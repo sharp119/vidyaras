@@ -1,0 +1,41 @@
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Preview and mockup directories
+preview/
+docs/mockups/
+
+# Video files
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.flv
+*.wmv
+
+# Large image files (except in assets)
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.webp
+
+# Allow images in assets directories
+!**/assets/**/*.jpg
+!**/assets/**/*.jpeg
+!**/assets/**/*.png
+!**/assets/**/*.gif
+!**/assets/**/*.webp
+
+# Build directories
+**/build/
+**/android/build/
+**/ios/build/
