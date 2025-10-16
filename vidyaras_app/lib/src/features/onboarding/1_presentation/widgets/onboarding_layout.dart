@@ -43,10 +43,7 @@ class OnboardingLayout extends StatelessWidget {
           children: [
             // Header with app name and language toggle
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 16,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -54,7 +51,7 @@ class OnboardingLayout extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'JanJeevan',
+                        'VidyaRas',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,

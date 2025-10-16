@@ -36,9 +36,7 @@ void main() async {
 
   runApp(
     // Wrap app with ProviderScope for Riverpod state management
-    const ProviderScope(
-      child: VidyaRasApp(),
-    ),
+    const ProviderScope(child: VidyaRasApp()),
   );
 }
 
@@ -51,7 +49,7 @@ class VidyaRasApp extends StatelessWidget {
       routerConfig: appRouter,
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      title: 'VidyaRas - JanJeevan',
+      title: 'VidyaRas',
     );
   }
 }

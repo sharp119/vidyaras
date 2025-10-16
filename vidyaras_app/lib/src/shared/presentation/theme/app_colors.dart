@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// VidyaRas App Color Palette
-/// Based on mockup designs for JanJeevan learning platform
+/// Based on mockup designs for VidyaRas learning platform
 class AppColors {
   AppColors._();
 
@@ -34,7 +34,9 @@ class AppColors {
   static const Color surfaceLight = Color(0xFFF5F5F5);
 
   // Text Colors
-  static const Color textPrimary = Color(0xFF1F2937); // Dark gray (almost black)
+  static const Color textPrimary = Color(
+    0xFF1F2937,
+  ); // Dark gray (almost black)
   static const Color textSecondary = Color(0xFF6B7280); // Medium gray
   static const Color textTertiary = Color(0xFF9CA3AF); // Light gray
   static const Color textOnPrimary = Color(0xFFFFFFFF); // White
