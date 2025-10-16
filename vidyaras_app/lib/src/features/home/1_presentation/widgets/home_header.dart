@@ -21,13 +21,11 @@ class HomeHeader extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: AppGradients.orange,
       ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
               // Header with branding and notification
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,7 +127,6 @@ class HomeHeader extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

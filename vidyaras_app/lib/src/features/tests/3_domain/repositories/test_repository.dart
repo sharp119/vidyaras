@@ -1,0 +1,15 @@
+import 'package:fpdart/fpdart.dart';
+import '../../../../shared/domain/failures/failure.dart';
+import '../models/test_data.dart';
+
+/// Repository interface for test-related operations
+abstract class TestRepository {
+  /// Fetches all test data including stats, performance, available and completed tests
+  Future<Either<Failure, TestData>> getTestData();
+
+  /// Starts a test and returns navigation data
+  Future<Either<Failure, String>> startTest(String testId);
+
+  /// Retakes a completed test
+  Future<Either<Failure, String>> retakeTest(String testId);
+}

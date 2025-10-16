@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../features/home/1_presentation/screens/home_screen_v2.dart';
+import '../../../features/tests/1_presentation/screens/test_series_screen.dart';
 import '../components/navigation/bottom_nav_bar.dart';
 import 'courses_screen.dart';
 import 'community_screen.dart';
-import 'tests_screen.dart';
 import 'profile_screen.dart';
 
 /// Main app shell with bottom navigation
@@ -25,7 +25,7 @@ class _MainShellState extends State<MainShell> {
     HomeScreenV2(),
     CoursesScreen(),
     CommunityScreen(),
-    TestsScreen(),
+    TestSeriesScreen(),
     ProfileScreen(),
   ];
 
@@ -60,10 +60,12 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: _screens,
+      body: SafeArea(
+        child: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: _screens,
+        ),
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,

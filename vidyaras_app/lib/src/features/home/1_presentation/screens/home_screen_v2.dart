@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
+import '../../../../shared/presentation/components/cards/stats_card.dart';
 import '../../2_application/notifiers/home_notifier.dart';
 import '../widgets/home_header.dart';
-import '../widgets/stats_card.dart';
 import '../widgets/category_pills.dart';
 import '../widgets/course_list_card.dart';
 import '../widgets/large_course_card.dart';
@@ -72,9 +72,26 @@ class HomeScreenV2 extends ConsumerWidget {
                         right: 20,
                         bottom: -25 - offset,
                         child: StatsCard(
-                          activeCourses: data.userProfile.enrolledCount,
-                          completedCourses: data.userProfile.completedCount,
-                          points: data.userProfile.referralPoints,
+                          stats: [
+                            StatCardItem(
+                              icon: Icons.play_circle_outline,
+                              value: data.userProfile.enrolledCount,
+                              label: 'Active',
+                              iconColor: AppColors.primary,
+                            ),
+                            StatCardItem(
+                              icon: Icons.emoji_events_outlined,
+                              value: data.userProfile.completedCount,
+                              label: 'Completed',
+                              iconColor: AppColors.success,
+                            ),
+                            StatCardItem(
+                              icon: Icons.card_giftcard,
+                              value: data.userProfile.referralPoints,
+                              label: 'Points',
+                              iconColor: AppColors.accent,
+                            ),
+                          ],
                         ),
                       ),
                     ],

@@ -12,8 +12,8 @@ void main() async {
   // Configure system UI overlay (status bar and navigation bar)
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      // Status bar color (Android)
-      statusBarColor: Colors.transparent,
+      // Status bar color (Android) - using app's primary color
+      statusBarColor: AppColors.primary,
       // Status bar icon brightness (Android)
       statusBarIconBrightness: Brightness.light,
       // Status bar brightness (iOS)

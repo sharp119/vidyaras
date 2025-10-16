@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../features/onboarding/1_presentation/screens/intro_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_interests_screen.dart';
@@ -7,6 +8,7 @@ import '../../../features/onboarding/1_presentation/screens/onboarding_language_
 import '../../../features/auth/1_presentation/screens/phone_auth_screen.dart';
 import '../../../features/auth/1_presentation/screens/otp_verification_screen.dart';
 import '../../../features/auth/1_presentation/screens/registration_screen.dart';
+import '../../../features/tests/1_presentation/screens/quiz_screen.dart';
 import '../screens/main_shell.dart';
 
 /// Application routing configuration using GoRouter
@@ -78,6 +80,44 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final index = state.extra as int? ?? 0;
         return MainShell(initialIndex: index);
+      },
+    ),
+
+    // Test Routes
+    GoRoute(
+      path: '/test/:testId',
+      name: 'test-questions',
+      builder: (context, state) {
+        final testId = state.pathParameters['testId']!;
+        final testTitle = state.extra as String? ?? 'Quiz';
+        return QuizScreen(
+          testId: testId,
+          testTitle: testTitle,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/test/:testId/results',
+      name: 'test-results',
+      builder: (context, state) {
+        final testId = state.pathParameters['testId']!;
+        // TODO: Create TestResultsScreen
+        // For now, return a placeholder
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Test Results'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () => context.go('/home'),
+                tooltip: 'Go to Home',
+              ),
+            ],
+          ),
+          body: Center(
+            child: Text('Test Results Screen for test: $testId'),
+          ),
+        );
       },
     ),
 
