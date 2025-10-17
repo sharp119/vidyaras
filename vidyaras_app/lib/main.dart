@@ -2,25 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'; // Import Supabase
 import 'src/shared/presentation/theme/app_theme.dart';
 import 'src/shared/presentation/routing/app_router.dart';
 import 'src/shared/presentation/theme/app_colors.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Supabase with your provided credentials
+  await Supabase.initialize(
+    url: 'https://cyenulvcedlzccorgkkx.supabase.co',
+    anonKey: 'sb_publishable_1bNMSWq_hWRg00wXfxkxNA_sJ65jFux',
+  );
 
   // Configure system UI overlay (status bar and navigation bar)
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      // Status bar color (Android) - using app's primary color
       statusBarColor: AppColors.primary,
-      // Status bar icon brightness (Android)
       statusBarIconBrightness: Brightness.light,
-      // Status bar brightness (iOS)
       statusBarBrightness: Brightness.dark,
-      // Navigation bar color (Android)
       systemNavigationBarColor: AppColors.background,
-      // Navigation bar icon brightness (Android)
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
@@ -39,6 +41,9 @@ void main() async {
     const ProviderScope(child: VidyaRasApp()),
   );
 }
+
+// Helper to get the Supabase client instance
+final supabase = Supabase.instance.client;
 
 class VidyaRasApp extends StatelessWidget {
   const VidyaRasApp({super.key});
