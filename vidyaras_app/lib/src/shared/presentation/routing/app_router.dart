@@ -9,6 +9,7 @@ import '../../../features/auth/1_presentation/screens/phone_auth_screen.dart';
 import '../../../features/auth/1_presentation/screens/otp_verification_screen.dart';
 import '../../../features/auth/1_presentation/screens/registration_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_screen.dart';
+import '../../../features/tests/1_presentation/screens/quiz_results_screen.dart'; // Import the new screen
 import '../screens/main_shell.dart';
 
 /// Application routing configuration using GoRouter
@@ -90,10 +91,7 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final testId = state.pathParameters['testId']!;
         final testTitle = state.extra as String? ?? 'Quiz';
-        return QuizScreen(
-          testId: testId,
-          testTitle: testTitle,
-        );
+        return QuizScreen(testId: testId, testTitle: testTitle);
       },
     ),
     GoRoute(
@@ -101,23 +99,7 @@ final GoRouter appRouter = GoRouter(
       name: 'test-results',
       builder: (context, state) {
         final testId = state.pathParameters['testId']!;
-        // TODO: Create TestResultsScreen
-        // For now, return a placeholder
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Test Results'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.home),
-                onPressed: () => context.go('/home'),
-                tooltip: 'Go to Home',
-              ),
-            ],
-          ),
-          body: Center(
-            child: Text('Test Results Screen for test: $testId'),
-          ),
-        );
+        return QuizResultsScreen(testId: testId); // Use the new screen
       },
     ),
 

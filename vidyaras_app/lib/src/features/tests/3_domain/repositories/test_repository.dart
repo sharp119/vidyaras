@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import '../../../../shared/domain/failures/failure.dart';
 import '../models/test_data.dart';
+import '../models/question.dart';
 
 /// Repository interface for test-related operations
 abstract class TestRepository {
@@ -12,4 +13,7 @@ abstract class TestRepository {
 
   /// Retakes a completed test
   Future<Either<Failure, String>> retakeTest(String testId);
+
+  /// Fetches the questions for a specific quiz
+  Future<Either<Failure, List<Question>>> getQuizQuestions(String testId);
 }
