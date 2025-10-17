@@ -9,11 +9,11 @@ import '../../../features/auth/1_presentation/screens/phone_auth_screen.dart';
 import '../../../features/auth/1_presentation/screens/otp_verification_screen.dart';
 import '../../../features/auth/1_presentation/screens/registration_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_screen.dart';
-import '../../../features/tests/1_presentation/screens/quiz_results_screen.dart'; // Import the new screen
+import '../../../features/tests/1_presentation/screens/quiz_results_screen.dart';
+import '../../../features/tests/1_presentation/screens/answer_review_screen.dart'; // Import the new screen
 import '../screens/main_shell.dart';
 
 /// Application routing configuration using GoRouter
-/// Centralized routing for the entire VidyaRas application
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   routes: [
@@ -99,7 +99,16 @@ final GoRouter appRouter = GoRouter(
       name: 'test-results',
       builder: (context, state) {
         final testId = state.pathParameters['testId']!;
-        return QuizResultsScreen(testId: testId); // Use the new screen
+        return QuizResultsScreen(testId: testId);
+      },
+    ),
+    GoRoute(
+      path: '/test/:testId/review', // New route for answer review
+      name: 'test-review',
+      builder: (context, state) {
+        final testId = state.pathParameters['testId']!;
+        final userAnswers = state.extra as Map<int, int>?;
+        return AnswerReviewScreen(testId: testId, userAnswers: userAnswers);
       },
     ),
 

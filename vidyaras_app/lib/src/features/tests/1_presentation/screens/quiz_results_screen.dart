@@ -24,6 +24,13 @@ class QuizResultsScreen extends ConsumerWidget {
       completedAt: DateTime.now(),
       timeTakenMinutes: 10,
     );
+    final mockUserAnswers = {
+      0: 0,
+      1: 0,
+      2: 0,
+      3: 1,
+      4: 3,
+    }; // Mock user answers for now
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -107,7 +114,8 @@ class QuizResultsScreen extends ConsumerWidget {
             // Action buttons
             PrimaryButton(
               onPressed: () {
-                // TODO: Navigate to answer review
+                // Navigate to the answer review screen
+                context.push('/test/$testId/review', extra: mockUserAnswers);
               },
               label: 'Review Answers',
               icon: Icons.rate_review,
