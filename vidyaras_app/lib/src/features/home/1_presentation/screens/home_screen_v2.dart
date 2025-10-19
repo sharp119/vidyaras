@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
 import '../../../../shared/presentation/components/cards/stats_card.dart';
+import '../../../auth/2_application/providers/auth_providers.dart';
 import '../../2_application/notifiers/home_notifier.dart';
 import '../widgets/home_header.dart';
 import '../widgets/category_pills.dart';
@@ -16,6 +17,7 @@ class HomeScreenV2 extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final homeState = ref.watch(homeNotifierProvider);
+    final currentUserAsync = ref.watch(currentUserProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -58,7 +60,11 @@ class HomeScreenV2 extends ConsumerWidget {
                     children: [
                       // Orange Header
                       HomeHeader(
-                        userName: data.userProfile.name,
+                        userName: currentUserAsync.when(
+                          data: (user) => user?.name ?? 'Guest',
+                          loading: () => 'Loading...',
+                          error: (_, __) => 'Guest',
+                        ),
                         onSearchTap: () {
                           // TODO: Navigate to search
                         },

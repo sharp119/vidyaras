@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../features/auth/1_presentation/screens/splash_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/intro_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_interests_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_goals_screen.dart';
@@ -17,9 +17,16 @@ import '../screens/main_shell.dart';
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   routes: [
-    // Intro/Onboarding Screen - Initial route
+    // Splash Screen - Entry point with auth check
     GoRoute(
       path: '/',
+      name: 'splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
+
+    // Intro Screen - For unauthenticated users
+    GoRoute(
+      path: '/intro',
       name: 'intro',
       builder: (context, state) => const IntroScreen(),
     ),
