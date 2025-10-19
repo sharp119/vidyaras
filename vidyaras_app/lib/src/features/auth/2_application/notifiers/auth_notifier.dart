@@ -1,7 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../3_domain/repositories/auth_repository.dart';
-import '../../4_data/datasources/auth_local_datasource.dart';
-import '../../4_data/repositories/auth_repository_impl.dart';
+import '../providers/auth_providers.dart';
 import '../state/auth_state.dart';
 
 part 'auth_notifier.g.dart';
@@ -14,8 +13,8 @@ class AuthNotifier extends _$AuthNotifier {
 
   @override
   AuthState build() {
-    // Initialize repository
-    _authRepository = AuthRepositoryImpl(AuthLocalDataSource());
+    // Initialize repository from provider
+    _authRepository = ref.watch(authRepositoryProvider);
     return const AuthState.initial();
   }
 
@@ -29,22 +28,27 @@ class AuthNotifier extends _$AuthNotifier {
       (failure) {
         state = AuthState.error(message: failure.message);
       },
-      (success) {
-        state = AuthState.otpSent(phoneNumber: phoneNumber);
+      (requestId) {
+        state = AuthState.otpSent(
+          phoneNumber: phoneNumber,
+          requestId: requestId,
+        );
       },
     );
   }
 
   /// Verify OTP
   Future<void> verifyOTP({
-    required String phoneNumber,
+    required String requestId,
     required String otp,
+    required String phoneNumber,
   }) async {
     state = const AuthState.verifyingOTP();
 
     final result = await _authRepository.verifyOTP(
-      phoneNumber: phoneNumber,
+      requestId: requestId,
       otp: otp,
+      phoneNumber: phoneNumber,
     );
 
     result.fold(

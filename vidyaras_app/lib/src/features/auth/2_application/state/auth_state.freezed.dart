@@ -21,7 +21,7 @@ mixin _$AuthState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() sendingOTP,
-    required TResult Function(String phoneNumber) otpSent,
+    required TResult Function(String phoneNumber, String requestId) otpSent,
     required TResult Function() verifyingOTP,
     required TResult Function(AuthResult authResult) otpVerified,
     required TResult Function() registering,
@@ -32,7 +32,7 @@ mixin _$AuthState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? sendingOTP,
-    TResult? Function(String phoneNumber)? otpSent,
+    TResult? Function(String phoneNumber, String requestId)? otpSent,
     TResult? Function()? verifyingOTP,
     TResult? Function(AuthResult authResult)? otpVerified,
     TResult? Function()? registering,
@@ -43,7 +43,7 @@ mixin _$AuthState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? sendingOTP,
-    TResult Function(String phoneNumber)? otpSent,
+    TResult Function(String phoneNumber, String requestId)? otpSent,
     TResult Function()? verifyingOTP,
     TResult Function(AuthResult authResult)? otpVerified,
     TResult Function()? registering,
@@ -152,7 +152,7 @@ class _$InitialImpl implements _Initial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() sendingOTP,
-    required TResult Function(String phoneNumber) otpSent,
+    required TResult Function(String phoneNumber, String requestId) otpSent,
     required TResult Function() verifyingOTP,
     required TResult Function(AuthResult authResult) otpVerified,
     required TResult Function() registering,
@@ -167,7 +167,7 @@ class _$InitialImpl implements _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? sendingOTP,
-    TResult? Function(String phoneNumber)? otpSent,
+    TResult? Function(String phoneNumber, String requestId)? otpSent,
     TResult? Function()? verifyingOTP,
     TResult? Function(AuthResult authResult)? otpVerified,
     TResult? Function()? registering,
@@ -182,7 +182,7 @@ class _$InitialImpl implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? sendingOTP,
-    TResult Function(String phoneNumber)? otpSent,
+    TResult Function(String phoneNumber, String requestId)? otpSent,
     TResult Function()? verifyingOTP,
     TResult Function(AuthResult authResult)? otpVerified,
     TResult Function()? registering,
@@ -295,7 +295,7 @@ class _$SendingOTPImpl implements _SendingOTP {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() sendingOTP,
-    required TResult Function(String phoneNumber) otpSent,
+    required TResult Function(String phoneNumber, String requestId) otpSent,
     required TResult Function() verifyingOTP,
     required TResult Function(AuthResult authResult) otpVerified,
     required TResult Function() registering,
@@ -310,7 +310,7 @@ class _$SendingOTPImpl implements _SendingOTP {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? sendingOTP,
-    TResult? Function(String phoneNumber)? otpSent,
+    TResult? Function(String phoneNumber, String requestId)? otpSent,
     TResult? Function()? verifyingOTP,
     TResult? Function(AuthResult authResult)? otpVerified,
     TResult? Function()? registering,
@@ -325,7 +325,7 @@ class _$SendingOTPImpl implements _SendingOTP {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? sendingOTP,
-    TResult Function(String phoneNumber)? otpSent,
+    TResult Function(String phoneNumber, String requestId)? otpSent,
     TResult Function()? verifyingOTP,
     TResult Function(AuthResult authResult)? otpVerified,
     TResult Function()? registering,
@@ -400,7 +400,7 @@ abstract class _$$OTPSentImplCopyWith<$Res> {
     $Res Function(_$OTPSentImpl) then,
   ) = __$$OTPSentImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String phoneNumber});
+  $Res call({String phoneNumber, String requestId});
 }
 
 /// @nodoc
@@ -416,12 +416,16 @@ class __$$OTPSentImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? phoneNumber = null}) {
+  $Res call({Object? phoneNumber = null, Object? requestId = null}) {
     return _then(
       _$OTPSentImpl(
         phoneNumber: null == phoneNumber
             ? _value.phoneNumber
             : phoneNumber // ignore: cast_nullable_to_non_nullable
+                  as String,
+        requestId: null == requestId
+            ? _value.requestId
+            : requestId // ignore: cast_nullable_to_non_nullable
                   as String,
       ),
     );
@@ -431,14 +435,16 @@ class __$$OTPSentImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$OTPSentImpl implements _OTPSent {
-  const _$OTPSentImpl({required this.phoneNumber});
+  const _$OTPSentImpl({required this.phoneNumber, required this.requestId});
 
   @override
   final String phoneNumber;
+  @override
+  final String requestId;
 
   @override
   String toString() {
-    return 'AuthState.otpSent(phoneNumber: $phoneNumber)';
+    return 'AuthState.otpSent(phoneNumber: $phoneNumber, requestId: $requestId)';
   }
 
   @override
@@ -447,11 +453,13 @@ class _$OTPSentImpl implements _OTPSent {
         (other.runtimeType == runtimeType &&
             other is _$OTPSentImpl &&
             (identical(other.phoneNumber, phoneNumber) ||
-                other.phoneNumber == phoneNumber));
+                other.phoneNumber == phoneNumber) &&
+            (identical(other.requestId, requestId) ||
+                other.requestId == requestId));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, phoneNumber);
+  int get hashCode => Object.hash(runtimeType, phoneNumber, requestId);
 
   /// Create a copy of AuthState
   /// with the given fields replaced by the non-null parameter values.
@@ -466,14 +474,14 @@ class _$OTPSentImpl implements _OTPSent {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() sendingOTP,
-    required TResult Function(String phoneNumber) otpSent,
+    required TResult Function(String phoneNumber, String requestId) otpSent,
     required TResult Function() verifyingOTP,
     required TResult Function(AuthResult authResult) otpVerified,
     required TResult Function() registering,
     required TResult Function(User user) authenticated,
     required TResult Function(String message) error,
   }) {
-    return otpSent(phoneNumber);
+    return otpSent(phoneNumber, requestId);
   }
 
   @override
@@ -481,14 +489,14 @@ class _$OTPSentImpl implements _OTPSent {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? sendingOTP,
-    TResult? Function(String phoneNumber)? otpSent,
+    TResult? Function(String phoneNumber, String requestId)? otpSent,
     TResult? Function()? verifyingOTP,
     TResult? Function(AuthResult authResult)? otpVerified,
     TResult? Function()? registering,
     TResult? Function(User user)? authenticated,
     TResult? Function(String message)? error,
   }) {
-    return otpSent?.call(phoneNumber);
+    return otpSent?.call(phoneNumber, requestId);
   }
 
   @override
@@ -496,7 +504,7 @@ class _$OTPSentImpl implements _OTPSent {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? sendingOTP,
-    TResult Function(String phoneNumber)? otpSent,
+    TResult Function(String phoneNumber, String requestId)? otpSent,
     TResult Function()? verifyingOTP,
     TResult Function(AuthResult authResult)? otpVerified,
     TResult Function()? registering,
@@ -505,7 +513,7 @@ class _$OTPSentImpl implements _OTPSent {
     required TResult orElse(),
   }) {
     if (otpSent != null) {
-      return otpSent(phoneNumber);
+      return otpSent(phoneNumber, requestId);
     }
     return orElse();
   }
@@ -561,9 +569,13 @@ class _$OTPSentImpl implements _OTPSent {
 }
 
 abstract class _OTPSent implements AuthState {
-  const factory _OTPSent({required final String phoneNumber}) = _$OTPSentImpl;
+  const factory _OTPSent({
+    required final String phoneNumber,
+    required final String requestId,
+  }) = _$OTPSentImpl;
 
   String get phoneNumber;
+  String get requestId;
 
   /// Create a copy of AuthState
   /// with the given fields replaced by the non-null parameter values.
@@ -617,7 +629,7 @@ class _$VerifyingOTPImpl implements _VerifyingOTP {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() sendingOTP,
-    required TResult Function(String phoneNumber) otpSent,
+    required TResult Function(String phoneNumber, String requestId) otpSent,
     required TResult Function() verifyingOTP,
     required TResult Function(AuthResult authResult) otpVerified,
     required TResult Function() registering,
@@ -632,7 +644,7 @@ class _$VerifyingOTPImpl implements _VerifyingOTP {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? sendingOTP,
-    TResult? Function(String phoneNumber)? otpSent,
+    TResult? Function(String phoneNumber, String requestId)? otpSent,
     TResult? Function()? verifyingOTP,
     TResult? Function(AuthResult authResult)? otpVerified,
     TResult? Function()? registering,
@@ -647,7 +659,7 @@ class _$VerifyingOTPImpl implements _VerifyingOTP {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? sendingOTP,
-    TResult Function(String phoneNumber)? otpSent,
+    TResult Function(String phoneNumber, String requestId)? otpSent,
     TResult Function()? verifyingOTP,
     TResult Function(AuthResult authResult)? otpVerified,
     TResult Function()? registering,
@@ -800,7 +812,7 @@ class _$OTPVerifiedImpl implements _OTPVerified {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() sendingOTP,
-    required TResult Function(String phoneNumber) otpSent,
+    required TResult Function(String phoneNumber, String requestId) otpSent,
     required TResult Function() verifyingOTP,
     required TResult Function(AuthResult authResult) otpVerified,
     required TResult Function() registering,
@@ -815,7 +827,7 @@ class _$OTPVerifiedImpl implements _OTPVerified {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? sendingOTP,
-    TResult? Function(String phoneNumber)? otpSent,
+    TResult? Function(String phoneNumber, String requestId)? otpSent,
     TResult? Function()? verifyingOTP,
     TResult? Function(AuthResult authResult)? otpVerified,
     TResult? Function()? registering,
@@ -830,7 +842,7 @@ class _$OTPVerifiedImpl implements _OTPVerified {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? sendingOTP,
-    TResult Function(String phoneNumber)? otpSent,
+    TResult Function(String phoneNumber, String requestId)? otpSent,
     TResult Function()? verifyingOTP,
     TResult Function(AuthResult authResult)? otpVerified,
     TResult Function()? registering,
@@ -952,7 +964,7 @@ class _$RegisteringImpl implements _Registering {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() sendingOTP,
-    required TResult Function(String phoneNumber) otpSent,
+    required TResult Function(String phoneNumber, String requestId) otpSent,
     required TResult Function() verifyingOTP,
     required TResult Function(AuthResult authResult) otpVerified,
     required TResult Function() registering,
@@ -967,7 +979,7 @@ class _$RegisteringImpl implements _Registering {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? sendingOTP,
-    TResult? Function(String phoneNumber)? otpSent,
+    TResult? Function(String phoneNumber, String requestId)? otpSent,
     TResult? Function()? verifyingOTP,
     TResult? Function(AuthResult authResult)? otpVerified,
     TResult? Function()? registering,
@@ -982,7 +994,7 @@ class _$RegisteringImpl implements _Registering {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? sendingOTP,
-    TResult Function(String phoneNumber)? otpSent,
+    TResult Function(String phoneNumber, String requestId)? otpSent,
     TResult Function()? verifyingOTP,
     TResult Function(AuthResult authResult)? otpVerified,
     TResult Function()? registering,
@@ -1134,7 +1146,7 @@ class _$AuthenticatedImpl implements _Authenticated {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() sendingOTP,
-    required TResult Function(String phoneNumber) otpSent,
+    required TResult Function(String phoneNumber, String requestId) otpSent,
     required TResult Function() verifyingOTP,
     required TResult Function(AuthResult authResult) otpVerified,
     required TResult Function() registering,
@@ -1149,7 +1161,7 @@ class _$AuthenticatedImpl implements _Authenticated {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? sendingOTP,
-    TResult? Function(String phoneNumber)? otpSent,
+    TResult? Function(String phoneNumber, String requestId)? otpSent,
     TResult? Function()? verifyingOTP,
     TResult? Function(AuthResult authResult)? otpVerified,
     TResult? Function()? registering,
@@ -1164,7 +1176,7 @@ class _$AuthenticatedImpl implements _Authenticated {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? sendingOTP,
-    TResult Function(String phoneNumber)? otpSent,
+    TResult Function(String phoneNumber, String requestId)? otpSent,
     TResult Function()? verifyingOTP,
     TResult Function(AuthResult authResult)? otpVerified,
     TResult Function()? registering,
@@ -1313,7 +1325,7 @@ class _$ErrorImpl implements _Error {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() sendingOTP,
-    required TResult Function(String phoneNumber) otpSent,
+    required TResult Function(String phoneNumber, String requestId) otpSent,
     required TResult Function() verifyingOTP,
     required TResult Function(AuthResult authResult) otpVerified,
     required TResult Function() registering,
@@ -1328,7 +1340,7 @@ class _$ErrorImpl implements _Error {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? sendingOTP,
-    TResult? Function(String phoneNumber)? otpSent,
+    TResult? Function(String phoneNumber, String requestId)? otpSent,
     TResult? Function()? verifyingOTP,
     TResult? Function(AuthResult authResult)? otpVerified,
     TResult? Function()? registering,
@@ -1343,7 +1355,7 @@ class _$ErrorImpl implements _Error {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? sendingOTP,
-    TResult Function(String phoneNumber)? otpSent,
+    TResult Function(String phoneNumber, String requestId)? otpSent,
     TResult Function()? verifyingOTP,
     TResult Function(AuthResult authResult)? otpVerified,
     TResult Function()? registering,

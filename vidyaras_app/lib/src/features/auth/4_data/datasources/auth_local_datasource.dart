@@ -1,12 +1,12 @@
 import '../../3_domain/models/user.dart';
+import '../services/msg91_service.dart';
 
-/// Local datasource for authentication
-/// Simulates authentication with dummy data for development
+/// Auth datasource using MSG91 SDK for OTP
+/// Handles real OTP sending and verification via MSG91
 class AuthLocalDataSource {
-  // Dummy OTP for all phone numbers (development only)
-  static const String _dummyOTP = '123456';
+  final Msg91Service _msg91Service;
 
-  // In-memory storage for registered users
+  // In-memory storage for registered users (temporary - will use Supabase later)
   final Map<String, User> _registeredUsers = {
     // Pre-registered test user
     '+911234567890': User(
@@ -22,38 +22,39 @@ class AuthLocalDataSource {
   // Current authenticated user
   User? _currentUser;
 
-  /// Send OTP to phone number (simulated)
-  /// Always returns true for valid phone numbers
-  Future<bool> sendOTP(String phoneNumber) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 500));
+  AuthLocalDataSource(this._msg91Service);
 
-    // In real implementation, this would call an API to send SMS
-    // For now, we just validate the phone number format
+  /// Send OTP to phone number via MSG91 SDK
+  /// Returns requestId needed for verification
+  Future<String> sendOTP(String phoneNumber) async {
+    // Validate phone number format
     if (phoneNumber.isEmpty || phoneNumber.length < 10) {
       throw Exception('Invalid phone number');
     }
 
-    // Log the dummy OTP for development
-    print('📱 OTP sent to $phoneNumber: $_dummyOTP');
-    return true;
+    // Send OTP via MSG91 SDK - returns requestId
+    final requestId = await _msg91Service.sendOTP(phoneNumber: phoneNumber);
+    print('✅ OTP sent successfully to $phoneNumber, requestId: $requestId');
+
+    return requestId;
   }
 
-  /// Verify OTP and check if user exists
+  /// Verify OTP via MSG91 SDK and check if user exists
   /// Returns user if exists, null if new user
   Future<User?> verifyOTP({
-    required String phoneNumber,
+    required String requestId,
     required String otp,
+    required String phoneNumber,
   }) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 800));
+    // Verify OTP via MSG91 SDK - returns access token
+    final accessToken = await _msg91Service.verifyOTP(
+      requestId: requestId,
+      otp: otp,
+    );
 
-    // Verify OTP
-    if (otp != _dummyOTP) {
-      throw Exception('Invalid OTP');
-    }
+    print('✅ OTP verified successfully, accessToken received');
 
-    // Check if user exists
+    // Check if user exists in our system
     final user = _registeredUsers[phoneNumber];
 
     if (user != null) {

@@ -13,10 +13,10 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._localDataSource);
 
   @override
-  Future<Either<Failure, bool>> sendOTP(String phoneNumber) async {
+  Future<Either<Failure, String>> sendOTP(String phoneNumber) async {
     try {
-      final result = await _localDataSource.sendOTP(phoneNumber);
-      return right(result);
+      final requestId = await _localDataSource.sendOTP(phoneNumber);
+      return right(requestId);
     } catch (e) {
       return left(AuthFailure(message: e.toString()));
     }
@@ -24,13 +24,15 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, AuthResult>> verifyOTP({
-    required String phoneNumber,
+    required String requestId,
     required String otp,
+    required String phoneNumber,
   }) async {
     try {
       final user = await _localDataSource.verifyOTP(
-        phoneNumber: phoneNumber,
+        requestId: requestId,
         otp: otp,
+        phoneNumber: phoneNumber,
       );
 
       if (user == null) {

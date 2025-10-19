@@ -34,8 +34,11 @@ final GoRouter appRouter = GoRouter(
       path: '/auth/verify-otp',
       name: 'verify-otp',
       builder: (context, state) {
-        final phoneNumber = state.extra as String;
-        return OTPVerificationScreen(phoneNumber: phoneNumber);
+        final data = state.extra as Map<String, String>;
+        return OTPVerificationScreen(
+          phoneNumber: data['phoneNumber']!,
+          requestId: data['requestId']!,
+        );
       },
     ),
     GoRoute(

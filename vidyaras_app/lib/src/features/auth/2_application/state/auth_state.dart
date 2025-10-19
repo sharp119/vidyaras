@@ -14,6 +14,7 @@ class AuthState with _$AuthState {
 
   const factory AuthState.otpSent({
     required String phoneNumber,
+    required String requestId,
   }) = _OTPSent;
 
   const factory AuthState.verifyingOTP() = _VerifyingOTP;

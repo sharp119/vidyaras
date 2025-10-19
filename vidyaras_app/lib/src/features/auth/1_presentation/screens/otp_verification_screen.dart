@@ -15,10 +15,12 @@ import '../../2_application/notifiers/auth_notifier.dart';
 /// Users enter the 6-digit OTP sent to their phone
 class OTPVerificationScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
+  final String requestId;
 
   const OTPVerificationScreen({
     super.key,
     required this.phoneNumber,
+    required this.requestId,
   });
 
   @override
@@ -75,8 +77,9 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
     final otp = _otpCode;
     if (otp.length == 6) {
       ref.read(authNotifierProvider.notifier).verifyOTP(
-            phoneNumber: widget.phoneNumber,
+            requestId: widget.requestId,
             otp: otp,
+            phoneNumber: widget.phoneNumber,
           );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -115,7 +118,7 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
       next.when(
         initial: () {},
         sendingOTP: () {},
-        otpSent: (_) {},
+        otpSent: (phoneNumber, requestId) {},
         verifyingOTP: () {},
         otpVerified: (authResult) {
           if (authResult.needsRegistration) {

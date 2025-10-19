@@ -51,9 +51,12 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
       next.when(
         initial: () {},
         sendingOTP: () {},
-        otpSent: (phoneNumber) {
-          // Navigate to OTP verification screen
-          context.push('/auth/verify-otp', extra: phoneNumber);
+        otpSent: (phoneNumber, requestId) {
+          // Navigate to OTP verification screen with both phone and requestId
+          context.push('/auth/verify-otp', extra: {
+            'phoneNumber': phoneNumber,
+            'requestId': requestId,
+          });
         },
         verifyingOTP: () {},
         otpVerified: (_) {},

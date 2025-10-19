@@ -8,14 +8,15 @@ import '../models/user.dart';
 /// Implementations must return Either<Failure, Success> and never throw exceptions
 abstract class AuthRepository {
   /// Send OTP to phone number
-  /// Returns true if OTP sent successfully
-  Future<Either<Failure, bool>> sendOTP(String phoneNumber);
+  /// Returns requestId needed for verification
+  Future<Either<Failure, String>> sendOTP(String phoneNumber);
 
   /// Verify OTP and authenticate user
   /// Returns AuthResult with user data and flags for registration/onboarding
   Future<Either<Failure, AuthResult>> verifyOTP({
-    required String phoneNumber,
+    required String requestId,
     required String otp,
+    required String phoneNumber,
   });
 
   /// Register new user with profile information

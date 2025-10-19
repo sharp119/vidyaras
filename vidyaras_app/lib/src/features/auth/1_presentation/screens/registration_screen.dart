@@ -59,7 +59,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
       next.when(
         initial: () {},
         sendingOTP: () {},
-        otpSent: (_) {},
+        otpSent: (phoneNumber, requestId) {},
         verifyingOTP: () {},
         otpVerified: (_) {},
         registering: () {},

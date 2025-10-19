@@ -37,6 +37,10 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
 
+  # OTP Service
+  sendotp_flutter_sdk: ^0.0.2
+  http: ^1.1.0
+
   # Error Handling
   fpdart: ^1.1.0
 
