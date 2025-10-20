@@ -32,9 +32,29 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   }
 
   void _startQuiz() async {
-    final questionsEither = await ref
-        .read(testRepositoryProvider)
-        .getQuizQuestions(widget.testId);
+    // First, get the quiz details to fetch the correct duration
+    final quizRepository = ref.read(testRepositoryProvider);
+
+    // We need to get the quiz metadata from test repository
+    // For now, let's fetch from the test data
+    final testDataEither = await quizRepository.getTestData();
+
+    int quizDuration = 30; // Default fallback
+
+    testDataEither.fold(
+      (failure) => null,
+      (testData) {
+        // Find the quiz in available or completed tests
+        final allTests = [...testData.availableTests, ...testData.completedTests];
+        final quiz = allTests.firstWhere(
+          (test) => test.id == widget.testId,
+          orElse: () => allTests.first,
+        );
+        quizDuration = quiz.durationMinutes;
+      },
+    );
+
+    final questionsEither = await quizRepository.getQuizQuestions(widget.testId);
 
     questionsEither.fold(
       (failure) {
@@ -50,7 +70,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               testId: widget.testId,
               testTitle: widget.testTitle,
               questions: questions,
-              durationMinutes: 30, // You can make this dynamic later
+              durationMinutes: quizDuration,
             );
       },
     );

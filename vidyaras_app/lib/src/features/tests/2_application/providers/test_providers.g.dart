@@ -6,7 +6,26 @@ part of 'test_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$testRepositoryHash() => r'989f02b088fd82f8bf3fc4f04ba7d0c12db93140';
+String _$supabaseClientHash() => r'36e9cae00709545a85bfe4a5a2cb98d8686a01ea';
+
+/// Provider for Supabase client
+///
+/// Copied from [supabaseClient].
+@ProviderFor(supabaseClient)
+final supabaseClientProvider = AutoDisposeProvider<SupabaseClient>.internal(
+  supabaseClient,
+  name: r'supabaseClientProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$supabaseClientHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SupabaseClientRef = AutoDisposeProviderRef<SupabaseClient>;
+String _$testRepositoryHash() => r'9319f44644eb93312cb45e40037677199068a4a5';
 
 /// Provider for test repository
 ///

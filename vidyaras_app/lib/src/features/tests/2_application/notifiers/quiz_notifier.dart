@@ -4,6 +4,7 @@ import '../../3_domain/models/quiz_attempt.dart';
 import '../../3_domain/models/question.dart';
 import '../../3_domain/models/quiz_result.dart';
 import '../state/quiz_state.dart';
+import '../providers/quiz_providers.dart';
 
 part 'quiz_notifier.g.dart';
 
@@ -11,6 +12,7 @@ part 'quiz_notifier.g.dart';
 @riverpod
 class QuizNotifier extends _$QuizNotifier {
   Timer? _timer;
+  String? _attemptId; // Store the database attempt ID
 
   @override
   QuizState build(String testId) {
@@ -31,21 +33,39 @@ class QuizNotifier extends _$QuizNotifier {
   }) async {
     state = const QuizState.loading();
 
-    final attempt = QuizAttempt(
-      testId: testId,
-      testTitle: testTitle,
-      questions: questions,
-      currentQuestionIndex: 0,
-      totalQuestions: questions.length,
-      durationMinutes: durationMinutes,
-      startTime: DateTime.now(),
-      userAnswers: {},
+    // Create quiz attempt in database
+    final repository = ref.read(quizRepositoryProvider);
+    final totalMarks = questions.fold<int>(0, (sum, q) => sum + 1) * 10; // 10 marks per question
+
+    final attemptResult = await repository.createQuizAttempt(
+      quizId: testId,
+      totalMarks: totalMarks,
     );
 
-    state = QuizState.active(attempt);
+    await attemptResult.fold(
+      (failure) async {
+        state = QuizState.error(failure.message);
+      },
+      (attemptRecord) async {
+        _attemptId = attemptRecord.id;
 
-    // Start timer to auto-submit when time expires
-    _startTimer();
+        final attempt = QuizAttempt(
+          testId: testId,
+          testTitle: testTitle,
+          questions: questions,
+          currentQuestionIndex: 0,
+          totalQuestions: questions.length,
+          durationMinutes: durationMinutes,
+          startTime: DateTime.now(),
+          userAnswers: {},
+        );
+
+        state = QuizState.active(attempt);
+
+        // Start timer to auto-submit when time expires
+        _startTimer();
+      },
+    );
   }
 
   /// Start the countdown timer
@@ -128,38 +148,74 @@ class QuizNotifier extends _$QuizNotifier {
       active: (attempt) async {
         _timer?.cancel(); // Stop the timer
 
+        if (_attemptId == null) {
+          state = const QuizState.error('No active quiz attempt');
+          return;
+        }
+
         state = QuizState.submitting(attempt);
 
-        // Calculate score
+        final repository = ref.read(quizRepositoryProvider);
+
+        // Calculate score and save each answer to database
         int correctAnswers = 0;
+        int totalScore = 0;
         final userAnswers = attempt.userAnswers ?? {};
 
         for (int i = 0; i < attempt.questions.length; i++) {
           final question = attempt.questions[i];
           final userAnswer = userAnswers[i];
 
-          if (userAnswer != null && userAnswer == question.correctAnswerIndex) {
-            correctAnswers++;
+          if (userAnswer != null) {
+            final isCorrect = userAnswer == question.correctAnswerIndex;
+            final marksAwarded = isCorrect ? 10 : 0; // 10 marks per correct answer
+
+            if (isCorrect) {
+              correctAnswers++;
+              totalScore += marksAwarded;
+            }
+
+            // Save answer to database
+            await repository.submitAnswer(
+              attemptId: _attemptId!,
+              questionId: question.id,
+              selectedOptionId: userAnswer,
+              isCorrect: isCorrect,
+              marksAwarded: marksAwarded,
+            );
           }
         }
 
-        final score = ((correctAnswers / attempt.totalQuestions) * 100).round();
-        final timeTaken = DateTime.now().difference(attempt.startTime).inMinutes;
+        final timeTaken = DateTime.now().difference(attempt.startTime).inSeconds;
 
-        final result = QuizResult(
-          testId: attempt.testId,
-          testTitle: attempt.testTitle,
-          totalQuestions: attempt.totalQuestions,
-          correctAnswers: correctAnswers,
-          score: score,
-          completedAt: DateTime.now(),
-          timeTakenMinutes: timeTaken,
+        // Complete the quiz attempt in database
+        final completeResult = await repository.completeQuizAttempt(
+          attemptId: _attemptId!,
+          score: totalScore,
+          timeTakenSeconds: timeTaken,
         );
 
-        // Simulate API call delay
-        await Future.delayed(const Duration(milliseconds: 500));
+        await completeResult.fold(
+          (failure) async {
+            state = QuizState.error(failure.message);
+          },
+          (attemptRecord) async {
+            final score = attemptRecord.percentage?.round() ?? 0;
+            final timeTakenMinutes = (timeTaken / 60).ceil();
 
-        state = QuizState.completed(result);
+            final result = QuizResult(
+              testId: attempt.testId,
+              testTitle: attempt.testTitle,
+              totalQuestions: attempt.totalQuestions,
+              correctAnswers: correctAnswers,
+              score: score,
+              completedAt: DateTime.now(),
+              timeTakenMinutes: timeTakenMinutes,
+            );
+
+            state = QuizState.completed(result);
+          },
+        );
       },
     );
   }

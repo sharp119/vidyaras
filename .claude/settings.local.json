@@ -7,7 +7,11 @@
       "Bash(flutter:*)",
       "Read(//Users/adityapaswan/soup/projects/profit_grocery/profit_grocery_application/lib/services/**)",
       "Read(//Users/adityapaswan/soup/projects/profit_grocery/profit_grocery_application/lib/presentation/pages/authentication/**)",
-      "Read(//Users/adityapaswan/soup/projects/profit_grocery/profit_grocery_application/lib/presentation/blocs/auth/**)"
+      "Read(//Users/adityapaswan/soup/projects/profit_grocery/profit_grocery_application/lib/presentation/blocs/auth/**)",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__list_migrations",
+      "mcp__supabase__get_logs"
     ],
     "deny": [],
     "ask": []

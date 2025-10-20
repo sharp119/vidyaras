@@ -8,29 +8,32 @@ import '../../3_domain/models/quiz_result.dart';
 
 /// Screen to display the results of a completed quiz
 class QuizResultsScreen extends ConsumerWidget {
-  const QuizResultsScreen({super.key, required this.testId});
+  const QuizResultsScreen({
+    super.key,
+    required this.testId,
+    this.result,
+    this.userAnswers,
+  });
 
   final String testId;
+  final QuizResult? result;
+  final Map<int, int>? userAnswers;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Mock data for now - this will be replaced by data from the notifier
-    final mockResult = QuizResult(
-      testId: testId,
-      testTitle: 'Tabla Rhythm Patterns',
-      totalQuestions: 5,
-      correctAnswers: 4,
-      score: 80,
-      completedAt: DateTime.now(),
-      timeTakenMinutes: 10,
-    );
-    final mockUserAnswers = {
-      0: 0,
-      1: 0,
-      2: 0,
-      3: 1,
-      4: 3,
-    }; // Mock user answers for now
+    // Use passed result or fallback to mock data
+    final quizResult = result ??
+        QuizResult(
+          testId: testId,
+          testTitle: 'Quiz',
+          totalQuestions: 0,
+          correctAnswers: 0,
+          score: 0,
+          completedAt: DateTime.now(),
+          timeTakenMinutes: 0,
+        );
+
+    final answers = userAnswers ?? <int, int>{};
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -58,7 +61,7 @@ class QuizResultsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   Text(
-                    mockResult.testTitle,
+                    quizResult.testTitle,
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -76,7 +79,7 @@ class QuizResultsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${mockResult.score}%',
+                    '${quizResult.score}%',
                     style: const TextStyle(
                       fontSize: 64,
                       fontWeight: FontWeight.bold,
@@ -90,17 +93,17 @@ class QuizResultsScreen extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildStatItem(
-                        '${mockResult.correctAnswers}/${mockResult.totalQuestions}',
+                        '${quizResult.correctAnswers}/${quizResult.totalQuestions}',
                         'Correct',
                         AppColors.success,
                       ),
                       _buildStatItem(
-                        '${mockResult.totalQuestions - mockResult.correctAnswers}',
+                        '${quizResult.totalQuestions - quizResult.correctAnswers}',
                         'Incorrect',
                         AppColors.error,
                       ),
                       _buildStatItem(
-                        '${mockResult.timeTakenMinutes} mins',
+                        '${quizResult.timeTakenMinutes} mins',
                         'Time Taken',
                         AppColors.textPrimary,
                       ),
@@ -115,7 +118,7 @@ class QuizResultsScreen extends ConsumerWidget {
             PrimaryButton(
               onPressed: () {
                 // Navigate to the answer review screen
-                context.push('/test/$testId/review', extra: mockUserAnswers);
+                context.push('/test/$testId/review', extra: answers);
               },
               label: 'Review Answers',
               icon: Icons.rate_review,

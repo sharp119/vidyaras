@@ -1,4 +1,5 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../shared/domain/failures/failure.dart';
 import '../../3_domain/models/test_data.dart';
 import '../../3_domain/models/test_stats.dart';
@@ -7,274 +8,189 @@ import '../../3_domain/models/test.dart';
 import '../../3_domain/models/question.dart';
 import '../../3_domain/repositories/test_repository.dart';
 
-/// Mock implementation of TestRepository
-/// TODO: Replace with actual API integration
+/// Real implementation of TestRepository using Supabase
 class TestRepositoryImpl implements TestRepository {
-  /// Master list of all tests in the system.
-  static final List<Test> _allTests = [
-    const Test(
-      id: '1',
-      title: 'Hindustani Music Theory - Level 1',
-      titleHindi: 'हिन्दुस्तानी संगीत सिद्धांत - स्तर 1',
-      category: 'Music',
-      difficulty: 'beginner',
-      questionCount: 5, // Updated to match questions
-      durationMinutes: 10,
-      bestScore: '85%',
-      isCompleted: true,
-    ),
-    const Test(
-      id: '2',
-      title: 'Meditation Techniques Assessment',
-      titleHindi: 'ध्यान तकनीक मूल्यांकन',
-      category: 'Wellness',
-      difficulty: 'beginner',
-      questionCount: 5, // Updated to match questions
-      durationMinutes: 10,
-      bestScore: '92%',
-      isCompleted: true,
-    ),
-    const Test(
-      id: '3',
-      title: 'Tabla Rhythm Patterns',
-      titleHindi: 'तबला लय पैटर्न',
-      category: 'Music',
-      difficulty: 'intermediate',
-      questionCount: 5,
-      durationMinutes: 10,
-      isCompleted: false,
-    ),
-    const Test(
-      id: '4',
-      title: 'Classical Raag Identification',
-      titleHindi: 'शास्त्रीय राग पहचान',
-      category: 'Music',
-      difficulty: 'advanced',
-      questionCount: 30,
-      durationMinutes: 35,
-      isCompleted: false,
-    ),
-    const Test(
-      id: '5',
-      title: 'Yoga Asanas & Benefits',
-      titleHindi: 'योग आसन और लाभ',
-      category: 'Wellness',
-      difficulty: 'beginner',
-      questionCount: 20,
-      durationMinutes: 25,
-      isCompleted: false,
-    ),
-  ];
+  final SupabaseClient _supabase;
 
-  /// In-memory mock data for quiz questions, linked by testId.
-  final Map<String, List<Question>> _mockQuizQuestions = {
-    '1': const [
-      // Questions for "Hindustani Music Theory - Level 1"
-      Question(
-        id: '1-1',
-        questionText: 'What is a "Swar"?',
-        options: ['Rhythm', 'Note', 'Melody', 'Instrument'],
-        correctAnswerIndex: 1,
-      ),
-      Question(
-        id: '1-2',
-        questionText: 'How many "shuddha" (pure) swars are there in a saptak?',
-        options: ['5', '7', '9', '12'],
-        correctAnswerIndex: 1,
-      ),
-      Question(
-        id: '1-3',
-        questionText: 'Which swar is the base note "Sa"?',
-        options: ['Shadja', 'Rishabh', 'Gandhar', 'Madhyam'],
-        correctAnswerIndex: 0,
-      ),
-      Question(
-        id: '1-4',
-        questionText: 'What is a "Thaat"?',
-        options: [
-          'A type of rhythm',
-          'A parent scale',
-          'A collection of ragas',
-          'A performance style',
-        ],
-        correctAnswerIndex: 1,
-      ),
-      Question(
-        id: '1-5',
-        questionText:
-            'The raga "Bhairav" is typically sung at what time of day?',
-        options: ['Morning', 'Afternoon', 'Evening', 'Night'],
-        correctAnswerIndex: 0,
-      ),
-    ],
-    '2': const [
-      // Questions for "Meditation Techniques Assessment"
-      Question(
-        id: '2-1',
-        questionText: 'What is the primary focus in mindfulness meditation?',
-        options: [
-          'Clearing the mind',
-          'Breath and bodily sensations',
-          'Visualizing success',
-          'Repeating a mantra',
-        ],
-        correctAnswerIndex: 1,
-      ),
-      Question(
-        id: '2-2',
-        questionText: 'Which of these is a common meditation posture?',
-        options: [
-          'Lying down flat',
-          'Standing on one leg',
-          'Cross-legged (Padmasana)',
-          'Walking briskly',
-        ],
-        correctAnswerIndex: 2,
-      ),
-      Question(
-        id: '2-3',
-        questionText: 'The term "Vipassanā" means:',
-        options: ['Concentration', 'Loving-kindness', 'Insight', 'Tranquility'],
-        correctAnswerIndex: 2,
-      ),
-      Question(
-        id: '2-4',
-        questionText: 'What is a common benefit of regular meditation?',
-        options: [
-          'Increased stress',
-          'Reduced focus',
-          'Improved emotional regulation',
-          'Faster heart rate',
-        ],
-        correctAnswerIndex: 2,
-      ),
-      Question(
-        id: '2-5',
-        questionText: 'A "mantra" in meditation is typically a:',
-        options: [
-          'Difficult question',
-          'Repeated sound or word',
-          'Physical posture',
-          'Breathing exercise',
-        ],
-        correctAnswerIndex: 1,
-      ),
-    ],
-    '3': const [
-      // Questions for "Tabla Rhythm Patterns"
-      Question(
-        id: '3-1',
-        questionText:
-            'Which pair of instruments is most commonly used in Hindustani classical music?',
-        options: [
-          'Dayan and Bayan',
-          'Tabla and Pakhawaj',
-          'Mridangam and Ghatam',
-          'Dhol and Dholak',
-        ],
-        correctAnswerIndex: 0,
-      ),
-      Question(
-        id: '3-2',
-        questionText: 'Which hand is used to play the Dayan?',
-        options: ['Left hand', 'Right hand', 'Both hands', 'Either hand'],
-        correctAnswerIndex: 1,
-      ),
-      Question(
-        id: '3-3',
-        questionText: 'What is the main component of the Tabla\'s surface?',
-        options: ['Leather', 'Wood', 'Metal', 'Plastic'],
-        correctAnswerIndex: 0,
-      ),
-      Question(
-        id: '3-4',
-        questionText: 'What does "Teentaal" consist of?',
-        options: ['12 beats', '16 beats', '14 beats', '10 beats'],
-        correctAnswerIndex: 1,
-      ),
-      Question(
-        id: '3-5',
-        questionText:
-            'Which taal (rhythm cycle) is most commonly used in Hindustani classical music?',
-        options: ['Dadra', 'Rupak', 'Jhaptaal', 'Teentaal'],
-        correctAnswerIndex: 3,
-      ),
-    ],
-  };
+  TestRepositoryImpl(this._supabase);
 
   @override
   Future<Either<Failure, TestData>> getTestData() async {
     try {
-      await Future.delayed(const Duration(milliseconds: 500));
-      final completedTests = _allTests
-          .where((t) => t.isCompleted == true)
-          .toList();
-      final availableTests = _allTests
-          .where((t) => t.isCompleted == false)
-          .toList();
+      // Get user ID - use default guest user if not authenticated
+      final userId = _supabase.auth.currentUser?.id ??
+                     '060b2882-a066-42b5-bdd8-1c3a609a407f'; // Default guest user
+
+      // Fetch all published quizzes
+      final quizzesResponse = await _supabase
+          .from('quizzes')
+          .select()
+          .eq('is_published', true)
+          .order('created_at', ascending: false);
+
+      final quizzes = quizzesResponse as List;
+
+      // Fetch user's quiz attempts for stats
+      final attemptsResponse = await _supabase
+          .from('quiz_attempts')
+          .select()
+          .eq('user_id', userId)
+          .eq('is_completed', true)
+          .order('completed_at', ascending: false);
+
+      final attempts = attemptsResponse as List;
+
+      // Calculate stats
+      final totalTests = quizzes.length;
+      final completedTests = attempts.length;
+      final double avgScore = attempts.isEmpty
+          ? 0.0
+          : attempts.fold<double>(
+                  0.0, (sum, attempt) => sum + (attempt['percentage'] ?? 0.0)) /
+              attempts.length;
+
+      // Get attempted quiz IDs
+      final attemptedQuizIds =
+          attempts.map((a) => a['quiz_id'] as String).toSet();
+
+      // Separate available and completed tests
+      final List<Test> availableTests = [];
+      final List<Test> completedTestsList = [];
+
+      for (var quiz in quizzes) {
+        final quizId = quiz['id'] as String;
+        final isCompleted = attemptedQuizIds.contains(quizId);
+
+        // Get best score for completed quizzes
+        String? bestScore;
+        if (isCompleted) {
+          final quizAttempts = attempts
+              .where((a) => a['quiz_id'] == quizId)
+              .toList();
+          if (quizAttempts.isNotEmpty) {
+            final maxPercentage = quizAttempts.fold<double>(
+                0.0,
+                (max, a) {
+                  final percentage = (a['percentage'] as double?) ?? 0.0;
+                  return percentage > max ? percentage : max;
+                });
+            bestScore = '${maxPercentage.toStringAsFixed(0)}%';
+          }
+        }
+
+        // Count questions for this quiz
+        final questionCountResponse = await _supabase
+            .from('questions')
+            .select()
+            .eq('quiz_id', quizId);
+
+        final questionCount = (questionCountResponse as List).length;
+
+        final test = Test(
+          id: quizId,
+          title: quiz['title'] as String,
+          titleHindi: quiz['description'] as String? ?? '',
+          category: quiz['difficulty_level'] as String? ?? 'General',
+          difficulty: quiz['difficulty_level'] as String? ?? 'beginner',
+          questionCount: questionCount,
+          durationMinutes: quiz['time_allotted_minutes'] as int? ?? 30,
+          bestScore: bestScore,
+          isCompleted: isCompleted,
+        );
+
+        if (isCompleted) {
+          completedTestsList.add(test);
+        } else {
+          availableTests.add(test);
+        }
+      }
+
+      // Get performance overview (last 5 completed tests)
+      final List<TestPerformance> performanceOverview = [];
+      final recentAttempts = attempts.take(5);
+      for (var attempt in recentAttempts) {
+        final quizId = attempt['quiz_id'] as String;
+        final quiz = quizzes.firstWhere(
+          (q) => q['id'] == quizId,
+          orElse: () => {'title': 'Unknown Quiz'},
+        );
+        performanceOverview.add(
+          TestPerformance(
+            testId: quizId,
+            testTitle: quiz['title'] as String? ?? 'Unknown',
+            score: '${(attempt['percentage'] ?? 0.0).toStringAsFixed(0)}%',
+          ),
+        );
+      }
+
       final testData = TestData(
         stats: TestStats(
-          totalTests: _allTests.length,
-          completedTests: completedTests.length,
-          averageScore: '89%',
+          totalTests: totalTests,
+          completedTests: completedTests,
+          averageScore: '${avgScore.toStringAsFixed(0)}%',
         ),
-        performanceOverview: const [
-          TestPerformance(
-            testId: '1',
-            testTitle: 'Hindustani Music Theory - Level 1',
-            score: '85%',
-          ),
-          TestPerformance(
-            testId: '2',
-            testTitle: 'Meditation Techniques Assessment',
-            score: '92%',
-          ),
-        ],
+        performanceOverview: performanceOverview,
         availableTests: availableTests,
-        completedTests: completedTests,
+        completedTests: completedTestsList,
       );
+
       return right(testData);
     } catch (e) {
-      return left(ServerFailure(message: e.toString()));
+      return left(NetworkFailure(message: 'Failed to load test data: $e'));
     }
   }
 
   @override
   Future<Either<Failure, String>> startTest(String testId) async {
     try {
-      await Future.delayed(const Duration(milliseconds: 300));
       return right('/test/$testId');
     } catch (e) {
-      return left(ServerFailure(message: e.toString()));
+      return left(NetworkFailure(message: e.toString()));
     }
   }
 
   @override
   Future<Either<Failure, String>> retakeTest(String testId) async {
     try {
-      await Future.delayed(const Duration(milliseconds: 300));
       return right('/test/$testId');
     } catch (e) {
-      return left(ServerFailure(message: e.toString()));
+      return left(NetworkFailure(message: e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, List<Question>>> getQuizQuestions(
-    String testId,
-  ) async {
+  Future<Either<Failure, List<Question>>> getQuizQuestions(String testId) async {
     try {
-      await Future.delayed(const Duration(milliseconds: 300));
-      final questions = _mockQuizQuestions[testId];
-      if (questions != null) {
-        return right(questions);
-      } else {
-        return left(
-          ServerFailure(message: 'No questions found for test ID: $testId'),
+      // Fetch questions from Supabase
+      final questionsResponse = await _supabase
+          .from('questions')
+          .select()
+          .eq('quiz_id', testId)
+          .order('question_number', ascending: true);
+
+      final questionsData = questionsResponse as List;
+
+      final questions = questionsData.map((q) {
+        final questionData = q['question_data'] as Map<String, dynamic>;
+        final options = (q['options'] as List)
+            .map((opt) {
+              final optData = opt['data'] as Map<String, dynamic>;
+              return optData['content'] as String;
+            })
+            .toList();
+
+        return Question(
+          id: q['id'] as String,
+          questionText: questionData['content'] as String,
+          options: options,
+          correctAnswerIndex: q['correct_option_id'] as int,
         );
-      }
+      }).toList();
+
+      return right(questions);
     } catch (e) {
-      return left(ServerFailure(message: e.toString()));
+      return left(NetworkFailure(message: 'Failed to load questions: $e'));
     }
   }
+
 }

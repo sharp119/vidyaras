@@ -109,7 +109,12 @@ final GoRouter appRouter = GoRouter(
       name: 'test-results',
       builder: (context, state) {
         final testId = state.pathParameters['testId']!;
-        return QuizResultsScreen(testId: testId);
+        final extra = state.extra as Map<String, dynamic>?;
+        return QuizResultsScreen(
+          testId: testId,
+          result: extra?['result'],
+          userAnswers: extra?['userAnswers'],
+        );
       },
     ),
     GoRoute(
