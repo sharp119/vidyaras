@@ -1,140 +1,238 @@
 import 'package:flutter/material.dart';
+// Make sure this path matches your project structure
 import '../../../../shared/presentation/theme/app_colors.dart';
-import '../../../../shared/presentation/components/typography/bilingual_text.dart';
-import '../../../../shared/presentation/components/buttons/primary_button.dart';
 
-/// Card component for available tests
+/// Card component for available tests, now clickable
 class AvailableTestCard extends StatelessWidget {
   const AvailableTestCard({
     super.key,
     required this.title,
-    required this.titleHindi,
     required this.category,
+    required this.description,
     required this.difficulty,
     required this.questionCount,
     required this.durationMinutes,
-    required this.onStartTest,
+    this.onTap,
   });
 
   final String title;
-  final String titleHindi;
   final String category;
+  final String description;
   final String difficulty;
   final int questionCount;
   final int durationMinutes;
-  final VoidCallback onStartTest;
+  final VoidCallback? onTap; // Callback for the whole card tap
 
   Color _getDifficultyColor() {
     switch (difficulty.toLowerCase()) {
       case 'beginner':
+      case 'easy':
         return AppColors.success;
-      case 'intermediate':
+      case 'medium': // Orange for medium
+      case 'intermediate': // Orange for intermediate
         return AppColors.warning;
       case 'advanced':
+      case 'hard':
         return AppColors.error;
       default:
         return AppColors.textSecondary;
     }
   }
 
+  Color _getDifficultyTextColor() {
+    switch (difficulty.toLowerCase()) {
+      case 'medium':
+      case 'intermediate':
+        return AppColors.textPrimary; // Dark text on orange
+      default:
+        return Colors.white; // White text on other colors
+    }
+  }
+
+  // NEW: Helper function to get the correct display label
+  String _getDifficultyLabel() {
+    switch (difficulty.toLowerCase()) {
+      case 'beginner':
+      case 'easy':
+        return 'Easy';
+      case 'medium':
+      case 'intermediate':
+        return 'Medium';
+      case 'advanced':
+      case 'hard':
+        return 'Hard';
+      default:
+        // Capitalize the first letter as a fallback
+        return difficulty.isNotEmpty
+            ? difficulty[0].toUpperCase() + difficulty.substring(1)
+            : '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.textTertiary.withOpacity(0.1),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Icon container
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.description_outlined,
-              size: 32,
-              color: AppColors.primary,
-            ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.textTertiary.withOpacity(0.1),
+            width: 1,
           ),
-          const SizedBox(width: 16),
-          // Content
-          Expanded(
-            child: Column(
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.textPrimary.withOpacity(0.05),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top Row
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Title
-                BilingualText(
-                  english: title,
-                  hindi: titleHindi,
-                  englishStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                // Icon container
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  hindiStyle: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
+                  child: const Icon(
+                    Icons.language, // Globe icon from image
+                    size: 32,
+                    color: Colors.deepPurple,
                   ),
-                  spacing: 4,
                 ),
-                const SizedBox(height: 12),
-                // Category and Difficulty badges
+                const SizedBox(width: 16),
+                // Main Content (Title, Category, Description)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        // Title and Difficulty badge on the same line
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Expanded to allow title to wrap if needed
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8), // Space before badge
+                          // Difficulty Badge (aligned to right)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _getDifficultyColor(),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              // MODIFIED: Use the new label function
+                              _getDifficultyLabel(),
+                              style: TextStyle(
+                                fontSize: 13, // Match image
+                                fontWeight: FontWeight.w600,
+                                color: _getDifficultyTextColor(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // Category Badge (commented out as in your code)
+                      // Container(
+                      //   padding: const EdgeInsets.symmetric(
+                      //     horizontal: 12,
+                      //     vertical: 6,
+                      //   ),
+                      //   decoration: BoxDecoration(
+                      //     color: AppColors.textSecondary.withOpacity(0.1),
+                      //     borderRadius: BorderRadius.circular(6),
+                      //   ),
+                      //   child: Text(
+                      //     category,
+                      //     style: const TextStyle(
+                      //       fontSize: 13,
+                      //       fontWeight: FontWeight.w600,
+                      //       color: AppColors.textPrimary,
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Description
+            Text(
+              description,
+              style: const TextStyle(
+                fontSize: 15,
+                color: AppColors.textSecondary,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Divider line
+            Divider(
+              color: AppColors.textTertiary.withOpacity(
+                0.5,
+              ), // Made divider subtler
+              height: 1, // Keep it thin
+              thickness: 1,
+            ),
+            const SizedBox(height: 16), // Space after divider
+            // Footer: Time on left, Questions on right
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // LEFT: Time
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.textSecondary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        category,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
+                    const Icon(
+                      Icons.access_time,
+                      size: 16,
+                      color: AppColors.textSecondary,
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getDifficultyColor().withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        difficulty,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: _getDifficultyColor(),
-                        ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '$durationMinutes min',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                // Questions and Duration
+                // RIGHT: Questions
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.description_outlined,
+                    const Icon(
+                      Icons.trending_up, // Graph icon
                       size: 16,
                       color: AppColors.textSecondary,
                     ),
@@ -146,33 +244,12 @@ class AvailableTestCard extends StatelessWidget {
                         color: AppColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Icon(
-                      Icons.access_time,
-                      size: 16,
-                      color: AppColors.textSecondary,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$durationMinutes mins',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
                   ],
-                ),
-                const SizedBox(height: 16),
-                // Start Test Button
-                PrimaryButton(
-                  label: 'Start Test',
-                  onPressed: onStartTest,
-                  icon: Icons.play_arrow,
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

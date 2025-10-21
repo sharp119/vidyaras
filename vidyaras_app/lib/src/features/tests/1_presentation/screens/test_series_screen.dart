@@ -6,7 +6,7 @@ import '../../../../shared/presentation/components/cards/stats_card.dart';
 import '../../2_application/notifiers/test_notifier.dart';
 import '../../2_application/providers/test_providers.dart';
 import '../widgets/available_test_card.dart';
-import '../widgets/completed_test_card.dart';
+import '../widgets/completed_test_card.dart'; // Make sure this is imported
 import '../../3_domain/models/test_data.dart';
 
 /// Test Series screen showing tests, stats, and performance
@@ -46,13 +46,9 @@ class TestSeriesScreen extends ConsumerWidget {
           final screenHeight = MediaQuery.of(context).size.height;
           final offset = screenHeight * 0.13;
 
-          // --- MODIFICATION 1: Updated TabBar ---
-          // This now includes icons and refined styling
           final tabBar = TabBar(
             labelColor: AppColors.textPrimary,
             unselectedLabelColor: AppColors.textSecondary,
-
-            // 1. This is the white, rounded indicator
             indicator: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10.0),
@@ -67,11 +63,7 @@ class TestSeriesScreen extends ConsumerWidget {
             indicatorSize: TabBarIndicatorSize.tab,
             indicatorPadding: EdgeInsets.zero,
             padding: EdgeInsets.zero,
-
-            // 2. Hide the default underline/divider
             dividerColor: Colors.transparent,
-
-            // 3. Updated Tab styles
             labelStyle: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -80,11 +72,11 @@ class TestSeriesScreen extends ConsumerWidget {
               fontSize: 15,
               fontWeight: FontWeight.w500,
             ),
-            tabs: [
+            tabs: const [
               Tab(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(Icons.explore_outlined, size: 18),
                     SizedBox(width: 6),
                     Text('Explore'),
@@ -94,7 +86,7 @@ class TestSeriesScreen extends ConsumerWidget {
               Tab(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(Icons.history, size: 18),
                     SizedBox(width: 6),
                     Text('History'),
@@ -103,7 +95,6 @@ class TestSeriesScreen extends ConsumerWidget {
               ),
             ],
           );
-          // --- END OF MODIFICATION 1 ---
 
           return DefaultTabController(
             length: 2,
@@ -113,14 +104,13 @@ class TestSeriesScreen extends ConsumerWidget {
                 SliverToBoxAdapter(child: SizedBox(height: 50 + offset)),
                 SliverPersistentHeader(
                   pinned: true,
-                  // The delegate is updated below
                   delegate: _TestSeriesTabBarDelegate(tabBar),
                 ),
               ],
               body: TabBarView(
                 children: [
                   _buildExploreTab(context, ref, data),
-                  _buildHistoryTab(context, ref, data),
+                  _buildHistoryTab(context, ref, data), // Updated method
                 ],
               ),
             ),
@@ -268,12 +258,13 @@ class TestSeriesScreen extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
                 child: AvailableTestCard(
                   title: test.title,
-                  titleHindi: test.titleHindi,
+                  description:
+                      test.titleHindi, // Maps to description in the card
                   category: test.category,
                   difficulty: test.difficulty,
                   questionCount: test.questionCount,
                   durationMinutes: test.durationMinutes,
-                  onStartTest: () async {
+                  onTap: () async {
                     final navigationUrl = await notifier.startTest(test.id);
                     if (navigationUrl != null && context.mounted) {
                       context.push('/test/${test.id}', extra: test.title);
@@ -313,6 +304,7 @@ class TestSeriesScreen extends ConsumerWidget {
     );
   }
 
+  // --- MODIFIED METHOD ---
   Widget _buildHistoryTab(BuildContext context, WidgetRef ref, TestData data) {
     final notifier = ref.read(testNotifierProvider.notifier);
     final hasCompletedTests = data.completedTests.isNotEmpty;
@@ -338,15 +330,30 @@ class TestSeriesScreen extends ConsumerWidget {
             ),
           if (hasCompletedTests)
             ...data.completedTests.map((test) {
+              // 1. Create the QuizResult object from your existing 'test' data
+              final int score =
+                  int.tryParse(test.bestScore?.replaceAll('%', '') ?? '0') ?? 0;
+              final quizResult = QuizResult(
+                id: test.id,
+                title: test.title,
+                category: test.category,
+                difficulty: test.difficulty,
+                score: score,
+                totalQuestions: test.questionCount,
+                correctAnswers: ((score / 100) * test.questionCount).round(),
+                icon: '🏆', // Placeholder icon
+                timeSpent:
+                    test.durationMinutes, // Using allotted time as placeholder
+                completedAt: DateTime.now(), // Placeholder date
+                passed: score >= 60, // Assuming 60% is a pass
+              );
+
+              // 2. Invoke the new card with the 'result' object and callbacks
               return Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
                 child: CompletedTestCard(
-                  title: test.title,
-                  category: test.category,
-                  difficulty: test.difficulty,
-                  bestScore: test.bestScore ?? '0%',
-                  attemptCount: test.attemptCount,
-                  onViewHistory: test.attemptCount > 1
+                  result: quizResult,
+                  onViewDetails: test.attemptCount > 1
                       ? () {
                           context.push(
                             '/test/${test.id}/history',
@@ -395,14 +402,11 @@ class TestSeriesScreen extends ConsumerWidget {
   }
 }
 
-// --- MODIFICATION 2: Updated Delegate ---
-// This now centers the tab bar and gives it a max-width
 class _TestSeriesTabBarDelegate extends SliverPersistentHeaderDelegate {
   _TestSeriesTabBarDelegate(this.tabBar);
 
   final TabBar tabBar;
 
-  // 1. Total height (44px pill + 8px top/bottom padding)
   @override
   double get minExtent => 60.0;
 
@@ -415,24 +419,18 @@ class _TestSeriesTabBarDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    // 2. This container is full-width and provides the background
     return Container(
       color: AppColors.background,
-      // 3. Center the pill
       alignment: Alignment.center,
-      // 4. Add vertical padding
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
-        // 5. This is the grey pill background
         height: 44,
-        // 6. Set max-width like max-w-md (448px) and horizontal margin
         constraints: const BoxConstraints(maxWidth: 448),
         margin: const EdgeInsets.symmetric(horizontal: 20.0),
         decoration: BoxDecoration(
           color: const Color(0xFFF3F4F6), // shadcn grey-100
           borderRadius: BorderRadius.circular(12.0),
         ),
-        // 7. Inner padding for the TabBar
         child: Padding(padding: const EdgeInsets.all(4.0), child: tabBar),
       ),
     );
@@ -443,5 +441,3 @@ class _TestSeriesTabBarDelegate extends SliverPersistentHeaderDelegate {
     return tabBar != oldDelegate.tabBar;
   }
 }
-
-// --- END OF MODIFICATION 2 ---
