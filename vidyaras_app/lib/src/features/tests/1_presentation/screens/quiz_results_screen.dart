@@ -13,27 +13,37 @@ class QuizResultsScreen extends ConsumerWidget {
     required this.testId,
     this.result,
     this.userAnswers,
+    this.attemptData,
   });
 
   final String testId;
   final QuizResult? result;
   final Map<int, int>? userAnswers;
+  final Map<String, dynamic>? attemptData;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Use passed result or fallback to mock data
-    final quizResult = result ??
-        QuizResult(
-          testId: testId,
-          testTitle: 'Quiz',
-          totalQuestions: 0,
-          correctAnswers: 0,
-          score: 0,
-          completedAt: DateTime.now(),
-          timeTakenMinutes: 0,
-        );
+    // Extract result and userAnswers from attemptData if provided
+    final QuizResult quizResult;
+    final Map<int, int> answers;
 
-    final answers = userAnswers ?? <int, int>{};
+    if (attemptData != null) {
+      quizResult = attemptData!['result'] as QuizResult;
+      answers = attemptData!['userAnswers'] as Map<int, int>;
+    } else {
+      // Use passed result or fallback to mock data
+      quizResult = result ??
+          QuizResult(
+            testId: testId,
+            testTitle: 'Quiz',
+            totalQuestions: 0,
+            correctAnswers: 0,
+            score: 0,
+            completedAt: DateTime.now(),
+            timeTakenMinutes: 0,
+          );
+      answers = userAnswers ?? <int, int>{};
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,

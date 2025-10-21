@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
 import '../../../../shared/presentation/components/cards/stats_card.dart';
 import '../../2_application/notifiers/test_notifier.dart';
+import '../../2_application/providers/test_providers.dart';
 import '../widgets/performance_overview.dart';
 import '../widgets/available_test_card.dart';
 import '../widgets/completed_test_card.dart';
@@ -260,8 +261,30 @@ class TestSeriesScreen extends ConsumerWidget {
                             category: test.category,
                             difficulty: test.difficulty,
                             bestScore: test.bestScore ?? '0%',
-                            onViewResults: () {
-                              context.push('/test/${test.id}/results');
+                            onViewResults: () async {
+                              // Fetch attempt details before navigating
+                              final repository = ref.read(testRepositoryProvider);
+                              final result = await repository.getQuizAttemptDetails(test.id);
+
+                              result.fold(
+                                (failure) {
+                                  // Show error if attempt details cannot be loaded
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(failure.message)),
+                                    );
+                                  }
+                                },
+                                (attemptData) {
+                                  // Navigate with attempt data
+                                  if (context.mounted) {
+                                    context.push(
+                                      '/test/${test.id}/results',
+                                      extra: attemptData,
+                                    );
+                                  }
+                                },
+                              );
                             },
                             onRetake: () async {
                               final navigationUrl = await ref

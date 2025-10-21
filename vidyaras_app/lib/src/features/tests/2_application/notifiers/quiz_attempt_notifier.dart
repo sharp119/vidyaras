@@ -1,6 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../3_domain/models/quiz_attempt_record.dart';
-import '../../3_domain/models/user_answer.dart';
 import '../../3_domain/repositories/quiz_repository.dart';
 import '../providers/quiz_providers.dart';
 

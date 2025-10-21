@@ -10,7 +10,8 @@ import '../../../features/auth/1_presentation/screens/otp_verification_screen.da
 import '../../../features/auth/1_presentation/screens/registration_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_results_screen.dart';
-import '../../../features/tests/1_presentation/screens/answer_review_screen.dart'; // Import the new screen
+import '../../../features/tests/1_presentation/screens/answer_review_screen.dart';
+import '../../../features/tests/3_domain/models/quiz_result.dart';
 import '../screens/main_shell.dart';
 
 /// Application routing configuration using GoRouter
@@ -109,12 +110,29 @@ final GoRouter appRouter = GoRouter(
       name: 'test-results',
       builder: (context, state) {
         final testId = state.pathParameters['testId']!;
-        final extra = state.extra as Map<String, dynamic>?;
-        return QuizResultsScreen(
-          testId: testId,
-          result: extra?['result'],
-          userAnswers: extra?['userAnswers'],
-        );
+        final extra = state.extra;
+
+        // Handle both Map<String, dynamic> (from completed test view)
+        // and individual result/userAnswers (from quiz completion)
+        if (extra is Map<String, dynamic>) {
+          // Check if this is attemptData from repository
+          if (extra.containsKey('result') && extra['result'] is QuizResult) {
+            return QuizResultsScreen(
+              testId: testId,
+              attemptData: extra,
+            );
+          } else {
+            // Legacy format with separate result and userAnswers
+            return QuizResultsScreen(
+              testId: testId,
+              result: extra['result'],
+              userAnswers: extra['userAnswers'],
+            );
+          }
+        }
+
+        // No data provided
+        return QuizResultsScreen(testId: testId);
       },
     ),
     GoRoute(
