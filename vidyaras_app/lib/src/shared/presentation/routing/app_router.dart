@@ -11,6 +11,7 @@ import '../../../features/auth/1_presentation/screens/registration_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_results_screen.dart';
 import '../../../features/tests/1_presentation/screens/answer_review_screen.dart';
+import '../../../features/tests/1_presentation/screens/quiz_attempt_history_screen.dart';
 import '../../../features/tests/3_domain/models/quiz_result.dart';
 import '../screens/main_shell.dart';
 
@@ -142,6 +143,18 @@ final GoRouter appRouter = GoRouter(
         final testId = state.pathParameters['testId']!;
         final userAnswers = state.extra as Map<int, int>?;
         return AnswerReviewScreen(testId: testId, userAnswers: userAnswers);
+      },
+    ),
+    GoRoute(
+      path: '/test/:testId/history', // Route for quiz attempt history
+      name: 'test-history',
+      builder: (context, state) {
+        final testId = state.pathParameters['testId']!;
+        final testTitle = state.extra as String? ?? 'Quiz';
+        return QuizAttemptHistoryScreen(
+          quizId: testId,
+          quizTitle: testTitle,
+        );
       },
     ),
 

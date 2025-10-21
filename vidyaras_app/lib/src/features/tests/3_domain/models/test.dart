@@ -16,6 +16,7 @@ class Test with _$Test {
     required int durationMinutes,
     String? bestScore, // e.g., "85%" or null if not attempted
     bool? isCompleted,
+    @Default(0) int attemptCount, // Number of times this test has been attempted
   }) = _Test;
 
   factory Test.fromJson(Map<String, dynamic> json) => _$TestFromJson(json);

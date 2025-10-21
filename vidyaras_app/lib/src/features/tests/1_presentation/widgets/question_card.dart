@@ -112,22 +112,35 @@ class _OptionTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.1)
+              ? AppColors.primary.withOpacity(0.15)
               : AppColors.background,
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.border,
-            width: isSelected ? 2 : 1,
+            width: isSelected ? 2.5 : 1,
           ),
           borderRadius: BorderRadius.circular(12),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: Row(
           children: [
-            // Radio button
-            Container(
+            // Radio button with improved visual feedback
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
               width: 24,
               height: 24,
               decoration: BoxDecoration(
@@ -148,7 +161,7 @@ class _OptionTile extends StatelessWidget {
             ),
             const SizedBox(width: 12),
 
-            // Option text
+            // Option text with improved contrast when selected
             Expanded(
               child: Text(
                 option,
@@ -158,6 +171,7 @@ class _OptionTile extends StatelessWidget {
                   color: isSelected
                       ? AppColors.textPrimary
                       : AppColors.textSecondary,
+                  height: 1.4,
                 ),
               ),
             ),

@@ -32,6 +32,7 @@ mixin _$Test {
   String? get bestScore =>
       throw _privateConstructorUsedError; // e.g., "85%" or null if not attempted
   bool? get isCompleted => throw _privateConstructorUsedError;
+  int get attemptCount => throw _privateConstructorUsedError;
 
   /// Serializes this Test to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -57,6 +58,7 @@ abstract class $TestCopyWith<$Res> {
     int durationMinutes,
     String? bestScore,
     bool? isCompleted,
+    int attemptCount,
   });
 }
 
@@ -84,6 +86,7 @@ class _$TestCopyWithImpl<$Res, $Val extends Test>
     Object? durationMinutes = null,
     Object? bestScore = freezed,
     Object? isCompleted = freezed,
+    Object? attemptCount = null,
   }) {
     return _then(
       _value.copyWith(
@@ -123,6 +126,10 @@ class _$TestCopyWithImpl<$Res, $Val extends Test>
                 ? _value.isCompleted
                 : isCompleted // ignore: cast_nullable_to_non_nullable
                       as bool?,
+            attemptCount: null == attemptCount
+                ? _value.attemptCount
+                : attemptCount // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -147,6 +154,7 @@ abstract class _$$TestImplCopyWith<$Res> implements $TestCopyWith<$Res> {
     int durationMinutes,
     String? bestScore,
     bool? isCompleted,
+    int attemptCount,
   });
 }
 
@@ -171,6 +179,7 @@ class __$$TestImplCopyWithImpl<$Res>
     Object? durationMinutes = null,
     Object? bestScore = freezed,
     Object? isCompleted = freezed,
+    Object? attemptCount = null,
   }) {
     return _then(
       _$TestImpl(
@@ -210,6 +219,10 @@ class __$$TestImplCopyWithImpl<$Res>
             ? _value.isCompleted
             : isCompleted // ignore: cast_nullable_to_non_nullable
                   as bool?,
+        attemptCount: null == attemptCount
+            ? _value.attemptCount
+            : attemptCount // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -228,6 +241,7 @@ class _$TestImpl implements _Test {
     required this.durationMinutes,
     this.bestScore,
     this.isCompleted,
+    this.attemptCount = 0,
   });
 
   factory _$TestImpl.fromJson(Map<String, dynamic> json) =>
@@ -253,10 +267,13 @@ class _$TestImpl implements _Test {
   // e.g., "85%" or null if not attempted
   @override
   final bool? isCompleted;
+  @override
+  @JsonKey()
+  final int attemptCount;
 
   @override
   String toString() {
-    return 'Test(id: $id, title: $title, titleHindi: $titleHindi, category: $category, difficulty: $difficulty, questionCount: $questionCount, durationMinutes: $durationMinutes, bestScore: $bestScore, isCompleted: $isCompleted)';
+    return 'Test(id: $id, title: $title, titleHindi: $titleHindi, category: $category, difficulty: $difficulty, questionCount: $questionCount, durationMinutes: $durationMinutes, bestScore: $bestScore, isCompleted: $isCompleted, attemptCount: $attemptCount)';
   }
 
   @override
@@ -279,7 +296,9 @@ class _$TestImpl implements _Test {
             (identical(other.bestScore, bestScore) ||
                 other.bestScore == bestScore) &&
             (identical(other.isCompleted, isCompleted) ||
-                other.isCompleted == isCompleted));
+                other.isCompleted == isCompleted) &&
+            (identical(other.attemptCount, attemptCount) ||
+                other.attemptCount == attemptCount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -295,6 +314,7 @@ class _$TestImpl implements _Test {
     durationMinutes,
     bestScore,
     isCompleted,
+    attemptCount,
   );
 
   /// Create a copy of Test
@@ -322,6 +342,7 @@ abstract class _Test implements Test {
     required final int durationMinutes,
     final String? bestScore,
     final bool? isCompleted,
+    final int attemptCount,
   }) = _$TestImpl;
 
   factory _Test.fromJson(Map<String, dynamic> json) = _$TestImpl.fromJson;
@@ -344,6 +365,8 @@ abstract class _Test implements Test {
   String? get bestScore; // e.g., "85%" or null if not attempted
   @override
   bool? get isCompleted;
+  @override
+  int get attemptCount;
 
   /// Create a copy of Test
   /// with the given fields replaced by the non-null parameter values.

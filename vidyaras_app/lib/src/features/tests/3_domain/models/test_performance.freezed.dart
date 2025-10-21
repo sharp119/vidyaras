@@ -23,7 +23,10 @@ TestPerformance _$TestPerformanceFromJson(Map<String, dynamic> json) {
 mixin _$TestPerformance {
   String get testId => throw _privateConstructorUsedError;
   String get testTitle => throw _privateConstructorUsedError;
-  String get score => throw _privateConstructorUsedError;
+  String get score => throw _privateConstructorUsedError; // e.g., "85%"
+  String get attemptId =>
+      throw _privateConstructorUsedError; // For navigating to specific attempt results
+  DateTime get completedAt => throw _privateConstructorUsedError;
 
   /// Serializes this TestPerformance to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -42,7 +45,13 @@ abstract class $TestPerformanceCopyWith<$Res> {
     $Res Function(TestPerformance) then,
   ) = _$TestPerformanceCopyWithImpl<$Res, TestPerformance>;
   @useResult
-  $Res call({String testId, String testTitle, String score});
+  $Res call({
+    String testId,
+    String testTitle,
+    String score,
+    String attemptId,
+    DateTime completedAt,
+  });
 }
 
 /// @nodoc
@@ -63,6 +72,8 @@ class _$TestPerformanceCopyWithImpl<$Res, $Val extends TestPerformance>
     Object? testId = null,
     Object? testTitle = null,
     Object? score = null,
+    Object? attemptId = null,
+    Object? completedAt = null,
   }) {
     return _then(
       _value.copyWith(
@@ -78,6 +89,14 @@ class _$TestPerformanceCopyWithImpl<$Res, $Val extends TestPerformance>
                 ? _value.score
                 : score // ignore: cast_nullable_to_non_nullable
                       as String,
+            attemptId: null == attemptId
+                ? _value.attemptId
+                : attemptId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            completedAt: null == completedAt
+                ? _value.completedAt
+                : completedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
           )
           as $Val,
     );
@@ -93,7 +112,13 @@ abstract class _$$TestPerformanceImplCopyWith<$Res>
   ) = __$$TestPerformanceImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String testId, String testTitle, String score});
+  $Res call({
+    String testId,
+    String testTitle,
+    String score,
+    String attemptId,
+    DateTime completedAt,
+  });
 }
 
 /// @nodoc
@@ -113,6 +138,8 @@ class __$$TestPerformanceImplCopyWithImpl<$Res>
     Object? testId = null,
     Object? testTitle = null,
     Object? score = null,
+    Object? attemptId = null,
+    Object? completedAt = null,
   }) {
     return _then(
       _$TestPerformanceImpl(
@@ -128,6 +155,14 @@ class __$$TestPerformanceImplCopyWithImpl<$Res>
             ? _value.score
             : score // ignore: cast_nullable_to_non_nullable
                   as String,
+        attemptId: null == attemptId
+            ? _value.attemptId
+            : attemptId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        completedAt: null == completedAt
+            ? _value.completedAt
+            : completedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
       ),
     );
   }
@@ -140,6 +175,8 @@ class _$TestPerformanceImpl implements _TestPerformance {
     required this.testId,
     required this.testTitle,
     required this.score,
+    required this.attemptId,
+    required this.completedAt,
   });
 
   factory _$TestPerformanceImpl.fromJson(Map<String, dynamic> json) =>
@@ -151,10 +188,16 @@ class _$TestPerformanceImpl implements _TestPerformance {
   final String testTitle;
   @override
   final String score;
+  // e.g., "85%"
+  @override
+  final String attemptId;
+  // For navigating to specific attempt results
+  @override
+  final DateTime completedAt;
 
   @override
   String toString() {
-    return 'TestPerformance(testId: $testId, testTitle: $testTitle, score: $score)';
+    return 'TestPerformance(testId: $testId, testTitle: $testTitle, score: $score, attemptId: $attemptId, completedAt: $completedAt)';
   }
 
   @override
@@ -165,12 +208,23 @@ class _$TestPerformanceImpl implements _TestPerformance {
             (identical(other.testId, testId) || other.testId == testId) &&
             (identical(other.testTitle, testTitle) ||
                 other.testTitle == testTitle) &&
-            (identical(other.score, score) || other.score == score));
+            (identical(other.score, score) || other.score == score) &&
+            (identical(other.attemptId, attemptId) ||
+                other.attemptId == attemptId) &&
+            (identical(other.completedAt, completedAt) ||
+                other.completedAt == completedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, testId, testTitle, score);
+  int get hashCode => Object.hash(
+    runtimeType,
+    testId,
+    testTitle,
+    score,
+    attemptId,
+    completedAt,
+  );
 
   /// Create a copy of TestPerformance
   /// with the given fields replaced by the non-null parameter values.
@@ -194,6 +248,8 @@ abstract class _TestPerformance implements TestPerformance {
     required final String testId,
     required final String testTitle,
     required final String score,
+    required final String attemptId,
+    required final DateTime completedAt,
   }) = _$TestPerformanceImpl;
 
   factory _TestPerformance.fromJson(Map<String, dynamic> json) =
@@ -204,7 +260,11 @@ abstract class _TestPerformance implements TestPerformance {
   @override
   String get testTitle;
   @override
-  String get score;
+  String get score; // e.g., "85%"
+  @override
+  String get attemptId; // For navigating to specific attempt results
+  @override
+  DateTime get completedAt;
 
   /// Create a copy of TestPerformance
   /// with the given fields replaced by the non-null parameter values.

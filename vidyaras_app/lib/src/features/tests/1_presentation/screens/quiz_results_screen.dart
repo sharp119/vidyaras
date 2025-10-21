@@ -26,6 +26,8 @@ class QuizResultsScreen extends ConsumerWidget {
     // Extract result and userAnswers from attemptData if provided
     final QuizResult quizResult;
     final Map<int, int> answers;
+    final int? attemptNumber = attemptData?['attemptNumber'] as int?;
+    final String? attemptDate = attemptData?['attemptDate'] as String?;
 
     if (attemptData != null) {
       quizResult = attemptData!['result'] as QuizResult;
@@ -48,7 +50,9 @@ class QuizResultsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Test Results'),
+        title: Text(attemptNumber != null
+            ? 'Results - Attempt #$attemptNumber'
+            : 'Test Results'),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () =>
@@ -79,6 +83,17 @@ class QuizResultsScreen extends ConsumerWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  if (attemptDate != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      attemptDate,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                   const SizedBox(height: 24),
                   const Text(
                     'Your Score',

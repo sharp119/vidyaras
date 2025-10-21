@@ -17,7 +17,15 @@ abstract class TestRepository {
   /// Fetches the questions for a specific quiz
   Future<Either<Failure, List<Question>>> getQuizQuestions(String testId);
 
-  /// Fetches the latest quiz attempt with user answers for a completed test
+  /// Fetches quiz attempt details with user answers
+  /// If attemptId is provided, fetches that specific attempt; otherwise fetches the latest
   /// Returns a map with 'result' and 'userAnswers' (question index -> selected option index)
-  Future<Either<Failure, Map<String, dynamic>>> getQuizAttemptDetails(String quizId);
+  Future<Either<Failure, Map<String, dynamic>>> getQuizAttemptDetails(
+    String quizId, {
+    String? attemptId,
+  });
+
+  /// Fetches all attempts for a specific quiz (for history view)
+  /// Returns a list of attempt data sorted by completion date (newest first)
+  Future<Either<Failure, List<Map<String, dynamic>>>> getQuizAttemptHistory(String quizId);
 }

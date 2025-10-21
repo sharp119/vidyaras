@@ -33,6 +33,14 @@ class QuizHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final isTimeCritical = remainingTimeSeconds < 60; // Last minute
 
+    // Calculate completion percentage
+    final completionPercentage = totalQuestions > 0
+        ? (answeredCount / totalQuestions)
+        : 0.0;
+
+    // Use prominent submit button when near completion (>75% answered)
+    final isNearCompletion = completionPercentage >= 0.75;
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -113,27 +121,50 @@ class QuizHeader extends StatelessWidget {
                     ),
                   ),
 
-                  // Submit button
-                  ElevatedButton(
-                    onPressed: onSubmitQuiz,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.textPrimary,
-                      foregroundColor: AppColors.textOnPrimary,
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      'Submit Quiz',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                  // Submit button - Styled based on completion progress
+                  isNearCompletion
+                      ? ElevatedButton(
+                          onPressed: onSubmitQuiz,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.textOnPrimary,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            elevation: 2,
+                          ),
+                          child: const Text(
+                            'Submit Quiz',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        )
+                      : OutlinedButton(
+                          onPressed: onSubmitQuiz,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.textPrimary,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            side: BorderSide(
+                              color: AppColors.border,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: const Text(
+                            'Submit Quiz',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                 ],
               ),
             ),

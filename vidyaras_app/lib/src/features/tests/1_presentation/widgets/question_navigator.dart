@@ -3,7 +3,7 @@ import '../../../../shared/presentation/theme/app_colors.dart';
 
 /// Question navigator showing numbered boxes for each question
 /// with different states (current, answered, not answered)
-class QuestionNavigator extends StatelessWidget {
+class QuestionNavigator extends StatefulWidget {
   const QuestionNavigator({
     super.key,
     required this.totalQuestions,
@@ -16,6 +16,64 @@ class QuestionNavigator extends StatelessWidget {
   final int currentQuestionIndex;
   final Set<int> answeredQuestions; // Set of answered question indices
   final Function(int) onQuestionTap;
+
+  @override
+  State<QuestionNavigator> createState() => _QuestionNavigatorState();
+}
+
+class _QuestionNavigatorState extends State<QuestionNavigator> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Scroll to current question after initial build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToCurrentQuestion();
+    });
+  }
+
+  @override
+  void didUpdateWidget(QuestionNavigator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Auto-scroll when current question changes
+    if (oldWidget.currentQuestionIndex != widget.currentQuestionIndex) {
+      _scrollToCurrentQuestion();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToCurrentQuestion() {
+    if (!_scrollController.hasClients) return;
+
+    // Calculate the position of the current question box
+    // Each box is 56px wide + 8px spacing = 64px total
+    const boxWidth = 56.0;
+    const spacing = 8.0;
+    const totalBoxWidth = boxWidth + spacing;
+
+    // Calculate scroll position to center the current question
+    final targetScrollPosition = (widget.currentQuestionIndex * totalBoxWidth) -
+        (MediaQuery.of(context).size.width / 2) +
+        (boxWidth / 2);
+
+    // Clamp to valid scroll range
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final minScroll = _scrollController.position.minScrollExtent;
+    final clampedPosition = targetScrollPosition.clamp(minScroll, maxScroll);
+
+    // Animate to the position
+    _scrollController.animateTo(
+      clampedPosition,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,20 +105,28 @@ class QuestionNavigator extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Question number grid
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(totalQuestions, (index) {
-                final isCurrent = index == currentQuestionIndex;
-                final isAnswered = answeredQuestions.contains(index);
+            // Question number grid - Horizontally scrollable with auto-scroll
+            SingleChildScrollView(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(widget.totalQuestions, (index) {
+                  final isCurrent = index == widget.currentQuestionIndex;
+                  final isAnswered = widget.answeredQuestions.contains(index);
 
-                return _QuestionNumberBox(
-                  number: index + 1,
-                  isCurrent: isCurrent,
-                  isAnswered: isAnswered,
-                  onTap: () => onQuestionTap(index),
-                );
-              }),
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      right: index < widget.totalQuestions - 1 ? 8.0 : 0.0,
+                    ),
+                    child: _QuestionNumberBox(
+                      number: index + 1,
+                      isCurrent: isCurrent,
+                      isAnswered: isAnswered,
+                      onTap: () => widget.onQuestionTap(index),
+                    ),
+                  );
+                }),
+              ),
             ),
             const SizedBox(height: 20),
 

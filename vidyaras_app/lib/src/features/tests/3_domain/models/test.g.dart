@@ -16,6 +16,7 @@ _$TestImpl _$$TestImplFromJson(Map<String, dynamic> json) => _$TestImpl(
   durationMinutes: (json['durationMinutes'] as num).toInt(),
   bestScore: json['bestScore'] as String?,
   isCompleted: json['isCompleted'] as bool?,
+  attemptCount: (json['attemptCount'] as num?)?.toInt() ?? 0,
 );
 
 Map<String, dynamic> _$$TestImplToJson(_$TestImpl instance) =>
@@ -29,4 +30,5 @@ Map<String, dynamic> _$$TestImplToJson(_$TestImpl instance) =>
       'durationMinutes': instance.durationMinutes,
       'bestScore': instance.bestScore,
       'isCompleted': instance.isCompleted,
+      'attemptCount': instance.attemptCount,
     };

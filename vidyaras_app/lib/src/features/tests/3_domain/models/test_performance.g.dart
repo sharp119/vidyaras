@@ -12,6 +12,8 @@ _$TestPerformanceImpl _$$TestPerformanceImplFromJson(
   testId: json['testId'] as String,
   testTitle: json['testTitle'] as String,
   score: json['score'] as String,
+  attemptId: json['attemptId'] as String,
+  completedAt: DateTime.parse(json['completedAt'] as String),
 );
 
 Map<String, dynamic> _$$TestPerformanceImplToJson(
@@ -20,4 +22,6 @@ Map<String, dynamic> _$$TestPerformanceImplToJson(
   'testId': instance.testId,
   'testTitle': instance.testTitle,
   'score': instance.score,
+  'attemptId': instance.attemptId,
+  'completedAt': instance.completedAt.toIso8601String(),
 };

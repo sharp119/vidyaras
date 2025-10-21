@@ -149,7 +149,7 @@ class TestSeriesScreen extends ConsumerWidget {
                 // Spacing to account for the overlapping stats card
                 SliverToBoxAdapter(child: SizedBox(height: 50 + offset)),
 
-                // Performance Overview
+                // Recent Activity (Performance Overview)
                 if (data.performanceOverview.isNotEmpty) ...[
                   SliverToBoxAdapter(
                     child: Padding(
@@ -159,6 +159,32 @@ class TestSeriesScreen extends ConsumerWidget {
                       ),
                       child: PerformanceOverview(
                         performances: data.performanceOverview,
+                        onTapPerformance: (performance) async {
+                          // Navigate to results for this specific attempt
+                          final repository = ref.read(testRepositoryProvider);
+                          final result = await repository.getQuizAttemptDetails(
+                            performance.testId,
+                            attemptId: performance.attemptId,
+                          );
+
+                          result.fold(
+                            (failure) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(failure.message)),
+                                );
+                              }
+                            },
+                            (attemptData) {
+                              if (context.mounted) {
+                                context.push(
+                                  '/test/${performance.testId}/results',
+                                  extra: attemptData,
+                                );
+                              }
+                            },
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -261,31 +287,16 @@ class TestSeriesScreen extends ConsumerWidget {
                             category: test.category,
                             difficulty: test.difficulty,
                             bestScore: test.bestScore ?? '0%',
-                            onViewResults: () async {
-                              // Fetch attempt details before navigating
-                              final repository = ref.read(testRepositoryProvider);
-                              final result = await repository.getQuizAttemptDetails(test.id);
-
-                              result.fold(
-                                (failure) {
-                                  // Show error if attempt details cannot be loaded
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(failure.message)),
-                                    );
-                                  }
-                                },
-                                (attemptData) {
-                                  // Navigate with attempt data
-                                  if (context.mounted) {
+                            attemptCount: test.attemptCount,
+                            onViewHistory: test.attemptCount > 1
+                                ? () {
+                                    // Navigate to attempt history screen
                                     context.push(
-                                      '/test/${test.id}/results',
-                                      extra: attemptData,
+                                      '/test/${test.id}/history',
+                                      extra: test.title,
                                     );
                                   }
-                                },
-                              );
-                            },
+                                : null,
                             onRetake: () async {
                               final navigationUrl = await ref
                                   .read(testNotifierProvider.notifier)

@@ -10,7 +10,8 @@ class CompletedTestCard extends StatelessWidget {
     required this.category,
     required this.difficulty,
     required this.bestScore,
-    required this.onViewResults,
+    this.attemptCount = 1,
+    this.onViewHistory,
     required this.onRetake,
   });
 
@@ -18,7 +19,8 @@ class CompletedTestCard extends StatelessWidget {
   final String category;
   final String difficulty;
   final String bestScore;
-  final VoidCallback onViewResults;
+  final int attemptCount;
+  final VoidCallback? onViewHistory;
   final VoidCallback onRetake;
 
   Color _getDifficultyColor() {
@@ -78,8 +80,10 @@ class CompletedTestCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Category and Difficulty badges
-                Row(
+                // Category, Difficulty, and Attempt Count badges
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -99,7 +103,6 @@ class CompletedTestCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -116,6 +119,35 @@ class CompletedTestCard extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                           color: _getDifficultyColor(),
                         ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.history,
+                            size: 14,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$attemptCount ${attemptCount == 1 ? 'Attempt' : 'Attempts'}',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -144,19 +176,22 @@ class CompletedTestCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 // Action buttons
+                if (attemptCount > 1 && onViewHistory != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: SecondaryButton(
+                      label: 'View History',
+                      onPressed: onViewHistory!,
+                      icon: Icons.history,
+                    ),
+                  ),
                 Row(
                   children: [
                     Expanded(
                       child: SecondaryButton(
-                        label: 'View Results',
-                        onPressed: onViewResults,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: SecondaryButton(
                         label: 'Retake',
                         onPressed: onRetake,
+                        icon: Icons.refresh,
                       ),
                     ),
                   ],

@@ -10,6 +10,8 @@ class TestPerformance with _$TestPerformance {
     required String testId,
     required String testTitle,
     required String score, // e.g., "85%"
+    required String attemptId, // For navigating to specific attempt results
+    required DateTime completedAt, // When this attempt was completed
   }) = _TestPerformance;
 
   factory TestPerformance.fromJson(Map<String, dynamic> json) =>

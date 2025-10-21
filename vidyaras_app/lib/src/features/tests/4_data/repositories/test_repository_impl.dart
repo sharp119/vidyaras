@@ -79,11 +79,12 @@ class TestRepositoryImpl implements TestRepository {
         if (isCompleted) {
           // Only add each completed quiz once (even if attempted multiple times)
           if (!addedCompletedTests.contains(quizId)) {
-            // Get best score for completed quizzes
+            // Get all attempts for this quiz to calculate stats
             final quizAttempts = attempts
                 .where((a) => a['quiz_id'] == quizId)
                 .toList();
 
+            // Calculate best score and attempt count
             final maxPercentage = quizAttempts.fold<double>(
                 0.0,
                 (max, a) {
@@ -91,6 +92,7 @@ class TestRepositoryImpl implements TestRepository {
                   return percentage > max ? percentage : max;
                 });
             final bestScore = '${maxPercentage.toStringAsFixed(0)}%';
+            final attemptCount = quizAttempts.length;
 
             final test = Test(
               id: quizId,
@@ -102,6 +104,7 @@ class TestRepositoryImpl implements TestRepository {
               durationMinutes: quiz['time_allotted_minutes'] as int? ?? 30,
               bestScore: bestScore,
               isCompleted: true,
+              attemptCount: attemptCount,
             );
 
             completedTestsList.add(test);
@@ -125,7 +128,7 @@ class TestRepositoryImpl implements TestRepository {
         }
       }
 
-      // Get performance overview (last 5 completed tests)
+      // Get performance overview (last 5 completed attempts)
       final List<TestPerformance> performanceOverview = [];
       final recentAttempts = attempts.take(5);
       for (var attempt in recentAttempts) {
@@ -134,11 +137,17 @@ class TestRepositoryImpl implements TestRepository {
           (q) => q['id'] == quizId,
           orElse: () => {'title': 'Unknown Quiz'},
         );
+        final completedAt = attempt['completed_at'] != null
+            ? DateTime.parse(attempt['completed_at'] as String)
+            : DateTime.now();
+
         performanceOverview.add(
           TestPerformance(
             testId: quizId,
             testTitle: quiz['title'] as String? ?? 'Unknown',
             score: '${(attempt['percentage'] ?? 0.0).toStringAsFixed(0)}%',
+            attemptId: attempt['id'] as String,
+            completedAt: completedAt,
           ),
         );
       }
@@ -214,29 +223,48 @@ class TestRepositoryImpl implements TestRepository {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> getQuizAttemptDetails(String quizId) async {
+  Future<Either<Failure, Map<String, dynamic>>> getQuizAttemptDetails(
+    String quizId, {
+    String? attemptId,
+  }) async {
     try {
       // Get user ID
       final userId = _supabase.auth.currentUser?.id ??
                      '060b2882-a066-42b5-bdd8-1c3a609a407f';
 
-      // Fetch the latest completed attempt for this quiz
-      final attemptResponse = await _supabase
-          .from('quiz_attempts')
-          .select()
-          .eq('quiz_id', quizId)
-          .eq('user_id', userId)
-          .eq('is_completed', true)
-          .order('completed_at', ascending: false)
-          .limit(1);
+      late final Map<String, dynamic> attempt;
+      late final String fetchedAttemptId;
 
-      final attempts = attemptResponse as List;
-      if (attempts.isEmpty) {
-        return left(NetworkFailure(message: 'No completed attempts found'));
+      if (attemptId != null) {
+        // Fetch specific attempt by ID
+        final attemptResponse = await _supabase
+            .from('quiz_attempts')
+            .select()
+            .eq('id', attemptId)
+            .eq('user_id', userId)
+            .single();
+
+        attempt = attemptResponse as Map<String, dynamic>;
+        fetchedAttemptId = attemptId;
+      } else {
+        // Fetch the latest completed attempt for this quiz
+        final attemptResponse = await _supabase
+            .from('quiz_attempts')
+            .select()
+            .eq('quiz_id', quizId)
+            .eq('user_id', userId)
+            .eq('is_completed', true)
+            .order('completed_at', ascending: false)
+            .limit(1);
+
+        final attempts = attemptResponse as List;
+        if (attempts.isEmpty) {
+          return left(NetworkFailure(message: 'No completed attempts found'));
+        }
+
+        attempt = attempts.first;
+        fetchedAttemptId = attempt['id'] as String;
       }
-
-      final attempt = attempts.first;
-      final attemptId = attempt['id'] as String;
 
       // Fetch quiz details for title
       final quizResponse = await _supabase
@@ -264,7 +292,7 @@ class TestRepositoryImpl implements TestRepository {
       final answersResponse = await _supabase
           .from('user_answers')
           .select()
-          .eq('attempt_id', attemptId)
+          .eq('attempt_id', fetchedAttemptId)
           .order('id', ascending: true);
 
       final answers = answersResponse as List;
@@ -312,6 +340,51 @@ class TestRepositoryImpl implements TestRepository {
       });
     } catch (e) {
       return left(NetworkFailure(message: 'Failed to load attempt details: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Map<String, dynamic>>>> getQuizAttemptHistory(String quizId) async {
+    try {
+      // Get user ID
+      final userId = _supabase.auth.currentUser?.id ??
+                     '060b2882-a066-42b5-bdd8-1c3a609a407f';
+
+      // Fetch all completed attempts for this quiz
+      final attemptsResponse = await _supabase
+          .from('quiz_attempts')
+          .select()
+          .eq('quiz_id', quizId)
+          .eq('user_id', userId)
+          .eq('is_completed', true)
+          .order('completed_at', ascending: false);
+
+      final attempts = attemptsResponse as List;
+
+      if (attempts.isEmpty) {
+        return right([]);
+      }
+
+      // Map attempts to simplified data structure
+      final attemptHistory = attempts.map((attempt) {
+        final completedAt = attempt['completed_at'] != null
+            ? DateTime.parse(attempt['completed_at'] as String)
+            : DateTime.now();
+
+        final timeTakenSeconds = attempt['time_taken_seconds'] as int? ?? 0;
+        final timeTakenMinutes = (timeTakenSeconds / 60).ceil();
+
+        return {
+          'attemptId': attempt['id'] as String,
+          'score': (attempt['percentage'] as double).round(),
+          'completedAt': completedAt,
+          'timeTakenMinutes': timeTakenMinutes,
+        };
+      }).toList();
+
+      return right(attemptHistory);
+    } catch (e) {
+      return left(NetworkFailure(message: 'Failed to load attempt history: $e'));
     }
   }
 
