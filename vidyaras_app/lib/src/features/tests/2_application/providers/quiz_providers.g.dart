@@ -44,9 +44,9 @@ final quizRepositoryProvider = AutoDisposeProvider<QuizRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef QuizRepositoryRef = AutoDisposeProviderRef<QuizRepository>;
-String _$publishedQuizzesHash() => r'4bb48def57613e02161cfc7faf3c65aed64ea304';
+String _$publishedQuizzesHash() => r'9822dcf087bf279a4844f122db8e24cbae6f619f';
 
-/// Provider to fetch all published quizzes
+/// Provider to fetch all published quizzes for the current user
 ///
 /// Copied from [publishedQuizzes].
 @ProviderFor(publishedQuizzes)
@@ -63,6 +63,44 @@ final publishedQuizzesProvider = AutoDisposeFutureProvider<List<Quiz>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PublishedQuizzesRef = AutoDisposeFutureProviderRef<List<Quiz>>;
+String _$availableQuizzesHash() => r'50086cb86465e890eb762f494d5813be169efed2';
+
+/// Provider to fetch available quizzes (not attempted) for the current user
+///
+/// Copied from [availableQuizzes].
+@ProviderFor(availableQuizzes)
+final availableQuizzesProvider = AutoDisposeFutureProvider<List<Quiz>>.internal(
+  availableQuizzes,
+  name: r'availableQuizzesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$availableQuizzesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef AvailableQuizzesRef = AutoDisposeFutureProviderRef<List<Quiz>>;
+String _$completedQuizzesHash() => r'84408a5fbc3219b41b4a8dc7ed0030b601334747';
+
+/// Provider to fetch completed quizzes (quiz history) for the current user
+///
+/// Copied from [completedQuizzes].
+@ProviderFor(completedQuizzes)
+final completedQuizzesProvider = AutoDisposeFutureProvider<List<Quiz>>.internal(
+  completedQuizzes,
+  name: r'completedQuizzesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$completedQuizzesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CompletedQuizzesRef = AutoDisposeFutureProviderRef<List<Quiz>>;
 String _$quizByIdHash() => r'89125fb210d9dfe08765ef1a4cbe86faac16a272';
 
 /// Copied from Dart SDK

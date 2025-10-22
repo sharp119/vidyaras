@@ -16,13 +16,13 @@ class TestRepositoryImpl implements TestRepository {
   TestRepositoryImpl(this._supabase);
 
   @override
-  Future<Either<Failure, TestData>> getTestData() async {
+  Future<Either<Failure, TestData>> getTestData({required String userId}) async {
     try {
-      // Get user ID - use default guest user if not authenticated
-      final userId = _supabase.auth.currentUser?.id ??
-                     '060b2882-a066-42b5-bdd8-1c3a609a407f'; // Default guest user
+      print('🔍 [TEST REPO] getTestData called');
+      print('   📋 User ID: $userId');
 
       // Fetch all published quizzes
+      print('   📞 Fetching published quizzes...');
       final quizzesResponse = await _supabase
           .from('quizzes')
           .select()
@@ -30,8 +30,10 @@ class TestRepositoryImpl implements TestRepository {
           .order('created_at', ascending: false);
 
       final quizzes = quizzesResponse as List;
+      print('   📦 Found ${quizzes.length} published quizzes');
 
       // Fetch user's quiz attempts for stats
+      print('   📞 Fetching user quiz attempts...');
       final attemptsResponse = await _supabase
           .from('quiz_attempts')
           .select()
@@ -40,6 +42,7 @@ class TestRepositoryImpl implements TestRepository {
           .order('completed_at', ascending: false);
 
       final attempts = attemptsResponse as List;
+      print('   📦 Found ${attempts.length} completed attempts for this user');
 
       // Calculate stats
       final totalTests = quizzes.length;
@@ -152,6 +155,15 @@ class TestRepositoryImpl implements TestRepository {
         );
       }
 
+      print('   ✅ Available Tests: ${availableTests.length}');
+      for (var i = 0; i < availableTests.length; i++) {
+        print('      [$i] ${availableTests[i].title} (ID: ${availableTests[i].id})');
+      }
+      print('   ✅ Completed Tests: ${completedTestsList.length}');
+      for (var i = 0; i < completedTestsList.length; i++) {
+        print('      [$i] ${completedTestsList[i].title} (ID: ${completedTestsList[i].id})');
+      }
+
       final testData = TestData(
         stats: TestStats(
           totalTests: totalTests,
@@ -163,8 +175,11 @@ class TestRepositoryImpl implements TestRepository {
         completedTests: completedTestsList,
       );
 
+      print('   🎯 Returning TestData with ${availableTests.length} available, ${completedTestsList.length} completed');
       return right(testData);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('   ❌ Error loading test data: $e');
+      print('   🔴 Stack trace: $stackTrace');
       return left(NetworkFailure(message: 'Failed to load test data: $e'));
     }
   }
@@ -225,12 +240,14 @@ class TestRepositoryImpl implements TestRepository {
   @override
   Future<Either<Failure, Map<String, dynamic>>> getQuizAttemptDetails(
     String quizId, {
+    required String userId,
     String? attemptId,
   }) async {
     try {
-      // Get user ID
-      final userId = _supabase.auth.currentUser?.id ??
-                     '060b2882-a066-42b5-bdd8-1c3a609a407f';
+      print('🔍 [TEST REPO] getQuizAttemptDetails called');
+      print('   📋 User ID: $userId');
+      print('   📋 Quiz ID: $quizId');
+      print('   📋 Attempt ID: ${attemptId ?? "null (latest)"}');
 
       late final Map<String, dynamic> attempt;
       late final String fetchedAttemptId;
@@ -344,13 +361,16 @@ class TestRepositoryImpl implements TestRepository {
   }
 
   @override
-  Future<Either<Failure, List<Map<String, dynamic>>>> getQuizAttemptHistory(String quizId) async {
+  Future<Either<Failure, List<Map<String, dynamic>>>> getQuizAttemptHistory(
+    String quizId, {
+    required String userId,
+  }) async {
     try {
-      // Get user ID
-      final userId = _supabase.auth.currentUser?.id ??
-                     '060b2882-a066-42b5-bdd8-1c3a609a407f';
+      print('🔍 [TEST REPO] getQuizAttemptHistory called');
+      print('   📋 User ID: $userId');
+      print('   📋 Quiz ID: $quizId');
 
-      // Fetch all completed attempts for this quiz
+      // Fetch all completed attempts for this quiz FOR THIS USER
       final attemptsResponse = await _supabase
           .from('quiz_attempts')
           .select()
@@ -359,9 +379,12 @@ class TestRepositoryImpl implements TestRepository {
           .eq('is_completed', true)
           .order('completed_at', ascending: false);
 
+      print('   📞 Fetched ${(attemptsResponse as List).length} attempts for this user');
+
       final attempts = attemptsResponse as List;
 
       if (attempts.isEmpty) {
+        print('   ✅ No attempts found for this user and quiz');
         return right([]);
       }
 
@@ -382,8 +405,15 @@ class TestRepositoryImpl implements TestRepository {
         };
       }).toList();
 
+      print('   ✅ Returning ${attemptHistory.length} attempt records');
+      for (var i = 0; i < attemptHistory.length; i++) {
+        print('      [$i] Attempt ID: ${attemptHistory[i]['attemptId']}, Score: ${attemptHistory[i]['score']}%');
+      }
+
       return right(attemptHistory);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('   ❌ Error loading attempt history: $e');
+      print('   🔴 Stack trace: $stackTrace');
       return left(NetworkFailure(message: 'Failed to load attempt history: $e'));
     }
   }

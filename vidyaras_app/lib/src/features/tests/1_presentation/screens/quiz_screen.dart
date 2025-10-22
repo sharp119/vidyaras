@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
 import '../../../../shared/presentation/components/buttons/primary_button.dart';
 import '../../../../shared/presentation/components/buttons/secondary_button.dart';
+import '../../../auth/2_application/providers/auth_providers.dart';
 import '../../2_application/notifiers/quiz_notifier.dart';
 import '../../2_application/providers/test_providers.dart';
 import '../widgets/quiz_header.dart';
@@ -32,12 +33,23 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   }
 
   void _startQuiz() async {
+    // Get current user
+    final currentUser = await ref.read(currentUserProvider.future);
+    if (currentUser == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not logged in')),
+        );
+      }
+      return;
+    }
+
     // First, get the quiz details to fetch the correct duration
     final quizRepository = ref.read(testRepositoryProvider);
 
     // We need to get the quiz metadata from test repository
     // For now, let's fetch from the test data
-    final testDataEither = await quizRepository.getTestData();
+    final testDataEither = await quizRepository.getTestData(userId: currentUser.id);
 
     int quizDuration = 30; // Default fallback
 

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
 import '../../../../shared/presentation/components/buttons/secondary_button.dart';
+import '../../../auth/2_application/providers/auth_providers.dart';
 import '../../2_application/providers/test_providers.dart';
 
 /// Screen showing all attempts for a specific quiz
@@ -40,8 +41,23 @@ class _QuizAttemptHistoryScreenState
       _errorMessage = null;
     });
 
+    // Get current user
+    final currentUser = await ref.read(currentUserProvider.future);
+    if (currentUser == null) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = 'User not logged in';
+        });
+      }
+      return;
+    }
+
     final repository = ref.read(testRepositoryProvider);
-    final result = await repository.getQuizAttemptHistory(widget.quizId);
+    final result = await repository.getQuizAttemptHistory(
+      widget.quizId,
+      userId: currentUser.id,
+    );
 
     result.fold(
       (failure) {
@@ -203,10 +219,22 @@ class _QuizAttemptHistoryScreenState
                         isBestScore: isBestScore,
                         scoreColor: _getScoreColor(score),
                         onViewDetails: () async {
+                          // Get current user
+                          final currentUser = await ref.read(currentUserProvider.future);
+                          if (currentUser == null) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('User not logged in')),
+                              );
+                            }
+                            return;
+                          }
+
                           // Navigate to quiz results for this specific attempt
                           final repository = ref.read(testRepositoryProvider);
                           final result = await repository.getQuizAttemptDetails(
                             widget.quizId,
+                            userId: currentUser.id,
                             attemptId: attemptId,
                           );
 

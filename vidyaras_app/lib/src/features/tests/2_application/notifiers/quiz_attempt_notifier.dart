@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../auth/2_application/providers/auth_providers.dart';
 import '../../3_domain/models/quiz_attempt_record.dart';
 import '../../3_domain/repositories/quiz_repository.dart';
 import '../providers/quiz_providers.dart';
@@ -52,7 +53,18 @@ class QuizAttemptNotifier extends _$QuizAttemptNotifier {
   Future<void> startQuizAttempt(String quizId, int totalMarks) async {
     state = state.copyWith(isSubmitting: true, error: null);
 
+    // Get current user ID
+    final currentUser = await ref.read(currentUserProvider.future);
+    if (currentUser == null) {
+      state = state.copyWith(
+        isSubmitting: false,
+        error: 'User not logged in',
+      );
+      return;
+    }
+
     final result = await _repository.createQuizAttempt(
+      userId: currentUser.id,
       quizId: quizId,
       totalMarks: totalMarks,
     );

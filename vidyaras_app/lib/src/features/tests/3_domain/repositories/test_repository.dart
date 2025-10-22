@@ -6,7 +6,7 @@ import '../models/question.dart';
 /// Repository interface for test-related operations
 abstract class TestRepository {
   /// Fetches all test data including stats, performance, available and completed tests
-  Future<Either<Failure, TestData>> getTestData();
+  Future<Either<Failure, TestData>> getTestData({required String userId});
 
   /// Starts a test and returns navigation data
   Future<Either<Failure, String>> startTest(String testId);
@@ -22,10 +22,14 @@ abstract class TestRepository {
   /// Returns a map with 'result' and 'userAnswers' (question index -> selected option index)
   Future<Either<Failure, Map<String, dynamic>>> getQuizAttemptDetails(
     String quizId, {
+    required String userId,
     String? attemptId,
   });
 
   /// Fetches all attempts for a specific quiz (for history view)
   /// Returns a list of attempt data sorted by completion date (newest first)
-  Future<Either<Failure, List<Map<String, dynamic>>>> getQuizAttemptHistory(String quizId);
+  Future<Either<Failure, List<Map<String, dynamic>>>> getQuizAttemptHistory(
+    String quizId, {
+    required String userId,
+  });
 }

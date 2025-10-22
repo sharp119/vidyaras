@@ -7,8 +7,24 @@ import '../models/user_answer.dart';
 
 /// Repository interface for quiz-related operations with Supabase
 abstract class QuizRepository {
-  /// Fetches all published quizzes (optionally filtered by course)
-  Future<Either<Failure, List<Quiz>>> getPublishedQuizzes({String? courseId});
+  /// Fetches all published quizzes for a specific user
+  /// Shows public quizzes + quizzes from courses the user is enrolled in
+  Future<Either<Failure, List<Quiz>>> getPublishedQuizzes({
+    required String userId,
+    String? courseId,
+  });
+
+  /// Fetches quizzes that user has NOT attempted yet (available quizzes)
+  Future<Either<Failure, List<Quiz>>> getAvailableQuizzes({
+    required String userId,
+    String? courseId,
+  });
+
+  /// Fetches quizzes that user has completed (quiz history)
+  Future<Either<Failure, List<Quiz>>> getCompletedQuizzes({
+    required String userId,
+    String? courseId,
+  });
 
   /// Fetches a specific quiz by ID
   Future<Either<Failure, Quiz>> getQuizById(String quizId);
@@ -18,6 +34,7 @@ abstract class QuizRepository {
 
   /// Creates a new quiz attempt when user starts a quiz
   Future<Either<Failure, QuizAttemptRecord>> createQuizAttempt({
+    required String userId,
     required String quizId,
     required int totalMarks,
   });
@@ -38,8 +55,9 @@ abstract class QuizRepository {
     required int timeTakenSeconds,
   });
 
-  /// Fetches user's quiz attempts (history)
+  /// Fetches user's quiz attempts (history) - filtered by user ID
   Future<Either<Failure, List<QuizAttemptRecord>>> getUserQuizAttempts({
+    required String userId,
     String? quizId,
   });
 

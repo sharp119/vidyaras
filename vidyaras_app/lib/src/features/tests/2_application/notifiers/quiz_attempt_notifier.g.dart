@@ -7,7 +7,7 @@ part of 'quiz_attempt_notifier.dart';
 // **************************************************************************
 
 String _$quizAttemptNotifierHash() =>
-    r'f58788b8b1a2b6fe895ed6f786466a874b8b1392';
+    r'49dfbae9d72ae4e9f4290ec96daff87fb3903912';
 
 /// Notifier for managing quiz attempts
 ///

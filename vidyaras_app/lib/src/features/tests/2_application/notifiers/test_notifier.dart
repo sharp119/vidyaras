@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../auth/2_application/providers/auth_providers.dart';
 import '../state/test_state.dart';
 import '../providers/test_providers.dart';
 
@@ -16,14 +17,33 @@ class TestNotifier extends _$TestNotifier {
 
   /// Load test data from repository
   Future<void> loadTestData() async {
+    print('🔵 [TEST NOTIFIER] loadTestData called');
     state = const TestState.loading();
 
+    // Get current user
+    final currentUser = await ref.read(currentUserProvider.future);
+    print('   👤 Current User: ${currentUser?.id ?? "null"}');
+    print('   📞 Current User Phone: ${currentUser?.phoneNumber ?? "null"}');
+
+    if (currentUser == null) {
+      print('   ❌ No user logged in');
+      state = const TestState.error('User not logged in');
+      return;
+    }
+
     final repository = ref.read(testRepositoryProvider);
-    final result = await repository.getTestData();
+    print('   📞 Calling repository.getTestData with userId: ${currentUser.id}');
+    final result = await repository.getTestData(userId: currentUser.id);
 
     result.fold(
-      (failure) => state = TestState.error(failure.message),
-      (data) => state = TestState.loaded(data),
+      (failure) {
+        print('   ❌ Repository returned failure: ${failure.message}');
+        state = TestState.error(failure.message);
+      },
+      (data) {
+        print('   ✅ Test data loaded successfully');
+        state = TestState.loaded(data);
+      },
     );
   }
 

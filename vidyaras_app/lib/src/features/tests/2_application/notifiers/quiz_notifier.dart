@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../auth/2_application/providers/auth_providers.dart';
 import '../../3_domain/models/quiz_attempt.dart';
 import '../../3_domain/models/question.dart';
 import '../../3_domain/models/quiz_result.dart';
@@ -33,11 +34,19 @@ class QuizNotifier extends _$QuizNotifier {
   }) async {
     state = const QuizState.loading();
 
+    // Get current user ID
+    final currentUser = await ref.read(currentUserProvider.future);
+    if (currentUser == null) {
+      state = const QuizState.error('User not logged in');
+      return;
+    }
+
     // Create quiz attempt in database
     final repository = ref.read(quizRepositoryProvider);
     final totalMarks = questions.fold<int>(0, (sum, q) => sum + 1) * 10; // 10 marks per question
 
     final attemptResult = await repository.createQuizAttempt(
+      userId: currentUser.id,
       quizId: testId,
       totalMarks: totalMarks,
     );
