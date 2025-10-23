@@ -57,3 +57,24 @@
 ## Supabase
 -keep class io.supabase.** { *; }
 -dontwarn io.supabase.**
+
+## Google Play Core (for Flutter deferred components)
+-keep class com.google.android.play.core.** { *; }
+-keep interface com.google.android.play.core.** { *; }
+-dontwarn com.google.android.play.core.**
+
+# Keep split compat classes
+-keep class com.google.android.play.core.splitcompat.** { *; }
+-dontwarn com.google.android.play.core.splitcompat.**
+
+# Keep split install classes
+-keep class com.google.android.play.core.splitinstall.** { *; }
+-dontwarn com.google.android.play.core.splitinstall.**
+
+# Keep tasks classes
+-keep class com.google.android.play.core.tasks.** { *; }
+-dontwarn com.google.android.play.core.tasks.**
+
+## Flutter embedding
+-keep class io.flutter.embedding.** { *; }
+-dontwarn io.flutter.embedding.**

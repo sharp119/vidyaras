@@ -328,40 +328,6 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
-
-              // Development note
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.success.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: AppColors.success.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Development Mode',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.success,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Enter OTP: 123456\n+911234567890 is a registered user\nAll other numbers are new users',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),

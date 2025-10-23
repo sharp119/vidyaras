@@ -173,40 +173,6 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
                   label: 'Continue',
                   isLoading: isLoading,
                 ),
-                const SizedBox(height: 32),
-
-                // Development note
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.accent.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppColors.accent.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Development Mode',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.accent,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Use any 10-digit phone number\nOTP: 123456',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
           ),
