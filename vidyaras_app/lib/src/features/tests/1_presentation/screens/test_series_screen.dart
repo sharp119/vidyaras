@@ -7,6 +7,7 @@ import '../../2_application/notifiers/test_notifier.dart';
 import '../../2_application/providers/test_providers.dart';
 import '../widgets/available_test_card.dart';
 import '../widgets/completed_test_card.dart'; // Make sure this is imported
+import '../widgets/locked_tab_placeholder.dart';
 import '../../3_domain/models/test_data.dart';
 
 /// Test Series screen showing tests, stats, and performance
@@ -107,11 +108,15 @@ class TestSeriesScreen extends ConsumerWidget {
                   delegate: _TestSeriesTabBarDelegate(tabBar),
                 ),
               ],
-              body: TabBarView(
-                children: [
-                  _buildExploreTab(context, ref, data),
-                  _buildHistoryTab(context, ref, data), // Updated method
-                ],
+              body: Builder(
+                builder: (tabContext) {
+                  return TabBarView(
+                    children: [
+                      _buildExploreTab(context, ref, data),
+                      _buildHistoryTab(tabContext, ref, data), // Pass tabContext
+                    ],
+                  );
+                },
               ),
             ),
           );
@@ -306,6 +311,22 @@ class TestSeriesScreen extends ConsumerWidget {
 
   // --- MODIFIED METHOD ---
   Widget _buildHistoryTab(BuildContext context, WidgetRef ref, TestData data) {
+    // TODO: Replace this with actual enrollment check when enrollment system is implemented
+    // For now, all users are considered NOT enrolled
+    const bool hasEnrollment = false;
+
+    // If user is not enrolled, show locked placeholder
+    if (!hasEnrollment) {
+      return LockedTabPlaceholder(
+        availableTests: data.availableTests,
+        onExplorePressed: () {
+          // Navigate to Courses screen (MainShell index 1)
+          context.go('/main', extra: 1);
+        },
+      );
+    }
+
+    // Below code will execute when enrollment system is implemented
     final notifier = ref.read(testNotifierProvider.notifier);
     final hasCompletedTests = data.completedTests.isNotEmpty;
 

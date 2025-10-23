@@ -17,6 +17,9 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.surface,
@@ -31,10 +34,13 @@ class BottomNavBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(
               items.length,
-              (index) => _BottomNavItemWidget(
-                item: items[index],
-                isSelected: currentIndex == index,
-                onTap: () => onTap(index),
+              (index) => Expanded(
+                child: _BottomNavItemWidget(
+                  item: items[index],
+                  isSelected: currentIndex == index,
+                  onTap: () => onTap(index),
+                  isSmallScreen: isSmallScreen,
+                ),
               ),
             ),
           ),
@@ -59,11 +65,13 @@ class _BottomNavItemWidget extends StatelessWidget {
     required this.item,
     required this.isSelected,
     required this.onTap,
+    required this.isSmallScreen,
   });
 
   final BottomNavItem item;
   final bool isSelected;
   final VoidCallback onTap;
+  final bool isSmallScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -71,22 +79,31 @@ class _BottomNavItemWidget extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: isSmallScreen ? 4 : 8,
+          vertical: 8,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               item.icon,
-              size: 24,
+              size: isSmallScreen ? 22 : 24,
               color: isSelected ? AppColors.primary : AppColors.textSecondary,
             ),
             const SizedBox(height: 4),
-            Text(
-              item.label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+            Flexible(
+              child: Text(
+                item.label,
+                style: TextStyle(
+                  fontSize: isSmallScreen ? 10 : 12,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ],
