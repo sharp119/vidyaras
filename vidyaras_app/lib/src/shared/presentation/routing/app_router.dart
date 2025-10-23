@@ -12,6 +12,7 @@ import '../../../features/tests/1_presentation/screens/quiz_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_results_screen.dart';
 import '../../../features/tests/1_presentation/screens/answer_review_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_attempt_history_screen.dart';
+import '../../../features/tests/1_presentation/screens/performance_screen.dart';
 import '../../../features/tests/3_domain/models/quiz_result.dart';
 import '../screens/main_shell.dart';
 
@@ -156,6 +157,13 @@ final GoRouter appRouter = GoRouter(
           quizTitle: testTitle,
         );
       },
+    ),
+
+    // Performance Screen
+    GoRoute(
+      path: '/performance',
+      name: 'performance',
+      builder: (context, state) => const PerformanceScreen(),
     ),
 
     // TODO: Add additional routes as features are implemented

@@ -61,15 +61,19 @@ class SecondaryButton extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                       ],
-                      Text(
-                        label,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: onPressed == null
-                              ? AppColors.textTertiary
-                              : AppColors.textPrimary,
-                          letterSpacing: 0.2,
+                      Flexible(
+                        child: Text(
+                          label,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: onPressed == null
+                                ? AppColors.textTertiary
+                                : AppColors.textPrimary,
+                            letterSpacing: 0.2,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ),
                     ],

@@ -164,16 +164,22 @@ class TestSeriesScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.description_outlined,
-                    size: 32,
-                    color: Colors.white,
+                Builder(
+                  builder: (context) => InkWell(
+                    onTap: () => context.push('/performance'),
+                    borderRadius: BorderRadius.circular(50),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.assessment_outlined,
+                        size: 32,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ],

@@ -23,6 +23,9 @@ class QuizResultsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+
     // Extract result and userAnswers from attemptData if provided
     final QuizResult quizResult;
     final Map<int, int> answers;
@@ -66,7 +69,7 @@ class QuizResultsScreen extends ConsumerWidget {
           children: [
             // Header with score
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
@@ -76,12 +79,14 @@ class QuizResultsScreen extends ConsumerWidget {
                 children: [
                   Text(
                     quizResult.testTitle,
-                    style: const TextStyle(
-                      fontSize: 22,
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 18 : 22,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
                     textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   if (attemptDate != null) ...[
                     const SizedBox(height: 8),
@@ -94,19 +99,19 @@ class QuizResultsScreen extends ConsumerWidget {
                       textAlign: TextAlign.center,
                     ),
                   ],
-                  const SizedBox(height: 24),
-                  const Text(
+                  SizedBox(height: isSmallScreen ? 16 : 24),
+                  Text(
                     'Your Score',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: isSmallScreen ? 14 : 16,
                       color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     '${quizResult.score}%',
-                    style: const TextStyle(
-                      fontSize: 64,
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 48 : 64,
                       fontWeight: FontWeight.bold,
                       color: AppColors.primary,
                     ),
@@ -145,7 +150,7 @@ class QuizResultsScreen extends ConsumerWidget {
                 // Navigate to the answer review screen
                 context.push('/test/$testId/review', extra: answers);
               },
-              label: 'Review Answers',
+              label: 'Review',
               icon: Icons.rate_review,
             ),
             const SizedBox(height: 16),
@@ -163,22 +168,28 @@ class QuizResultsScreen extends ConsumerWidget {
   }
 
   Widget _buildStatItem(String value, String label, Color color) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: color,
+    return Flexible(
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
-        ),
-      ],
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+        ],
+      ),
     );
   }
 }

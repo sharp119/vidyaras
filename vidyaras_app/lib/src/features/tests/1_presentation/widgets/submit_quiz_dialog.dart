@@ -100,7 +100,7 @@ class SubmitQuizDialog extends StatelessWidget {
                 Expanded(
                   child: SecondaryButton(
                     onPressed: onReviewAnswers,
-                    label: 'Review Answers',
+                    label: 'Review',
                     fullWidth: true,
                   ),
                 ),
@@ -108,7 +108,7 @@ class SubmitQuizDialog extends StatelessWidget {
                 Expanded(
                   child: PrimaryButton(
                     onPressed: onSubmitNow,
-                    label: 'Submit Now',
+                    label: 'Submit',
                     fullWidth: true,
                   ),
                 ),
