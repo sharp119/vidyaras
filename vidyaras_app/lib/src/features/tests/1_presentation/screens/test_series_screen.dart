@@ -87,9 +87,9 @@ class TestSeriesScreen extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.history, size: 18),
+                    Icon(Icons.book_outlined, size: 18),
                     SizedBox(width: 6),
-                    Text('History'),
+                    Text('My Courses'),
                   ],
                 ),
               ),
