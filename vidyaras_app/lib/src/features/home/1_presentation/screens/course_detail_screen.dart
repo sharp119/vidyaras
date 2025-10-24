@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
 import '../../2_application/providers/home_providers.dart';
 import '../../3_domain/models/course_detail.dart';
+import '../../3_domain/models/enrollment_message_data.dart';
 import '../widgets/course_stats_card.dart';
 import '../widgets/curriculum_section_card.dart';
 import '../widgets/batch_info_card.dart';
 import '../widgets/pricing_card.dart';
 import '../widgets/course_review_card.dart';
+import '../widgets/enrollment_options_bottom_sheet.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
 import '../../../../shared/presentation/components/buttons/primary_button.dart';
+import '../../../auth/2_application/providers/auth_providers.dart';
+import '../../../auth/3_domain/models/user.dart' as domain;
 
 /// Course detail screen showing comprehensive course information
 /// Displays curriculum, pricing, reviews, and enrollment options
@@ -560,59 +564,87 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
   }
 
   Widget _buildCTAButton(CourseDetail courseDetail) {
-    if (courseDetail.pricing.isFree) {
-      return PrimaryButton(
-        label: 'Enroll Now (Free)',
-        onPressed: () {
-          // TODO: Handle free enrollment
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Enrollment feature coming soon!'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        },
-        fullWidth: true,
-      );
-    }
+    final label = courseDetail.pricing.isFree
+        ? 'Enroll Now (Free)'
+        : 'Contact Us to Enroll';
 
     return PrimaryButton(
-      label: 'Contact Us to Enroll',
-      onPressed: () => _launchWhatsApp(courseDetail),
+      label: label,
+      onPressed: () => _showEnrollmentOptions(courseDetail),
       fullWidth: true,
     );
   }
 
-  Future<void> _launchWhatsApp(CourseDetail courseDetail) async {
+  void _showEnrollmentOptions(CourseDetail courseDetail) async {
+    // Get current user data
+    final currentUserAsync = ref.read(currentUserProvider);
+
+    final user = currentUserAsync.valueOrNull;
+
+    if (user == null) {
+      // User not logged in - should not happen but handle gracefully
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please log in to enroll'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+      return;
+    }
+
+    // Build enrollment message data
+    final enrollmentData = _buildEnrollmentData(courseDetail, user);
+
+    // Show bottom sheet
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => EnrollmentOptionsBottomSheet(
+        enrollmentData: enrollmentData,
+      ),
+    );
+  }
+
+  EnrollmentMessageData _buildEnrollmentData(
+    CourseDetail courseDetail,
+    domain.User user,
+  ) {
     final selectedPrice = _selectedFullPayment
         ? '₹${courseDetail.pricing.fullPrice}'
         : '₹${courseDetail.pricing.emiMonthlyPrice}/mo (${courseDetail.pricing.emiTenure} months)';
 
-    final message = '''
-Hello VidyaRas Team!
+    return EnrollmentMessageData(
+      // User data
+      userName: user.name,
+      userPhone: user.phoneNumber,
+      userEmail: user.email,
 
-I'm interested in enrolling in:
-📚 *${courseDetail.basicInfo.title}*
-👨‍🏫 Instructor: ${courseDetail.basicInfo.instructor}
-💰 Price: $selectedPrice
+      // Course data
+      courseTitle: courseDetail.basicInfo.title,
+      instructor: courseDetail.basicInfo.instructor,
+      courseType:
+          courseDetail.basicInfo.isLive ? 'Live Classes' : 'Recorded Course',
 
-Please share enrollment details.
-    ''';
+      // Pricing
+      selectedPrice: selectedPrice,
+      isFullPayment: _selectedFullPayment,
 
-    final whatsappUrl =
-        'https://wa.me/91XXXXXXXXXX?text=${Uri.encodeComponent(message)}';
+      // Live batch specific
+      batchName: courseDetail.liveBatch?.name,
+      batchSchedule: courseDetail.liveBatch?.schedule,
+      batchStartDate: courseDetail.liveBatch != null
+          ? DateFormat('MMM d, y').format(courseDetail.liveBatch!.startDate)
+          : null,
 
-    if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
-      await launchUrl(Uri.parse(whatsappUrl), mode: LaunchMode.externalApplication);
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not open WhatsApp. Please try again.'),
-          ),
-        );
-      }
-    }
+      // Recorded course specific
+      accessDays: courseDetail.accessDays,
+
+      // Free course flag
+      isFree: courseDetail.pricing.isFree,
+    );
   }
 
   Widget _buildLoading() {
