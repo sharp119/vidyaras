@@ -8,6 +8,7 @@ import '../../../features/onboarding/1_presentation/screens/onboarding_language_
 import '../../../features/auth/1_presentation/screens/phone_auth_screen.dart';
 import '../../../features/auth/1_presentation/screens/otp_verification_screen.dart';
 import '../../../features/auth/1_presentation/screens/registration_screen.dart';
+import '../../../features/home/1_presentation/screens/course_detail_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_results_screen.dart';
 import '../../../features/tests/1_presentation/screens/answer_review_screen.dart';
@@ -166,9 +167,18 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const PerformanceScreen(),
     ),
 
+    // Course Detail Screen
+    GoRoute(
+      path: '/course/:courseId',
+      name: 'course-detail',
+      builder: (context, state) {
+        final courseId = state.pathParameters['courseId']!;
+        return CourseDetailScreen(courseId: courseId);
+      },
+    ),
+
     // TODO: Add additional routes as features are implemented
     // Example routes to be added:
-    // - /course/:id - Course detail screen
     // - /course/:id/lesson/:lessonId - Course lesson screen
     // - /settings - Settings screen
   ],

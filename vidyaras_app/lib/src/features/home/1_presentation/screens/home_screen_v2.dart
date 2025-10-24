@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
 import '../../../../shared/presentation/components/cards/stats_card.dart';
 import '../../../auth/2_application/providers/auth_providers.dart';
@@ -272,9 +273,7 @@ class HomeScreenV2 extends ConsumerWidget {
                               hasFreeTrial: course.hasFreeTrial,
                               isLive: course.isLive,
                               isRecorded: course.isRecorded,
-                              onTap: () {
-                                // TODO: Navigate to course details
-                              },
+                              onTap: () => context.push('/course/${course.id}'),
                             ),
                           );
                         },
@@ -361,9 +360,7 @@ class HomeScreenV2 extends ConsumerWidget {
                               duration: course.duration,
                               isFree: true,
                               isRecorded: course.isRecorded,
-                              onTap: () {
-                                // TODO: Navigate to course details
-                              },
+                              onTap: () => context.push('/course/${course.id}'),
                             ),
                           );
                         },
