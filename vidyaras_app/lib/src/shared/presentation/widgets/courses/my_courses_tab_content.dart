@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../features/home/3_domain/models/course.dart';
+import '../../../../features/home/1_presentation/widgets/course_list_card.dart';
 import '../../theme/app_colors.dart';
-import '../../components/cards/course_card.dart';
 import 'empty_courses_widget.dart';
 
 /// My Courses tab content
@@ -54,13 +54,12 @@ class MyCoursesTabContent extends StatelessWidget {
           const SizedBox(height: 16),
           ...inProgressCourses.map((course) => Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: CourseCard(
+                child: CourseListCard(
                   title: course.title,
                   instructor: course.instructor,
                   thumbnailUrl: course.thumbnailUrl,
                   rating: course.rating,
                   price: course.price,
-                  progress: course.progress,
                   onTap: () => context.push('/course/${course.id}'),
                 ),
               )),
@@ -78,13 +77,12 @@ class MyCoursesTabContent extends StatelessWidget {
           const SizedBox(height: 16),
           ...notStartedCourses.map((course) => Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: CourseCard(
+                child: CourseListCard(
                   title: course.title,
                   instructor: course.instructor,
                   thumbnailUrl: course.thumbnailUrl,
                   rating: course.rating,
                   price: course.price,
-                  progress: course.progress,
                   onTap: () => context.push('/course/${course.id}'),
                 ),
               )),
@@ -102,13 +100,12 @@ class MyCoursesTabContent extends StatelessWidget {
           const SizedBox(height: 16),
           ...completedCourses.map((course) => Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: CourseCard(
+                child: CourseListCard(
                   title: course.title,
                   instructor: course.instructor,
                   thumbnailUrl: course.thumbnailUrl,
                   rating: course.rating,
                   price: course.price,
-                  progress: course.progress,
                   onTap: () => context.push('/course/${course.id}'),
                 ),
               )),
