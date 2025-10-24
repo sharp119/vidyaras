@@ -10,31 +10,53 @@ import '../../3_domain/models/batch_info.dart';
 import '../../3_domain/models/pricing_option.dart';
 import '../../3_domain/models/course_review.dart';
 import '../../3_domain/repositories/home_repository.dart';
+import '../../../auth/3_domain/repositories/auth_repository.dart';
 
 /// Mock implementation of HomeRepository
-/// Returns sample data for development
-/// TODO: Replace with actual API implementation
+/// Returns sample data for development with actual user info
+/// TODO: Replace with actual API implementation for stats and courses
 class HomeRepositoryImpl implements HomeRepository {
+  final AuthRepository _authRepository;
+
+  HomeRepositoryImpl(this._authRepository);
+
   @override
   Future<Either<Failure, HomeData>> getHomeData() async {
     try {
+      // Get the actual authenticated user
+      final userResult = await _authRepository.getCurrentUser();
+
+      // If we can't get user, return error
+      final user = userResult.fold(
+        (failure) => null,
+        (user) => user,
+      );
+
+      if (user == null) {
+        return left(const AuthFailure(message: 'User not authenticated'));
+      }
+
       // Simulate network delay
       await Future.delayed(const Duration(milliseconds: 500));
 
+      // Build UserProfile from actual user + mock stats
+      // TODO: Fetch actual stats from API
+      final userProfile = UserProfile(
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatarUrl: user.avatarUrl,
+        isPremium: false, // TODO: Fetch from API
+        enrolledCount: 2, // TODO: Fetch from API
+        completedCount: 0, // TODO: Fetch from API
+        certificatesCount: 1, // TODO: Fetch from API
+        referralPoints: 150, // TODO: Fetch from API
+        interests: ['music', 'wellness'], // TODO: Fetch from API
+        createdAt: user.createdAt,
+      );
+
       final homeData = HomeData(
-        userProfile: const UserProfile(
-          id: '1',
-          name: 'Priya Sharma',
-          email: 'priya@example.com',
-          avatarUrl:
-              'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
-          isPremium: true,
-          enrolledCount: 2,
-          completedCount: 0,
-          certificatesCount: 1,
-          referralPoints: 150,
-          interests: ['music', 'wellness'],
-        ),
+        userProfile: userProfile,
         myCourses: [
           const Course(
             id: '1',
@@ -150,10 +172,11 @@ class HomeRepositoryImpl implements HomeRepository {
       await Future.delayed(const Duration(milliseconds: 600));
 
       // Find the basic course info first
+      final mockData = await _getMockHomeData();
       final allCourses = [
-        ..._getMockHomeData().myCourses,
-        ..._getMockHomeData().recommendedCourses,
-        ..._getMockHomeData().freeCourses,
+        ...mockData.myCourses,
+        ...mockData.recommendedCourses,
+        ...mockData.freeCourses,
       ];
 
       final basicCourse = allCourses.firstWhere(
@@ -172,21 +195,43 @@ class HomeRepositoryImpl implements HomeRepository {
     }
   }
 
-  HomeData _getMockHomeData() {
+  Future<HomeData> _getMockHomeData() async {
+    // Get the actual authenticated user
+    final userResult = await _authRepository.getCurrentUser();
+
+    final user = userResult.fold(
+      (failure) => null,
+      (user) => user,
+    );
+
+    // Use actual user data or fallback to default
+    final userProfile = user != null
+        ? UserProfile(
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            avatarUrl: user.avatarUrl,
+            isPremium: false, // TODO: Fetch from API
+            enrolledCount: 2, // TODO: Fetch from API
+            completedCount: 0, // TODO: Fetch from API
+            certificatesCount: 1, // TODO: Fetch from API
+            referralPoints: 150, // TODO: Fetch from API
+            interests: ['music', 'wellness'], // TODO: Fetch from API
+            createdAt: user.createdAt,
+          )
+        : const UserProfile(
+            id: '1',
+            name: 'Guest User',
+            email: 'guest@example.com',
+            isPremium: false,
+            enrolledCount: 0,
+            completedCount: 0,
+            certificatesCount: 0,
+            referralPoints: 0,
+          );
+
     return HomeData(
-      userProfile: const UserProfile(
-        id: '1',
-        name: 'Priya Sharma',
-        email: 'priya@example.com',
-        avatarUrl:
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
-        isPremium: true,
-        enrolledCount: 2,
-        completedCount: 0,
-        certificatesCount: 1,
-        referralPoints: 150,
-        interests: ['music', 'wellness'],
-      ),
+      userProfile: userProfile,
       myCourses: [
         const Course(
           id: '1',
