@@ -90,7 +90,7 @@ class TestSeriesScreen extends ConsumerWidget {
                   children: [
                     Icon(Icons.book_outlined, size: 18),
                     SizedBox(width: 6),
-                    Text('My Courses'),
+                    Text('My Tests'),
                   ],
                 ),
               ),
@@ -113,7 +113,11 @@ class TestSeriesScreen extends ConsumerWidget {
                   return TabBarView(
                     children: [
                       _buildExploreTab(context, ref, data),
-                      _buildHistoryTab(tabContext, ref, data), // Pass tabContext
+                      _buildHistoryTab(
+                        tabContext,
+                        ref,
+                        data,
+                      ), // Pass tabContext
                     ],
                   );
                 },
