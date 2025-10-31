@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../features/home/1_presentation/screens/home_screen_v2.dart';
 import '../../../features/tests/1_presentation/screens/test_series_screen.dart';
+import '../../../features/my_learning/1_presentation/screens/my_learning_hub_screen.dart';
 import '../components/navigation/bottom_nav_bar.dart';
-import 'courses_screen.dart';
 import 'community_screen.dart';
 import 'profile_screen.dart';
 
@@ -23,7 +23,7 @@ class _MainShellState extends State<MainShell> {
 
   final List<Widget> _screens = const [
     HomeScreenV2(),
-    CoursesScreen(),
+    MyLearningHubScreen(),
     CommunityScreen(),
     TestSeriesScreen(),
     ProfileScreen(),
@@ -31,7 +31,7 @@ class _MainShellState extends State<MainShell> {
 
   final List<BottomNavItem> _navItems = const [
     BottomNavItem(icon: Icons.home, label: 'Home'),
-    BottomNavItem(icon: Icons.book, label: 'Courses'),
+    BottomNavItem(icon: Icons.school, label: 'Learning'),
     BottomNavItem(icon: Icons.chat, label: 'Community'),
     BottomNavItem(icon: Icons.assignment, label: 'Tests'),
     BottomNavItem(icon: Icons.person, label: 'Profile'),

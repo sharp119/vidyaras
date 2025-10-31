@@ -15,6 +15,8 @@ import '../../../features/tests/1_presentation/screens/answer_review_screen.dart
 import '../../../features/tests/1_presentation/screens/quiz_attempt_history_screen.dart';
 import '../../../features/tests/1_presentation/screens/performance_screen.dart';
 import '../../../features/tests/3_domain/models/quiz_result.dart';
+import '../../../features/my_learning/1_presentation/screens/my_learning_hub_screen.dart';
+import '../../../features/my_learning/1_presentation/screens/course_content_screen.dart';
 import '../screens/main_shell.dart';
 
 /// Application routing configuration using GoRouter
@@ -174,6 +176,23 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final courseId = state.pathParameters['courseId']!;
         return CourseDetailScreen(courseId: courseId);
+      },
+    ),
+
+    // My Learning Hub - Shows all enrolled courses
+    GoRoute(
+      path: '/my-learning',
+      name: 'my-learning',
+      builder: (context, state) => const MyLearningHubScreen(),
+    ),
+
+    // Course Content Screen - Shows lectures, live classes, materials
+    GoRoute(
+      path: '/my-learning/course/:courseId',
+      name: 'enrolled-course-content',
+      builder: (context, state) {
+        final courseId = state.pathParameters['courseId']!;
+        return CourseContentScreen(courseId: courseId);
       },
     ),
 
