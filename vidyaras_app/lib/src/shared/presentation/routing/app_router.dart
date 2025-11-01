@@ -9,6 +9,7 @@ import '../../../features/auth/1_presentation/screens/phone_auth_screen.dart';
 import '../../../features/auth/1_presentation/screens/otp_verification_screen.dart';
 import '../../../features/auth/1_presentation/screens/registration_screen.dart';
 import '../../../features/home/1_presentation/screens/course_detail_screen.dart';
+import '../../../features/my_courses/1_presentation/screens/course_progress_detail_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_results_screen.dart';
 import '../../../features/tests/1_presentation/screens/answer_review_screen.dart';
@@ -174,6 +175,20 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final courseId = state.pathParameters['courseId']!;
         return CourseDetailScreen(courseId: courseId);
+      },
+    ),
+    GoRoute(
+      path: '/learn/course/:courseId',
+      name: 'course-progress',
+      builder: (context, state) {
+        final courseId = state.pathParameters['courseId']!;
+        final focusLectureId = (state.extra is Map)
+            ? (state.extra as Map)['focusLectureId'] as String?
+            : null;
+        return CourseProgressDetailScreen(
+          courseId: courseId,
+          focusLectureId: focusLectureId,
+        );
       },
     ),
 

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../../features/home/1_presentation/screens/home_screen_v2.dart';
+import '../../../features/my_courses/1_presentation/screens/learn_screen.dart';
 import '../../../features/tests/1_presentation/screens/test_series_screen.dart';
 import '../components/navigation/bottom_nav_bar.dart';
-import 'courses_screen.dart';
-import 'community_screen.dart';
 import 'profile_screen.dart';
+import 'more_screen.dart';
 
 /// Main app shell with bottom navigation
-/// Manages tab navigation between Home, Courses, Community, Tests, Profile
+/// Manages tab navigation between Home, Learn, Tests, Profile, More
 class MainShell extends StatefulWidget {
   const MainShell({super.key, this.initialIndex = 0});
 
@@ -21,20 +21,20 @@ class _MainShellState extends State<MainShell> {
   late int _currentIndex;
   late PageController _pageController;
 
-  final List<Widget> _screens = const [
-    HomeScreenV2(),
-    CoursesScreen(),
-    CommunityScreen(),
-    TestSeriesScreen(),
-    ProfileScreen(),
+  late final List<Widget> _screens = [
+    const HomeScreenV2(),
+    const LearnScreen(),
+    const TestSeriesScreen(),
+    const ProfileScreen(),
+    const MoreScreen(),
   ];
 
   final List<BottomNavItem> _navItems = const [
     BottomNavItem(icon: Icons.home, label: 'Home'),
-    BottomNavItem(icon: Icons.book, label: 'Courses'),
-    BottomNavItem(icon: Icons.chat, label: 'Community'),
+    BottomNavItem(icon: Icons.school, label: 'Learn'),
     BottomNavItem(icon: Icons.assignment, label: 'Tests'),
     BottomNavItem(icon: Icons.person, label: 'Profile'),
+    BottomNavItem(icon: Icons.grid_view, label: 'More'),
   ];
 
   @override
