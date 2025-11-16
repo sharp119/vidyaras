@@ -1,15 +1,14 @@
 import * as React from "react"
 import {
-  AudioWaveform,
   BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
+  GraduationCap,
+  LayoutDashboard,
   Settings2,
-  SquareTerminal,
+  Sparkles,
+  Users,
+  Video,
+  FileText,
+  DollarSign,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -24,89 +23,90 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
+// VidyaRas Admin data
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "Admin User",
+    email: "admin@vidyaras.com",
+    avatar: "/avatars/admin.jpg",
   },
   teams: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      name: "VidyaRas",
+      logo: GraduationCap,
+      plan: "Admin",
     },
   ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
+      title: "Dashboard",
+      url: "/",
+      icon: LayoutDashboard,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Overview",
+          url: "/",
         },
         {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
+          title: "Analytics",
           url: "#",
         },
       ],
     },
     {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
+      title: "Courses",
       url: "#",
       icon: BookOpen,
       items: [
         {
-          title: "Introduction",
+          title: "All Courses",
           url: "#",
         },
         {
-          title: "Get Started",
+          title: "Course Builder",
+          url: "/courses/builder",
+        },
+        {
+          title: "Categories",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Students",
+      url: "#",
+      icon: Users,
+      items: [
+        {
+          title: "All Students",
           url: "#",
         },
         {
-          title: "Tutorials",
+          title: "Enrollments",
           url: "#",
         },
         {
-          title: "Changelog",
+          title: "Progress Reports",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Live Sessions",
+      url: "#",
+      icon: Video,
+      items: [
+        {
+          title: "Scheduled",
+          url: "#",
+        },
+        {
+          title: "Past Sessions",
+          url: "#",
+        },
+        {
+          title: "Recordings",
           url: "#",
         },
       ],
@@ -121,15 +121,11 @@ const data = {
           url: "#",
         },
         {
-          title: "Team",
+          title: "Instructors",
           url: "#",
         },
         {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
+          title: "Payments",
           url: "#",
         },
       ],
@@ -137,19 +133,19 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "Content Library",
       url: "#",
-      icon: Frame,
+      icon: FileText,
     },
     {
-      name: "Sales & Marketing",
+      name: "Revenue Reports",
       url: "#",
-      icon: PieChart,
+      icon: DollarSign,
     },
     {
-      name: "Travel",
+      name: "AI Assistant",
       url: "#",
-      icon: Map,
+      icon: Sparkles,
     },
   ],
 }
