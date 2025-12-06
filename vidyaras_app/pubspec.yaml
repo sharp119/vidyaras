@@ -71,6 +71,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  # Assets
+  assets:
+    - assets/svgs/
+    - assets/
+
 flutter_launcher_icons:
   android: true
   ios: false # Set to true when you need iOS icon

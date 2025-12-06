@@ -1,13 +1,15 @@
 import 'package:go_router/go_router.dart';
-import '../../../features/auth/1_presentation/screens/splash_screen.dart';
+import '../../../features/splash/splash_screen.dart';
+import '../../../features/auth/1_presentation/screens/google_login_screen.dart';
+import '../../../features/auth/1_presentation/screens/phone_binding_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/intro_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_interests_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_goals_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_experience_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_language_screen.dart';
-import '../../../features/auth/1_presentation/screens/phone_auth_screen.dart';
-import '../../../features/auth/1_presentation/screens/otp_verification_screen.dart';
-import '../../../features/auth/1_presentation/screens/registration_screen.dart';
+import '../../../features/auth_legacy_backup/1_presentation/screens/phone_auth_screen.dart';
+import '../../../features/auth_legacy_backup/1_presentation/screens/otp_verification_screen.dart';
+import '../../../features/auth_legacy_backup/1_presentation/screens/registration_screen.dart';
 import '../../../features/home/1_presentation/screens/course_detail_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_results_screen.dart';
@@ -37,7 +39,21 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const IntroScreen(),
     ),
 
-    // Authentication Flow
+    // Google OAuth Authentication Flow (NEW)
+    GoRoute(
+      path: '/login',
+      name: 'login',
+      builder: (context, state) => const GoogleLoginScreen(),
+    ),
+
+    // Phone Binding Screen - Mandatory after Google sign-in (NEW)
+    GoRoute(
+      path: '/phone-binding',
+      name: 'phone-binding',
+      builder: (context, state) => const PhoneBindingScreen(),
+    ),
+
+    // Legacy Authentication Flow (DEPRECATED - kept for reference)
     GoRoute(
       path: '/auth',
       name: 'auth',

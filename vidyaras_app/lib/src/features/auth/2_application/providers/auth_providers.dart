@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../3_domain/repositories/auth_repository.dart';
+import '../../3_domain/models/app_user.dart';
 import '../../4_data/datasources/profile_datasource.dart';
 import '../../4_data/repositories/auth_repository_impl.dart';
 import '../../4_data/services/msg91_service.dart';
@@ -52,4 +53,24 @@ Future<Map<String, dynamic>?> currentProfile(CurrentProfileRef ref) async {
   ref.watch(authStateChangesProvider);
 
   return await profileDataSource.getCurrentProfile();
+}
+
+/// Current user provider (typed AppUser)
+/// Fetches current user as AppUser object
+@riverpod
+Future<AppUser?> currentUser(CurrentUserRef ref) async {
+  final authRepository = ref.watch(authRepositoryProvider);
+
+  // Watch auth state to trigger refresh when user signs in/out
+  ref.watch(authStateChangesProvider);
+
+  final result = await authRepository.getCurrentUser();
+
+  return result.fold(
+    (error) {
+      print('Error fetching current user: $error');
+      return null;
+    },
+    (user) => user,
+  );
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../features/auth/2_application/notifiers/auth_notifier.dart';
+import '../../../../../features/auth/2_application/providers/auth_providers.dart';
 import '../../../theme/app_colors.dart';
 import '../logout_confirmation_dialog.dart';
 
@@ -65,12 +65,12 @@ class ProfileLogoutButton extends ConsumerWidget {
         }
 
         // Perform logout
-        final authNotifier = ref.read(authNotifierProvider.notifier);
-        await authNotifier.signOut();
+        final authRepository = ref.read(authRepositoryProvider);
+        await authRepository.signOut();
 
-        // Navigate to auth screen
+        // Navigate to login screen
         if (context.mounted) {
-          context.go('/auth');
+          context.go('/login');
         }
       },
     );

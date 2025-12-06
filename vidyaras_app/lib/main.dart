@@ -14,7 +14,22 @@ Future<void> main() async {
   await Supabase.initialize(
     url: 'https://cyenulvcedlzccorgkkx.supabase.co',
     anonKey: 'sb_publishable_1bNMSWq_hWRg00wXfxkxNA_sJ65jFux',
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce, // CRITICAL for mobile OAuth security
+    ),
   );
+
+  // Listen for auth state changes (optional debugging)
+  Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+    final event = data.event;
+    print('🔐 Auth Event: $event');
+
+    if (event == AuthChangeEvent.signedIn) {
+      print('✅ User signed in: ${data.session?.user.email}');
+    } else if (event == AuthChangeEvent.signedOut) {
+      print('👋 User signed out');
+    }
+  });
 
   // Configure system UI overlay (status bar and navigation bar)
   SystemChrome.setSystemUIOverlayStyle(

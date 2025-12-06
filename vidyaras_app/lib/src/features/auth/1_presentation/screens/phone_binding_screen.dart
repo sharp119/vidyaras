@@ -90,16 +90,16 @@ class _PhoneBindingScreenState extends ConsumerState<PhoneBindingScreen> {
                 TextInputField(
                   controller: _phoneController,
                   label: 'Phone Number',
-                  hint: '+91XXXXXXXXXX',
+                  hintText: '+91XXXXXXXXXX',
                   keyboardType: TextInputType.phone,
-                  prefixIcon: const Icon(Icons.phone, size: 20),
+                  leadingIcon: Icons.phone,
                   enabled: !_isLoading,
                 ),
 
                 const SizedBox(height: 24),
 
                 PrimaryButton(
-                  text: 'Send OTP',
+                  label: 'Send OTP',
                   onPressed: _isLoading ? null : _sendOTP,
                   isLoading: _isLoading,
                   fullWidth: true,
@@ -109,10 +109,9 @@ class _PhoneBindingScreenState extends ConsumerState<PhoneBindingScreen> {
                 TextInputField(
                   controller: _otpController,
                   label: 'Enter OTP',
-                  hint: '6-digit code',
+                  hintText: '6-digit code',
                   keyboardType: TextInputType.number,
-                  prefixIcon: const Icon(Icons.lock, size: 20),
-                  maxLength: 6,
+                  leadingIcon: Icons.lock,
                   enabled: !_isLoading,
                 ),
 
@@ -121,7 +120,7 @@ class _PhoneBindingScreenState extends ConsumerState<PhoneBindingScreen> {
                 // Resend OTP
                 Center(
                   child: AppTextButton(
-                    text: 'Resend OTP',
+                    label: 'Resend OTP',
                     onPressed: _isLoading ? null : _sendOTP,
                   ),
                 ),
@@ -129,7 +128,7 @@ class _PhoneBindingScreenState extends ConsumerState<PhoneBindingScreen> {
                 const SizedBox(height: 24),
 
                 PrimaryButton(
-                  text: 'Verify & Continue',
+                  label: 'Verify & Continue',
                   onPressed: _isLoading ? null : _verifyOTP,
                   isLoading: _isLoading,
                   fullWidth: true,
@@ -183,7 +182,7 @@ class _PhoneBindingScreenState extends ConsumerState<PhoneBindingScreen> {
       return;
     }
 
-    setState(() => _isLoading = false);
+    setState(() => _isLoading = true);
 
     try {
       // Verify OTP with MSG91
