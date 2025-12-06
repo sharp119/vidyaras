@@ -29,9 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppGradients.primary,
-        ),
+        decoration: const BoxDecoration(gradient: AppGradients.primary),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -105,8 +103,8 @@ class _SplashScreenState extends State<SplashScreen> {
       // GATE 1: Check Supabase session
       final session = supabase.auth.currentSession;
       if (session == null) {
-        print('🚪 GATE 1: No session → Navigate to /login');
-        if (mounted) context.go('/login');
+        print('🚪 GATE 1: No session → Navigate to /intro');
+        if (mounted) context.go('/intro');
         return;
       }
 
