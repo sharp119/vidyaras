@@ -127,21 +127,17 @@ class _GoogleLoginScreenState extends ConsumerState<GoogleLoginScreen> {
 
       result.fold(
         (error) {
-          // Sign-in failed
+          // Sign-in failed (user cancelled or error before browser opened)
           if (mounted) {
             setState(() => _isLoading = false);
             _showError(error);
           }
         },
         (user) {
-          // Sign-in successful
-          // Note: After successful OAuth, user is redirected back to app
-          // Splash screen routing logic will handle navigation based on user state
-          // (phone verification, onboarding, etc.)
-          if (mounted) {
-            setState(() => _isLoading = false);
-            // The splash screen routing will handle navigation
-          }
+          // OAuth flow initiated successfully
+          // User is now in browser completing sign-in
+          // Keep loading state - auth state listener will handle navigation after callback
+          // Don't set isLoading = false here to keep showing loading indicator
         },
       );
     } catch (e) {

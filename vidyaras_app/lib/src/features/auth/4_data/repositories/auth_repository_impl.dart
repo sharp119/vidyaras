@@ -29,18 +29,19 @@ class AuthRepositoryImpl implements AuthRepository {
         return left('Google sign-in was cancelled or failed');
       }
 
-      // Wait a moment for the auth state to update
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      // Get the created profile (trigger auto-creates it)
-      final profile = await _profileDataSource.getCurrentProfile();
-
-      if (profile == null) {
-        return left('Profile not found after sign-in');
-      }
-
-      final user = AppUser.fromJson(profile);
-      return right(user);
+      // For mobile OAuth, the actual sign-in happens via deep link callback
+      // The auth state listener will trigger navigation after callback
+      // We return a placeholder user here - actual user will be fetched by auth state listener
+      return right(AppUser(
+        id: 'pending',
+        email: 'pending',
+        fullName: null,
+        name: null,
+        avatarUrl: null,
+        phoneNumber: null,
+        isOnboarded: false,
+        createdAt: DateTime.now(),
+      ));
     } on AuthException catch (e) {
       return left('Google sign-in failed: ${e.message}');
     } catch (e) {
