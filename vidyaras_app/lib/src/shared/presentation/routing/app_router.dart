@@ -19,6 +19,8 @@ import '../../../features/tests/1_presentation/screens/performance_screen.dart';
 import '../../../features/tests/3_domain/models/quiz_result.dart';
 import '../../../features/my_learning/1_presentation/screens/my_learning_hub_screen.dart';
 import '../../../features/my_learning/1_presentation/screens/course_content_screen.dart';
+import '../../../features/chat/1_presentation/screens/chat_room_screen.dart';
+import '../../../features/chat/3_domain/models/chat_room.dart';
 import '../screens/main_shell.dart';
 
 /// Application routing configuration using GoRouter
@@ -138,10 +140,7 @@ final GoRouter appRouter = GoRouter(
         if (extra is Map<String, dynamic>) {
           // Check if this is attemptData from repository
           if (extra.containsKey('result') && extra['result'] is QuizResult) {
-            return QuizResultsScreen(
-              testId: testId,
-              attemptData: extra,
-            );
+            return QuizResultsScreen(testId: testId, attemptData: extra);
           } else {
             // Legacy format with separate result and userAnswers
             return QuizResultsScreen(
@@ -171,10 +170,7 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final testId = state.pathParameters['testId']!;
         final testTitle = state.extra as String? ?? 'Quiz';
-        return QuizAttemptHistoryScreen(
-          quizId: testId,
-          quizTitle: testTitle,
-        );
+        return QuizAttemptHistoryScreen(quizId: testId, quizTitle: testTitle);
       },
     ),
 
@@ -209,6 +205,17 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final courseId = state.pathParameters['courseId']!;
         return CourseContentScreen(courseId: courseId);
+      },
+    ),
+
+    // Chat Routes
+    GoRoute(
+      path: '/chat/:roomId',
+      name: 'chat-room',
+      builder: (context, state) {
+        final roomId = state.pathParameters['roomId']!;
+        final room = state.extra as ChatRoom?;
+        return ChatRoomScreen(roomId: roomId, room: room);
       },
     ),
 
