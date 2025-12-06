@@ -5,8 +5,6 @@ import '../../3_domain/models/chat_room.dart';
 import '../../3_domain/repositories/chat_repository.dart';
 import '../datasources/chat_remote_datasource.dart';
 
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 class ChatRepositoryImpl implements ChatRepository {
   final ChatRemoteDataSource _remoteDataSource;
 
@@ -50,12 +48,8 @@ class ChatRepositoryImpl implements ChatRepository {
     String type = 'text',
   }) async {
     try {
-      final currentAuthUser = Supabase.instance.client.auth.currentUser?.id;
       print(
         'Sending message: roomId=$roomId, userId=$userId, content=$content',
-      );
-      print(
-        'Auth check: currentAuthUser=$currentAuthUser, match=${currentAuthUser == userId}',
       );
 
       await _remoteDataSource.sendMessage(

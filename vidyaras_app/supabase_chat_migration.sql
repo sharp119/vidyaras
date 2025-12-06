@@ -16,7 +16,7 @@ ALTER TABLE public.chat_rooms ENABLE ROW LEVEL SECURITY;
 CREATE TABLE IF NOT EXISTS public.chat_messages (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     room_id uuid REFERENCES public.chat_rooms(id) ON DELETE CASCADE NOT NULL,
-    user_id uuid REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
     content text NOT NULL,
     message_type text DEFAULT 'text' CHECK (message_type IN ('text', 'image', 'file')),
     created_at timestamptz DEFAULT now(),
@@ -34,14 +34,14 @@ ON public.chat_rooms FOR SELECT
 USING (type = 'global');
 
 -- Users can view chat rooms for courses they are enrolled in
-CREATE POLICY "Course chat rooms are viewable by enrolled users" 
-ON public.chat_rooms FOR SELECT 
+-- Note: This policy will be applied in supabase_chat_rls_fix.sql for custom auth
+CREATE POLICY "Course chat rooms are viewable by enrolled users"
+ON public.chat_rooms FOR SELECT
 USING (
-    type = 'course' AND 
+    type = 'course' AND
     EXISTS (
-        SELECT 1 FROM public.enrollments 
-        WHERE enrollments.course_id = chat_rooms.course_id 
-        AND enrollments.user_id = auth.uid() 
+        SELECT 1 FROM public.enrollments
+        WHERE enrollments.course_id = chat_rooms.course_id
         AND enrollments.status = 'active'
     )
 );
@@ -60,42 +60,48 @@ USING (
 );
 
 -- Users can insert messages in the global chat (authenticated)
-CREATE POLICY "Authenticated users can post in global chat" 
-ON public.chat_messages FOR INSERT 
+-- Note: This policy will be replaced in supabase_chat_rls_fix.sql for custom auth
+CREATE POLICY "Authenticated users can post in global chat"
+ON public.chat_messages FOR INSERT
 WITH CHECK (
-    auth.uid() = user_id AND
     EXISTS (
-        SELECT 1 FROM public.chat_rooms 
-        WHERE chat_rooms.id = chat_messages.room_id 
+        SELECT 1 FROM public.profiles WHERE profiles.id = chat_messages.user_id
+    ) AND
+    EXISTS (
+        SELECT 1 FROM public.chat_rooms
+        WHERE chat_rooms.id = chat_messages.room_id
         AND chat_rooms.type = 'global'
     )
 );
 
 -- Users can view messages in course chats they are enrolled in
-CREATE POLICY "Course chat messages are viewable by enrolled users" 
-ON public.chat_messages FOR SELECT 
+-- Note: This policy will be replaced in supabase_chat_rls_fix.sql for custom auth
+CREATE POLICY "Course chat messages are viewable by enrolled users"
+ON public.chat_messages FOR SELECT
 USING (
     EXISTS (
-        SELECT 1 FROM public.chat_rooms 
+        SELECT 1 FROM public.chat_rooms
         JOIN public.enrollments ON chat_rooms.course_id = enrollments.course_id
-        WHERE chat_rooms.id = chat_messages.room_id 
+        WHERE chat_rooms.id = chat_messages.room_id
         AND chat_rooms.type = 'course'
-        AND enrollments.user_id = auth.uid()
         AND enrollments.status = 'active'
     )
 );
 
 -- Users can insert messages in course chats they are enrolled in
-CREATE POLICY "Enrolled users can post in course chat" 
-ON public.chat_messages FOR INSERT 
+-- Note: This policy will be replaced in supabase_chat_rls_fix.sql for custom auth
+CREATE POLICY "Enrolled users can post in course chat"
+ON public.chat_messages FOR INSERT
 WITH CHECK (
-    auth.uid() = user_id AND
     EXISTS (
-        SELECT 1 FROM public.chat_rooms 
+        SELECT 1 FROM public.profiles WHERE profiles.id = chat_messages.user_id
+    ) AND
+    EXISTS (
+        SELECT 1 FROM public.chat_rooms
         JOIN public.enrollments ON chat_rooms.course_id = enrollments.course_id
-        WHERE chat_rooms.id = chat_messages.room_id 
+        WHERE chat_rooms.id = chat_messages.room_id
         AND chat_rooms.type = 'course'
-        AND enrollments.user_id = auth.uid()
+        AND enrollments.user_id = chat_messages.user_id
         AND enrollments.status = 'active'
     )
 );

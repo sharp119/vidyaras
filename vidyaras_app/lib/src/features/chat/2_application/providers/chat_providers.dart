@@ -1,5 +1,4 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../main.dart'; // For supabase client
 import '../../3_domain/models/chat_message.dart';
 import '../../3_domain/models/chat_room.dart';

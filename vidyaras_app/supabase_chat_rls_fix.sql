@@ -1,36 +1,36 @@
 -- Fix RLS policies for custom auth (no Supabase Auth session)
 -- The app uses phone auth with local storage, so auth.uid() returns null.
--- These updated policies check user existence in the users table instead.
+-- These updated policies check user existence in the profiles table instead.
 
 -- Drop existing INSERT policies
 DROP POLICY IF EXISTS "Authenticated users can post in global chat" ON public.chat_messages;
 DROP POLICY IF EXISTS "Enrolled users can post in course chat" ON public.chat_messages;
 
--- New policy: Allow insert if user_id exists in users table (global chat)
-CREATE POLICY "Users can post in global chat" 
-ON public.chat_messages FOR INSERT 
+-- New policy: Allow insert if user_id exists in profiles table (global chat)
+CREATE POLICY "Users can post in global chat"
+ON public.chat_messages FOR INSERT
 WITH CHECK (
     EXISTS (
-        SELECT 1 FROM public.users WHERE users.id = chat_messages.user_id
+        SELECT 1 FROM public.profiles WHERE profiles.id = chat_messages.user_id
     ) AND
     EXISTS (
-        SELECT 1 FROM public.chat_rooms 
-        WHERE chat_rooms.id = chat_messages.room_id 
+        SELECT 1 FROM public.chat_rooms
+        WHERE chat_rooms.id = chat_messages.room_id
         AND chat_rooms.type = 'global'
     )
 );
 
 -- New policy: Allow insert if user is enrolled in course (for course chats)
-CREATE POLICY "Enrolled users can post in course chat" 
-ON public.chat_messages FOR INSERT 
+CREATE POLICY "Enrolled users can post in course chat"
+ON public.chat_messages FOR INSERT
 WITH CHECK (
     EXISTS (
-        SELECT 1 FROM public.users WHERE users.id = chat_messages.user_id
+        SELECT 1 FROM public.profiles WHERE profiles.id = chat_messages.user_id
     ) AND
     EXISTS (
-        SELECT 1 FROM public.chat_rooms 
+        SELECT 1 FROM public.chat_rooms
         JOIN public.enrollments ON chat_rooms.course_id = enrollments.course_id
-        WHERE chat_rooms.id = chat_messages.room_id 
+        WHERE chat_rooms.id = chat_messages.room_id
         AND chat_rooms.type = 'course'
         AND enrollments.user_id = chat_messages.user_id
         AND enrollments.status = 'active'
