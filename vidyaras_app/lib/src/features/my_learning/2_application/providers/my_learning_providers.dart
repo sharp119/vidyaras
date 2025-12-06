@@ -1,5 +1,4 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../main.dart'; // For supabase client
 import '../../3_domain/repositories/my_learning_repository.dart';
 import '../../3_domain/models/enrolled_course.dart';
@@ -8,6 +7,7 @@ import '../../3_domain/models/live_class.dart';
 import '../../3_domain/models/course_material.dart';
 import '../../4_data/datasources/my_learning_remote_datasource.dart';
 import '../../4_data/repositories/my_learning_repository_impl.dart';
+import '../../../auth/2_application/providers/auth_providers.dart';
 
 part 'my_learning_providers.g.dart';
 
@@ -29,16 +29,15 @@ MyLearningRepository myLearningRepository(
 }
 
 /// Fetches all enrolled courses for the current user
-/// TODO: Replace hardcoded userId with actual user from auth
 @riverpod
 Future<List<EnrolledCourse>> enrolledCourses(
   EnrolledCoursesRef ref,
 ) async {
-  // Hardcoded user ID for now (Aditya Paswan from database)
-  const userId = '49dd34c0-7f0d-4b6f-9b1f-d201e97640f5';
+  final user = await ref.watch(currentUserProvider.future);
+  if (user == null) return [];
 
   final repository = ref.watch(myLearningRepositoryProvider);
-  final result = await repository.getEnrolledCourses(userId: userId);
+  final result = await repository.getEnrolledCourses(userId: user.id);
 
   return result.fold(
     (failure) => throw Exception(failure.message),
@@ -52,12 +51,12 @@ Future<EnrolledCourse> courseDetails(
   CourseDetailsRef ref, {
   required String courseId,
 }) async {
-  // Hardcoded user ID for now
-  const userId = '49dd34c0-7f0d-4b6f-9b1f-d201e97640f5';
+  final user = await ref.watch(currentUserProvider.future);
+  if (user == null) throw Exception('User not authenticated');
 
   final repository = ref.watch(myLearningRepositoryProvider);
   final result = await repository.getCourseDetails(
-    userId: userId,
+    userId: user.id,
     courseId: courseId,
   );
 
@@ -73,11 +72,12 @@ Future<List<Lecture>> courseLectures(
   CourseLecturesRef ref, {
   required String courseId,
 }) async {
-  const userId = '49dd34c0-7f0d-4b6f-9b1f-d201e97640f5';
+  final user = await ref.watch(currentUserProvider.future);
+  if (user == null) return [];
 
   final repository = ref.watch(myLearningRepositoryProvider);
   final result = await repository.getCourseLectures(
-    userId: userId,
+    userId: user.id,
     courseId: courseId,
   );
 
@@ -107,10 +107,11 @@ Future<List<LiveClass>> courseLiveClasses(
 Future<List<LiveClass>> upcomingLiveClasses(
   UpcomingLiveClassesRef ref,
 ) async {
-  const userId = '49dd34c0-7f0d-4b6f-9b1f-d201e97640f5';
+  final user = await ref.watch(currentUserProvider.future);
+  if (user == null) return [];
 
   final repository = ref.watch(myLearningRepositoryProvider);
-  final result = await repository.getUpcomingLiveClasses(userId: userId);
+  final result = await repository.getUpcomingLiveClasses(userId: user.id);
 
   return result.fold(
     (failure) => throw Exception(failure.message),
@@ -139,11 +140,12 @@ Future<CourseProgress> courseProgress(
   CourseProgressRef ref, {
   required String courseId,
 }) async {
-  const userId = '49dd34c0-7f0d-4b6f-9b1f-d201e97640f5';
+  final user = await ref.watch(currentUserProvider.future);
+  if (user == null) throw Exception('User not authenticated');
 
   final repository = ref.watch(myLearningRepositoryProvider);
   final result = await repository.getCourseProgress(
-    userId: userId,
+    userId: user.id,
     courseId: courseId,
   );
 

@@ -49,10 +49,9 @@ final myLearningRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef MyLearningRepositoryRef = AutoDisposeProviderRef<MyLearningRepository>;
-String _$enrolledCoursesHash() => r'ffb30587a290db80c2c0a433a7c782d403f7c473';
+String _$enrolledCoursesHash() => r'7f3b2856d4ec71721e2abd77b1de2d8082862b2c';
 
 /// Fetches all enrolled courses for the current user
-/// TODO: Replace hardcoded userId with actual user from auth
 ///
 /// Copied from [enrolledCourses].
 @ProviderFor(enrolledCourses)
@@ -70,7 +69,7 @@ final enrolledCoursesProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef EnrolledCoursesRef = AutoDisposeFutureProviderRef<List<EnrolledCourse>>;
-String _$courseDetailsHash() => r'f928c54724978274929ec18ace68203d984118ee';
+String _$courseDetailsHash() => r'd49d11a6805a63b45f8b1a03b3f91626ddff2ab9';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -223,7 +222,7 @@ class _CourseDetailsProviderElement
   String get courseId => (origin as CourseDetailsProvider).courseId;
 }
 
-String _$courseLecturesHash() => r'ca3754cf14d87ec656f41b11c3113de0719bfbab';
+String _$courseLecturesHash() => r'50eb5405d3610aeb460982105aad941b2bb874ec';
 
 /// Fetches lectures for a specific course
 ///
@@ -490,7 +489,7 @@ class _CourseLiveClassesProviderElement
 }
 
 String _$upcomingLiveClassesHash() =>
-    r'ce2ef59193462752de869f7a235bca9005b85e71';
+    r'83d883e85c9066a250aef8aaad5c15720439d9d5';
 
 /// Fetches upcoming live classes across all enrolled courses
 ///
@@ -643,7 +642,7 @@ class _CourseMaterialsProviderElement
   String get courseId => (origin as CourseMaterialsProvider).courseId;
 }
 
-String _$courseProgressHash() => r'6a567414cc3f155661212b70ddd9f3bb3300296a';
+String _$courseProgressHash() => r'880377eb8b481ec4bf3d48291655f2593877911c';
 
 /// Fetches course progress statistics
 ///
