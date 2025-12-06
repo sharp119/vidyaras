@@ -81,25 +81,25 @@ class _IntroScreenState extends State<IntroScreen> {
   void _nextPage() {
     if (_currentPage < _introPages.length - 1) {
       _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOutQuart,
       );
     }
   }
 
   void _skipIntro() {
     // Skip intro and go to authentication
-    context.go('/auth');
+    context.go('/login');
   }
 
   void _getStarted() {
     // Navigate to authentication flow
-    context.go('/auth');
+    context.go('/login');
   }
 
   void _goToLogin() {
     // Navigate to authentication screen (unified phone-based auth)
-    context.go('/auth');
+    context.go('/login');
   }
 
   @override
@@ -108,89 +108,125 @@ class _IntroScreenState extends State<IntroScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Top bar with Skip button (hidden on last page)
-            if (!isLastPage)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    AppTextButton(
-                      onPressed: _skipIntro,
-                      label: 'Skip',
-                      color: AppColors.textSecondary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+      body: Stack(
+        children: [
+          // Background Gradient Mesh (Subtle)
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white,
+                    Color(0xFFFAFAFA), // AppColors.background
                   ],
                 ),
-              )
-            else
-              const SizedBox(height: 56), // Spacer to maintain layout
-
-            // PageView with intro pages
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: _onPageChanged,
-                itemCount: _introPages.length,
-                itemBuilder: (context, index) {
-                  return IntroPage(content: _introPages[index]);
-                },
               ),
             ),
+          ),
 
-            // Carousel dots indicator
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: CarouselDots(
-                totalDots: _introPages.length,
-                currentIndex: _currentPage,
-                activeColor: AppColors.progressFill,
-                inactiveColor: AppColors.progressBackground,
-                dotSize: 8,
-                spacing: 8,
-              ),
-            ),
-
-            // Bottom buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 32,
-              ),
-              child: isLastPage
-                  ? Column(
-                      children: [
-                        // Get Started button
-                        PrimaryButton(
-                          onPressed: _getStarted,
-                          label: 'Get Started',
-                          fullWidth: true,
+          SafeArea(
+            child: Column(
+              children: [
+                // Top bar with Skip button (hidden on last page)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      AnimatedOpacity(
+                        opacity: isLastPage ? 0.0 : 1.0,
+                        duration: const Duration(milliseconds: 300),
+                        child: IgnorePointer(
+                          ignoring: isLastPage,
+                          child: AppTextButton(
+                            onPressed: _skipIntro,
+                            label: 'Skip',
+                            color: AppColors.textSecondary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                        const SizedBox(height: 16),
-                        // I Already Have an Account button
-                        SecondaryButton(
-                          onPressed: _goToLogin,
-                          label: 'I Already Have an Account',
-                          fullWidth: true,
-                        ),
-                      ],
-                    )
-                  : PrimaryButton(
-                      onPressed: _nextPage,
-                      label: 'Next',
-                      fullWidth: true,
-                    ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // PageView with intro pages
+                Expanded(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    onPageChanged: _onPageChanged,
+                    itemCount: _introPages.length,
+                    itemBuilder: (context, index) {
+                      return IntroPage(content: _introPages[index]);
+                    },
+                  ),
+                ),
+
+                // Carousel dots indicator
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  child: CarouselDots(
+                    totalDots: _introPages.length,
+                    currentIndex: _currentPage,
+                    activeColor: AppColors.primary,
+                    inactiveColor: AppColors.primary.withOpacity(0.2),
+                    dotSize: 8,
+                    spacing: 8,
+                  ),
+                ),
+
+                // Bottom buttons
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 48),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                    child: isLastPage
+                        ? Column(
+                            key: const ValueKey('last_page_buttons'),
+                            children: [
+                              // Get Started button
+                              PrimaryButton(
+                                onPressed: _getStarted,
+                                label: 'Get Started',
+                                fullWidth: true,
+                              ),
+                              const SizedBox(height: 16),
+                              // I Already Have an Account button
+                              SecondaryButton(
+                                onPressed: _goToLogin,
+                                label: 'I Already Have an Account',
+                                fullWidth: true,
+                              ),
+                            ],
+                          )
+                        : SizedBox(
+                            width: double.infinity,
+                            key: const ValueKey('next_button'),
+                            child: PrimaryButton(
+                              onPressed: _nextPage,
+                              label: 'Next',
+                              fullWidth: true,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

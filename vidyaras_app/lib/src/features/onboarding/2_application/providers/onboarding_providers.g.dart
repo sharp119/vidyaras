@@ -6,8 +6,27 @@ part of 'onboarding_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$supabaseClientHash() => r'36e9cae00709545a85bfe4a5a2cb98d8686a01ea';
+
+/// Supabase client provider
+///
+/// Copied from [supabaseClient].
+@ProviderFor(supabaseClient)
+final supabaseClientProvider = AutoDisposeProvider<SupabaseClient>.internal(
+  supabaseClient,
+  name: r'supabaseClientProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$supabaseClientHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SupabaseClientRef = AutoDisposeProviderRef<SupabaseClient>;
 String _$onboardingLocalDataSourceHash() =>
-    r'233dc9b34eab8aef7b11ad296bde703f052ce424';
+    r'a6c5e6ec10cfa15221d771a89dcd42b080517d20';
 
 /// Provider for OnboardingLocalDataSource
 ///

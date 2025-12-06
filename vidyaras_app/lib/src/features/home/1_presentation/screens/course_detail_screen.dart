@@ -14,7 +14,7 @@ import '../widgets/enrollment_options_bottom_sheet.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
 import '../../../../shared/presentation/components/buttons/primary_button.dart';
 import '../../../auth/2_application/providers/auth_providers.dart';
-import '../../../auth/3_domain/models/user.dart' as domain;
+import '../../../auth/3_domain/models/app_user.dart' as domain;
 
 /// Course detail screen showing comprehensive course information
 /// Displays curriculum, pricing, reviews, and enrollment options
@@ -610,7 +610,7 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
 
   EnrollmentMessageData _buildEnrollmentData(
     CourseDetail courseDetail,
-    domain.User user,
+    domain.AppUser user,
   ) {
     final selectedPrice = _selectedFullPayment
         ? '₹${courseDetail.pricing.fullPrice}'
@@ -618,9 +618,9 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
 
     return EnrollmentMessageData(
       // User data
-      userName: user.name,
-      userPhone: user.phoneNumber,
-      userEmail: user.email,
+      userName: user.name ?? user.email ?? 'User',
+      userPhone: user.phoneNumber ?? '',
+      userEmail: user.email ?? '',
 
       // Course data
       courseTitle: courseDetail.basicInfo.title,

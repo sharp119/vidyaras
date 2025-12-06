@@ -43,7 +43,7 @@ class HomeRepositoryImpl implements HomeRepository {
       // TODO: Fetch actual stats from API
       final userProfile = UserProfile(
         id: user.id,
-        name: user.name,
+        name: user.name ?? user.email ?? 'User',
         email: user.email,
         avatarUrl: user.avatarUrl,
         isPremium: false, // TODO: Fetch from API
@@ -208,7 +208,7 @@ class HomeRepositoryImpl implements HomeRepository {
     final userProfile = user != null
         ? UserProfile(
             id: user.id,
-            name: user.name,
+            name: user.name ?? user.email ?? 'User',
             email: user.email,
             avatarUrl: user.avatarUrl,
             isPremium: false, // TODO: Fetch from API

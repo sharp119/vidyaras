@@ -1,13 +1,15 @@
 import 'package:go_router/go_router.dart';
-import '../../../features/auth/1_presentation/screens/splash_screen.dart';
+import '../../../features/splash/splash_screen.dart';
+import '../../../features/auth/1_presentation/screens/google_login_screen.dart';
+import '../../../features/auth/1_presentation/screens/phone_binding_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/intro_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_interests_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_goals_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_experience_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_language_screen.dart';
-import '../../../features/auth/1_presentation/screens/phone_auth_screen.dart';
-import '../../../features/auth/1_presentation/screens/otp_verification_screen.dart';
-import '../../../features/auth/1_presentation/screens/registration_screen.dart';
+import '../../../features/auth_legacy_backup/1_presentation/screens/phone_auth_screen.dart';
+import '../../../features/auth_legacy_backup/1_presentation/screens/otp_verification_screen.dart';
+import '../../../features/auth_legacy_backup/1_presentation/screens/registration_screen.dart';
 import '../../../features/home/1_presentation/screens/course_detail_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_results_screen.dart';
@@ -15,6 +17,8 @@ import '../../../features/tests/1_presentation/screens/answer_review_screen.dart
 import '../../../features/tests/1_presentation/screens/quiz_attempt_history_screen.dart';
 import '../../../features/tests/1_presentation/screens/performance_screen.dart';
 import '../../../features/tests/3_domain/models/quiz_result.dart';
+import '../../../features/my_learning/1_presentation/screens/my_learning_hub_screen.dart';
+import '../../../features/my_learning/1_presentation/screens/course_content_screen.dart';
 import '../screens/main_shell.dart';
 
 /// Application routing configuration using GoRouter
@@ -35,7 +39,21 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const IntroScreen(),
     ),
 
-    // Authentication Flow
+    // Google OAuth Authentication Flow (NEW)
+    GoRoute(
+      path: '/login',
+      name: 'login',
+      builder: (context, state) => const GoogleLoginScreen(),
+    ),
+
+    // Phone Binding Screen - Mandatory after Google sign-in (NEW)
+    GoRoute(
+      path: '/phone-binding',
+      name: 'phone-binding',
+      builder: (context, state) => const PhoneBindingScreen(),
+    ),
+
+    // Legacy Authentication Flow (DEPRECATED - kept for reference)
     GoRoute(
       path: '/auth',
       name: 'auth',
@@ -174,6 +192,23 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final courseId = state.pathParameters['courseId']!;
         return CourseDetailScreen(courseId: courseId);
+      },
+    ),
+
+    // My Learning Hub - Shows all enrolled courses
+    GoRoute(
+      path: '/my-learning',
+      name: 'my-learning',
+      builder: (context, state) => const MyLearningHubScreen(),
+    ),
+
+    // Course Content Screen - Shows lectures, live classes, materials
+    GoRoute(
+      path: '/my-learning/course/:courseId',
+      name: 'enrolled-course-content',
+      builder: (context, state) {
+        final courseId = state.pathParameters['courseId']!;
+        return CourseContentScreen(courseId: courseId);
       },
     ),
 
