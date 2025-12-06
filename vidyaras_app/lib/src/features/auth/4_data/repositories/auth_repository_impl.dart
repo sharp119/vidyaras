@@ -1,113 +1,117 @@
 import 'package:fpdart/fpdart.dart';
-import '../../../../shared/domain/failures/failure.dart';
-import '../../3_domain/models/auth_result.dart';
-import '../../3_domain/models/user.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../3_domain/models/app_user.dart';
 import '../../3_domain/repositories/auth_repository.dart';
-import '../datasources/auth_local_datasource.dart';
-import '../datasources/auth_supabase_datasource.dart';
+import '../datasources/profile_datasource.dart';
 
-/// Implementation of AuthRepository
-/// Uses MSG91 for OTP and Supabase for user management
+/// AuthRepositoryImpl
+/// Implements AuthRepository interface
+/// Handles Google OAuth via Supabase + profile operations via ProfileDataSource
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthLocalDataSource _localDataSource; // MSG91 service
-  final AuthSupabaseDataSource _supabaseDataSource; // Supabase service
+  final SupabaseClient _supabase;
+  final ProfileDataSource _profileDataSource;
 
-  AuthRepositoryImpl(this._localDataSource, this._supabaseDataSource);
+  AuthRepositoryImpl(this._supabase, this._profileDataSource);
 
   @override
-  Future<Either<Failure, String>> sendOTP(String phoneNumber) async {
+  Future<Either<String, AppUser>> signInWithGoogle() async {
     try {
-      final requestId = await _localDataSource.sendOTP(phoneNumber);
-      return right(requestId);
+      // Sign in with Google OAuth
+      // For mobile: This opens browser/in-app browser
+      // Callback is handled in main.dart deep link listener
+      final response = await _supabase.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: 'io.supabase.vidyaras://login-callback',
+        authScreenLaunchMode: LaunchMode.externalApplication,
+      );
+
+      if (!response) {
+        return left('Google sign-in was cancelled or failed');
+      }
+
+      // Wait a moment for the auth state to update
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Get the created profile (trigger auto-creates it)
+      final profile = await _profileDataSource.getCurrentProfile();
+
+      if (profile == null) {
+        return left('Profile not found after sign-in');
+      }
+
+      final user = AppUser.fromJson(profile);
+      return right(user);
+    } on AuthException catch (e) {
+      return left('Google sign-in failed: ${e.message}');
     } catch (e) {
-      return left(AuthFailure(message: e.toString()));
+      return left('Unexpected error during sign-in: $e');
     }
   }
 
   @override
-  Future<Either<Failure, AuthResult>> verifyOTP({
-    required String requestId,
-    required String otp,
-    required String phoneNumber,
-  }) async {
+  Future<Either<String, AppUser?>> getCurrentUser() async {
     try {
-      // Step 1: Verify OTP via MSG91
-      await _localDataSource.verifyOTP(
-        requestId: requestId,
-        otp: otp,
-        phoneNumber: phoneNumber,
-      );
+      final profile = await _profileDataSource.getCurrentProfile();
 
-      print('✅ OTP verified via MSG91, now checking/creating user in Supabase...');
+      if (profile == null) {
+        return right(null);
+      }
 
-      // Step 2: Create or get user via Supabase database
-      // This happens immediately after OTP verification
-      final user = await _supabaseDataSource.createOrGetUser(
-        phoneNumber: phoneNumber,
-      );
-
-      print('✅ User retrieved from Supabase: ${user.id}');
-
-      // Step 3: Determine if user needs registration or onboarding
-      // If user has no name, they need to complete registration
-      final needsRegistration = user.name.isEmpty;
-
-      // For now, we'll assume users need onboarding if they're new
-      // This can be enhanced later to check a specific field in user metadata
-      final needsOnboarding = needsRegistration;
-
-      return right(AuthResult(
-        user: user,
-        needsRegistration: needsRegistration,
-        needsOnboarding: needsOnboarding,
-      ));
-    } catch (e) {
-      print('❌ Error in verifyOTP: $e');
-      return left(AuthFailure(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, User>> registerUser({
-    required String phoneNumber,
-    required String name,
-    String? email,
-  }) async {
-    try {
-      print('📝 Updating user profile in Supabase...');
-
-      // Update user in Supabase with name and email
-      final user = await _supabaseDataSource.createOrGetUser(
-        phoneNumber: phoneNumber,
-        name: name,
-        email: email,
-      );
-
-      print('✅ User profile updated successfully: ${user.name}');
+      final user = AppUser.fromJson(profile);
       return right(user);
     } catch (e) {
-      print('❌ Error in registerUser: $e');
-      return left(AuthFailure(message: e.toString()));
+      return left('Failed to get current user: $e');
     }
   }
 
   @override
-  Future<Either<Failure, User?>> getCurrentUser() async {
+  Future<Either<String, void>> updatePhoneNumber(String phoneNumber) async {
     try {
-      final user = await _supabaseDataSource.getCurrentUser();
-      return right(user);
+      await _profileDataSource.updatePhoneNumber(phoneNumber);
+      return right(null);
+    } on PostgrestException catch (e) {
+      // Check for unique constraint violation
+      if (e.code == '23505') {
+        return left(
+          'This phone number is already linked to another account. '
+          'Please use a different number or contact support.',
+        );
+      }
+      return left('Database error: ${e.message}');
     } catch (e) {
-      return left(AuthFailure(message: e.toString()));
+      return left('Failed to update phone number: $e');
     }
   }
 
   @override
-  Future<Either<Failure, bool>> signOut() async {
+  Future<Either<String, void>> completeOnboarding(
+    Map<String, dynamic> preferences,
+  ) async {
     try {
-      final result = await _supabaseDataSource.signOut();
-      return right(result);
+      await _profileDataSource.completeOnboarding(preferences);
+      return right(null);
     } catch (e) {
-      return left(AuthFailure(message: e.toString()));
+      return left('Failed to complete onboarding: $e');
+    }
+  }
+
+  @override
+  Future<Either<String, void>> signOut() async {
+    try {
+      await _supabase.auth.signOut();
+      return right(null);
+    } catch (e) {
+      return left('Failed to sign out: $e');
+    }
+  }
+
+  @override
+  Future<Either<String, bool>> phoneExists(String phoneNumber) async {
+    try {
+      final exists = await _profileDataSource.phoneExists(phoneNumber);
+      return right(exists);
+    } catch (e) {
+      return left('Failed to check phone existence: $e');
     }
   }
 }

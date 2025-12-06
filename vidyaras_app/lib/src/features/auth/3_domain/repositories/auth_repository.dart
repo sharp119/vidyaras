@@ -1,36 +1,43 @@
 import 'package:fpdart/fpdart.dart';
-import '../../../../shared/domain/failures/failure.dart';
-import '../models/auth_result.dart';
-import '../models/user.dart';
+import '../models/app_user.dart';
 
-/// Authentication repository interface
-/// Defines contract for authentication operations
-/// Implementations must return Either<Failure, Success> and never throw exceptions
+/// Auth Repository Interface
+/// Defines contracts for authentication operations
+/// Implemented by AuthRepositoryImpl in Data Layer
 abstract class AuthRepository {
-  /// Send OTP to phone number
-  /// Returns requestId needed for verification
-  Future<Either<Failure, String>> sendOTP(String phoneNumber);
+  /// Sign in with Google OAuth
+  /// Returns Either<String, AppUser> where:
+  /// - Left: Error message
+  /// - Right: Authenticated user
+  Future<Either<String, AppUser>> signInWithGoogle();
 
-  /// Verify OTP and authenticate user
-  /// Returns AuthResult with user data and flags for registration/onboarding
-  Future<Either<Failure, AuthResult>> verifyOTP({
-    required String requestId,
-    required String otp,
-    required String phoneNumber,
-  });
+  /// Get current user profile from profiles table
+  /// Returns Either<String, AppUser> where:
+  /// - Left: Error message
+  /// - Right: Current user or null if not authenticated
+  Future<Either<String, AppUser?>> getCurrentUser();
 
-  /// Register new user with profile information
-  /// Returns complete User object after registration
-  Future<Either<Failure, User>> registerUser({
-    required String phoneNumber,
-    required String name,
-    String? email,
-  });
+  /// Update phone number after OTP verification
+  /// Returns Either<String, void> where:
+  /// - Left: Error message (e.g., duplicate phone)
+  /// - Right: Success
+  Future<Either<String, void>> updatePhoneNumber(String phoneNumber);
 
-  /// Get currently authenticated user
-  /// Returns null if no user is authenticated
-  Future<Either<Failure, User?>> getCurrentUser();
+  /// Complete onboarding with preferences
+  /// Returns Either<String, void> where:
+  /// - Left: Error message
+  /// - Right: Success
+  Future<Either<String, void>> completeOnboarding(Map<String, dynamic> preferences);
 
-  /// Sign out current user
-  Future<Either<Failure, bool>> signOut();
+  /// Sign out
+  /// Returns Either<String, void> where:
+  /// - Left: Error message
+  /// - Right: Success
+  Future<Either<String, void>> signOut();
+
+  /// Check if phone number exists
+  /// Returns Either<String, bool> where:
+  /// - Left: Error message
+  /// - Right: true if exists, false otherwise
+  Future<Either<String, bool>> phoneExists(String phoneNumber);
 }
