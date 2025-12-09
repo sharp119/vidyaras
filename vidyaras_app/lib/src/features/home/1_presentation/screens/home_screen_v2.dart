@@ -140,7 +140,9 @@ class HomeScreenV2 extends ConsumerWidget {
                         ),
                       ],
                       onCategoryTap: (categoryId) {
-                        // TODO: Filter by category
+                        // Navigate to all courses
+                        // In a real app we would pass the categoryId to pre-filter
+                        context.push('/courses');
                       },
                     ),
                   ),
@@ -164,7 +166,7 @@ class HomeScreenV2 extends ConsumerWidget {
                           ),
                           TextButton(
                             onPressed: () {
-                              // TODO: Navigate to all courses
+                              context.push('/my-learning');
                             },
                             child: const Text(
                               'View All',
@@ -231,6 +233,18 @@ class HomeScreenV2 extends ConsumerWidget {
                               color: AppColors.textPrimary,
                             ),
                           ),
+                          const Spacer(),
+                          TextButton(
+                            onPressed: () => context.push('/courses'),
+                            child: const Text(
+                              'View All',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -269,7 +283,9 @@ class HomeScreenV2 extends ConsumerWidget {
                               studentCount: course.enrolledCount,
                               duration: course.duration,
                               price: course.price,
-                              emiPrice: course.price != null ? '₹1666/mo' : null,
+                              emiPrice: course.price != null
+                                  ? '₹1666/mo'
+                                  : null,
                               hasFreeTrial: course.hasFreeTrial,
                               isLive: course.isLive,
                               isRecorded: course.isRecorded,

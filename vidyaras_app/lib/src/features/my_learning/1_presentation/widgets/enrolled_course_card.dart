@@ -24,12 +24,12 @@ class EnrolledCourseCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              color: AppColors.primary.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -190,13 +190,50 @@ class EnrolledCourseCard extends StatelessWidget {
                           value: course.progress,
                           minHeight: 6,
                           backgroundColor: AppColors.surfaceLight,
-                          valueColor: AlwaysStoppedAnimation(
-                            AppColors.primary,
-                          ),
+                          valueColor: AlwaysStoppedAnimation(AppColors.primary),
                         ),
                       ),
                     ],
                   ),
+
+                  // Action Buttons
+                  if (course.progress > 0 && course.progress < 1.0) ...[
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: onTap,
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          side: const BorderSide(color: AppColors.primary),
+                        ),
+                        icon: const Icon(Icons.play_circle_outline, size: 18),
+                        label: const Text('Resume Learning'),
+                      ),
+                    ),
+                  ] else if (course.progress == 0) ...[
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: onTap,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        icon: const Icon(Icons.play_arrow, size: 18),
+                        label: const Text('Start Course'),
+                      ),
+                    ),
+                  ],
 
                   // Next Action
                   if (course.nextLecture != null ||
@@ -234,11 +271,7 @@ class _NextActionChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.live_tv,
-              size: 16,
-              color: AppColors.error,
-            ),
+            const Icon(Icons.live_tv, size: 16, color: AppColors.error),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -267,11 +300,7 @@ class _NextActionChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.play_arrow,
-              size: 16,
-              color: AppColors.primary,
-            ),
+            const Icon(Icons.play_arrow, size: 16, color: AppColors.primary),
             const SizedBox(width: 8),
             Expanded(
               child: Text(

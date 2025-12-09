@@ -23,36 +23,42 @@ class AppTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = color ??
-        (onPressed == null ? AppColors.textTertiary : AppColors.textSecondary);
+    // Determine color priority:
+    // 1. Explicit color passed to widget
+    // 2. Disabled state -> disabled color from theme
+    // 3. Default -> primary color from theme (or secondary text if implied by legacy)
+    
+    // Legacy mapping: previously defaulted to textSecondary/Tertiary. 
+    // Standard TextButton defaults to Primary. 
+    // If we want to maintain the "grey link" look, we might need to be specific.
+    // However, usually "AppTextButton" implies an action, so primary is often correct.
+    // If the usage was for "Back", "Cancel" (often grey), we can rely on the color arg or theme overrides.
+    // Let's defer to Theme defaults but allow color override.
 
-    return InkWell(
-      onTap: onPressed,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(
-                icon,
-                color: textColor,
-                size: fontSize + 2,
-              ),
-              const SizedBox(width: 4),
-            ],
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: fontSize,
-                fontWeight: fontWeight,
-                color: textColor,
-                letterSpacing: 0.1,
-              ),
-            ),
-          ],
+    final effectiveColor = color ?? Theme.of(context).colorScheme.primary;
+
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: effectiveColor,
+        textStyle: TextStyle(
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          letterSpacing: 0.1,
+          fontFamily: 'Inter',
         ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: fontSize + 2),
+            const SizedBox(width: 4),
+          ],
+          Text(label),
+        ],
       ),
     );
   }

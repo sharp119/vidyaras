@@ -32,50 +32,31 @@ class TextInputField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.border,
-              width: 1.5,
-            ),
-          ),
-          child: TextFormField(
-            controller: controller,
-            keyboardType: keyboardType,
-            validator: validator,
-            onChanged: onChanged,
-            enabled: enabled,
-            style: const TextStyle(
-              fontSize: 16,
-              color: AppColors.textPrimary,
-            ),
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: const TextStyle(
-                color: AppColors.textTertiary,
-              ),
-              prefixIcon: leadingIcon != null
-                  ? Icon(
-                      leadingIcon,
-                      color: AppColors.textSecondary,
-                      size: 20,
-                    )
-                  : null,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
-            ),
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          validator: validator,
+          onChanged: onChanged,
+          enabled: enabled,
+          style: Theme.of(context).textTheme.bodyLarge,
+          decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+            prefixIcon: leadingIcon != null
+                ? Icon(
+                    leadingIcon,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    size: 20,
+                  )
+                : null,
+            // Border and other properties are now handled by inputDecorationTheme in AppTheme
           ),
         ),
       ],

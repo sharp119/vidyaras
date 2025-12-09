@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
-import '../../../../shared/presentation/theme/app_gradients.dart';
 import '../../2_application/providers/my_learning_providers.dart';
 import '../widgets/enrolled_course_card.dart';
 import '../widgets/upcoming_live_class_banner.dart';
+import '../widgets/learning_summary_card.dart';
 
 /// My Learning Hub Screen
 /// Shows all enrolled courses with progress tracking
@@ -23,27 +23,31 @@ class MyLearningHubScreen extends ConsumerWidget {
         child: CustomScrollView(
           slivers: [
             // App Bar
-            SliverAppBar(
-              expandedHeight: 120,
+            const SliverAppBar(
+              expandedHeight: 0,
               floating: false,
               pinned: true,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: BoxDecoration(
-                    gradient: AppGradients.primary,
-                  ),
-                ),
-                title: const Text(
+              backgroundColor: AppColors.background,
+              title: Padding(
+                padding: EdgeInsets.only(top: 16, bottom: 8),
+                child: Text(
                   'My Learning',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textOnPrimary,
+                    color: AppColors.textPrimary,
                   ),
                 ),
-                titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
               ),
-              backgroundColor: AppColors.primary,
+              centerTitle: false,
+            ),
+
+            // Learning Summary Stats
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 24),
+                child: LearningSummaryCard(),
+              ),
             ),
 
             // Upcoming Live Classes Banner
@@ -54,7 +58,11 @@ class MyLearningHubScreen extends ConsumerWidget {
                 }
                 return SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                      bottom: 24,
+                    ),
                     child: UpcomingLiveClassBanner(
                       liveClasses: classes.take(3).toList(),
                     ),
@@ -62,7 +70,8 @@ class MyLearningHubScreen extends ConsumerWidget {
                 );
               },
               loading: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
-              error: (_, __) => const SliverToBoxAdapter(child: SizedBox.shrink()),
+              error: (_, __) =>
+                  const SliverToBoxAdapter(child: SizedBox.shrink()),
             ),
 
             // Enrolled Courses List
@@ -92,24 +101,28 @@ class MyLearningHubScreen extends ConsumerWidget {
                     // In Progress Section
                     if (inProgress.isNotEmpty) ...[
                       _SectionHeader(
-                        icon: Icons.play_circle_outline,
+                        icon: Icons.play_circle_fill,
                         title: 'Continue Learning',
                         count: inProgress.length,
                         iconColor: AppColors.primary,
+                        showDivider: false,
                       ),
+                      const SizedBox(height: 12),
                       const SizedBox(height: 16),
-                      ...inProgress.map((course) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 8,
+                      ...inProgress.map(
+                        (course) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 8,
+                          ),
+                          child: EnrolledCourseCard(
+                            course: course,
+                            onTap: () => context.push(
+                              '/my-learning/course/${course.id}',
                             ),
-                            child: EnrolledCourseCard(
-                              course: course,
-                              onTap: () => context.push(
-                                '/my-learning/course/${course.id}',
-                              ),
-                            ),
-                          )),
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 24),
                     ],
 
@@ -122,18 +135,20 @@ class MyLearningHubScreen extends ConsumerWidget {
                         iconColor: AppColors.accent,
                       ),
                       const SizedBox(height: 16),
-                      ...notStarted.map((course) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 8,
+                      ...notStarted.map(
+                        (course) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 8,
+                          ),
+                          child: EnrolledCourseCard(
+                            course: course,
+                            onTap: () => context.push(
+                              '/my-learning/course/${course.id}',
                             ),
-                            child: EnrolledCourseCard(
-                              course: course,
-                              onTap: () => context.push(
-                                '/my-learning/course/${course.id}',
-                              ),
-                            ),
-                          )),
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 24),
                     ],
 
@@ -146,18 +161,20 @@ class MyLearningHubScreen extends ConsumerWidget {
                         iconColor: AppColors.success,
                       ),
                       const SizedBox(height: 16),
-                      ...completed.map((course) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 8,
+                      ...completed.map(
+                        (course) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 8,
+                          ),
+                          child: EnrolledCourseCard(
+                            course: course,
+                            onTap: () => context.push(
+                              '/my-learning/course/${course.id}',
                             ),
-                            child: EnrolledCourseCard(
-                              course: course,
-                              onTap: () => context.push(
-                                '/my-learning/course/${course.id}',
-                              ),
-                            ),
-                          )),
+                          ),
+                        ),
+                      ),
                     ],
 
                     const SizedBox(height: 40),
@@ -168,9 +185,7 @@ class MyLearningHubScreen extends ConsumerWidget {
                 child: Center(child: CircularProgressIndicator()),
               ),
               error: (error, stack) => SliverFillRemaining(
-                child: Center(
-                  child: Text('Error: ${error.toString()}'),
-                ),
+                child: Center(child: Text('Error: ${error.toString()}')),
               ),
             ),
           ],
@@ -186,58 +201,66 @@ class _SectionHeader extends StatelessWidget {
     required this.title,
     required this.count,
     required this.iconColor,
+    this.showDivider = true,
   });
 
   final IconData icon;
   final String title;
   final int count;
   final Color iconColor;
+  final bool showDivider;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
+    return Column(
+      children: [
+        if (showDivider)
           Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              icon,
-              size: 20,
-              color: iconColor,
-            ),
+            height: 1,
+            color: AppColors.textSecondary.withValues(alpha: 0.1),
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           ),
-          const SizedBox(width: 12),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceLight,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              count.toString(),
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, size: 20, color: iconColor),
               ),
-            ),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceLight,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  count.toString(),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -280,10 +303,7 @@ class _EmptyState extends StatelessWidget {
             Text(
               'Start your learning journey by exploring courses',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 32),
             ElevatedButton(

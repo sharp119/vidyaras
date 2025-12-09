@@ -21,6 +21,7 @@ import '../../../features/my_learning/1_presentation/screens/my_learning_hub_scr
 import '../../../features/my_learning/1_presentation/screens/course_content_screen.dart';
 import '../../../features/chat/1_presentation/screens/chat_room_screen.dart';
 import '../../../features/chat/3_domain/models/chat_room.dart';
+import '../../../features/courses/1_presentation/screens/all_courses_screen.dart';
 import '../screens/main_shell.dart';
 
 /// Application routing configuration using GoRouter
@@ -189,6 +190,13 @@ final GoRouter appRouter = GoRouter(
         final courseId = state.pathParameters['courseId']!;
         return CourseDetailScreen(courseId: courseId);
       },
+    ),
+
+    // All Courses Screen
+    GoRoute(
+      path: '/courses',
+      name: 'all-courses',
+      builder: (context, state) => const AllCoursesScreen(),
     ),
 
     // My Learning Hub - Shows all enrolled courses
