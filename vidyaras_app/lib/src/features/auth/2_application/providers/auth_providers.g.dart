@@ -103,35 +103,34 @@ final authStateChangesProvider = AutoDisposeStreamProvider<User?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthStateChangesRef = AutoDisposeStreamProviderRef<User?>;
-String _$currentProfileHash() => r'b3e6c15872c91c904df8dc239ebd38ada51d187e';
+String _$currentProfileHash() => r'cb100fb825be98d0f60e578a828e4cf1549f5187';
 
 /// Current profile provider
 /// Fetches current user's profile from profiles table
 ///
 /// Copied from [currentProfile].
 @ProviderFor(currentProfile)
-final currentProfileProvider =
-    AutoDisposeFutureProvider<Map<String, dynamic>?>.internal(
-      currentProfile,
-      name: r'currentProfileProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$currentProfileHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+final currentProfileProvider = FutureProvider<Map<String, dynamic>?>.internal(
+  currentProfile,
+  name: r'currentProfileProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$currentProfileHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef CurrentProfileRef = AutoDisposeFutureProviderRef<Map<String, dynamic>?>;
-String _$currentUserHash() => r'55c96bde0479fd9c81cf70495630414e1460e236';
+typedef CurrentProfileRef = FutureProviderRef<Map<String, dynamic>?>;
+String _$currentUserHash() => r'272f41e0248e4b168ef9f72ec3b152d620a4414d';
 
 /// Current user provider (typed AppUser)
 /// Fetches current user as AppUser object
 ///
 /// Copied from [currentUser].
 @ProviderFor(currentUser)
-final currentUserProvider = AutoDisposeFutureProvider<AppUser?>.internal(
+final currentUserProvider = FutureProvider<AppUser?>.internal(
   currentUser,
   name: r'currentUserProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -143,6 +142,6 @@ final currentUserProvider = AutoDisposeFutureProvider<AppUser?>.internal(
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef CurrentUserRef = AutoDisposeFutureProviderRef<AppUser?>;
+typedef CurrentUserRef = FutureProviderRef<AppUser?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -238,7 +238,7 @@ class _$CoursesStateImpl extends _CoursesState {
                 other.searchQuery == searchQuery) &&
             (identical(other.selectedCategory, selectedCategory) ||
                 other.selectedCategory == selectedCategory) &&
-            const DeepCollectionEquality().equals(other.failure, failure));
+            (identical(other.failure, failure) || other.failure == failure));
   }
 
   @override
@@ -249,7 +249,7 @@ class _$CoursesStateImpl extends _CoursesState {
     isLoading,
     searchQuery,
     selectedCategory,
-    const DeepCollectionEquality().hash(failure),
+    failure,
   );
 
   /// Create a copy of CoursesState

@@ -45,7 +45,7 @@ Stream<User?> authStateChanges(AuthStateChangesRef ref) {
 
 /// Current profile provider
 /// Fetches current user's profile from profiles table
-@riverpod
+@Riverpod(keepAlive: true)
 Future<Map<String, dynamic>?> currentProfile(CurrentProfileRef ref) async {
   final profileDataSource = ref.watch(profileDataSourceProvider);
 
@@ -57,7 +57,7 @@ Future<Map<String, dynamic>?> currentProfile(CurrentProfileRef ref) async {
 
 /// Current user provider (typed AppUser)
 /// Fetches current user as AppUser object
-@riverpod
+@Riverpod(keepAlive: true)
 Future<AppUser?> currentUser(CurrentUserRef ref) async {
   final authRepository = ref.watch(authRepositoryProvider);
 
@@ -66,11 +66,8 @@ Future<AppUser?> currentUser(CurrentUserRef ref) async {
 
   final result = await authRepository.getCurrentUser();
 
-  return result.fold(
-    (error) {
-      print('Error fetching current user: $error');
-      return null;
-    },
-    (user) => user,
-  );
+  return result.fold((error) {
+    print('Error fetching current user: $error');
+    return null;
+  }, (user) => user);
 }
