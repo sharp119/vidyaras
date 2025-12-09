@@ -25,7 +25,7 @@ final supabaseClientProvider = AutoDisposeProvider<SupabaseClient>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SupabaseClientRef = AutoDisposeProviderRef<SupabaseClient>;
-String _$profileDataSourceHash() => r'b58a1592951e0d40dda031721788923e7cc82616';
+String _$profileDataSourceHash() => r'dcf645cc781d9b34a75d9ed971824b18aa2131e8';
 
 /// ProfileDataSource provider
 ///

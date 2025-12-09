@@ -23,6 +23,7 @@ import '../../../features/chat/1_presentation/screens/chat_room_screen.dart';
 import '../../../features/chat/3_domain/models/chat_room.dart';
 import '../../../features/courses/1_presentation/screens/all_courses_screen.dart';
 import '../screens/main_shell.dart';
+import '../screens/edit_profile_screen.dart';
 
 /// Application routing configuration using GoRouter
 final GoRouter appRouter = GoRouter(
@@ -225,6 +226,13 @@ final GoRouter appRouter = GoRouter(
         final room = state.extra as ChatRoom?;
         return ChatRoomScreen(roomId: roomId, room: room);
       },
+    ),
+
+    // Profile Edit Screen
+    GoRoute(
+      path: '/profile/edit',
+      name: 'edit-profile',
+      builder: (context, state) => const EditProfileScreen(),
     ),
 
     // TODO: Add additional routes as features are implemented

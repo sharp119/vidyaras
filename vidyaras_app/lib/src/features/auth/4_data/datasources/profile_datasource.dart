@@ -1,12 +1,15 @@
+import 'package:dio/dio.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:io';
 
 /// ProfileDataSource
 /// Handles CRUD operations for the profiles table
-/// This is in the Data Layer - raw database operations only
+/// This is in the Data Layer - raw database operations and API calls
 class ProfileDataSource {
   final SupabaseClient _supabase;
+  final Dio _dio;
 
-  ProfileDataSource(this._supabase);
+  ProfileDataSource(this._supabase, this._dio);
 
   /// Get current user's profile from profiles table
   /// Returns null if user not authenticated or profile not found
@@ -115,6 +118,106 @@ class ProfileDataSource {
           .eq('id', userId);
     } catch (e) {
       throw Exception('Failed to update profile: $e');
+    }
+  }
+
+  /// Update profile via API endpoint
+  /// Calls PATCH /api/users/me/profile
+  /// Accepts: bio, full_name, name
+  Future<Map<String, dynamic>> updateProfileViaAPI({
+    String? bio,
+    String? fullName,
+    String? name,
+  }) async {
+    try {
+      final updates = <String, dynamic>{};
+      if (bio != null) updates['bio'] = bio;
+      if (fullName != null) updates['full_name'] = fullName;
+      if (name != null) updates['name'] = name;
+
+      if (updates.isEmpty) {
+        throw Exception('No fields to update');
+      }
+
+      final response = await _dio.patch(
+        '/api/users/me/profile',
+        data: updates,
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data['data'] as Map<String, dynamic>;
+      } else {
+        throw Exception('Failed to update profile: ${response.statusMessage}');
+      }
+    } on DioException catch (e) {
+      throw Exception(
+        'API Error: ${e.response?.statusCode} - ${e.response?.data?['error'] ?? e.message}',
+      );
+    } catch (e) {
+      throw Exception('Failed to update profile via API: $e');
+    }
+  }
+
+  /// Upload avatar to Supabase Storage and update profile
+  /// 1. Uploads file to avatars bucket with user ID prefix
+  /// 2. Gets public URL
+  /// 3. Calls POST /api/users/me/avatar to update profile
+  Future<String> uploadAvatar(File imageFile) async {
+    try {
+      final userId = _supabase.auth.currentUser?.id;
+      if (userId == null) throw Exception('User not authenticated');
+
+      // Generate unique filename with user ID prefix
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final extension = imageFile.path.split('.').last;
+      final fileName = '$userId/$timestamp.$extension';
+
+      // Upload to Supabase Storage
+      final uploadPath = await _supabase.storage
+          .from('avatars')
+          .upload(fileName, imageFile);
+
+      // Get public URL
+      final publicUrl = _supabase.storage.from('avatars').getPublicUrl(uploadPath);
+
+      // Update profile via API
+      final response = await _dio.post(
+        '/api/users/me/avatar',
+        data: {'avatar_url': publicUrl},
+      );
+
+      if (response.statusCode == 200) {
+        return publicUrl;
+      } else {
+        throw Exception('Failed to update avatar URL: ${response.statusMessage}');
+      }
+    } on DioException catch (e) {
+      throw Exception(
+        'API Error: ${e.response?.statusCode} - ${e.response?.data?['error'] ?? e.message}',
+      );
+    } catch (e) {
+      throw Exception('Failed to upload avatar: $e');
+    }
+  }
+
+  /// Get user statistics from API
+  /// Calls GET /api/users/me/statistics
+  /// Returns stats including enrollments, completions, referral points, etc.
+  Future<Map<String, dynamic>> getUserStatistics() async {
+    try {
+      final response = await _dio.get('/api/users/me/statistics');
+
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data['data'] as Map<String, dynamic>;
+      } else {
+        throw Exception('Failed to fetch statistics: ${response.statusMessage}');
+      }
+    } on DioException catch (e) {
+      throw Exception(
+        'API Error: ${e.response?.statusCode} - ${e.response?.data?['error'] ?? e.message}',
+      );
+    } catch (e) {
+      throw Exception('Failed to fetch user statistics: $e');
     }
   }
 }

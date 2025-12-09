@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,12 +23,14 @@ Future<void> main() async {
   // Listen for auth state changes (optional debugging)
   Supabase.instance.client.auth.onAuthStateChange.listen((data) {
     final event = data.event;
-    print('🔐 Auth Event: $event');
+    if (kDebugMode) {
+      print('🔐 Auth Event: $event');
 
-    if (event == AuthChangeEvent.signedIn) {
-      print('✅ User signed in: ${data.session?.user.email}');
-    } else if (event == AuthChangeEvent.signedOut) {
-      print('👋 User signed out');
+      if (event == AuthChangeEvent.signedIn) {
+        print('✅ User signed in: ${data.session?.user.email}');
+      } else if (event == AuthChangeEvent.signedOut) {
+        print('👋 User signed out');
+      }
     }
   });
 

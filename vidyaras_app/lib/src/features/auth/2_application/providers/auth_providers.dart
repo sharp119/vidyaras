@@ -5,6 +5,7 @@ import '../../3_domain/models/app_user.dart';
 import '../../4_data/datasources/profile_datasource.dart';
 import '../../4_data/repositories/auth_repository_impl.dart';
 import '../../4_data/services/msg91_service.dart';
+import '../../../../shared/providers/api_client_provider.dart';
 
 part 'auth_providers.g.dart';
 
@@ -18,7 +19,8 @@ SupabaseClient supabaseClient(SupabaseClientRef ref) {
 @riverpod
 ProfileDataSource profileDataSource(ProfileDataSourceRef ref) {
   final supabase = ref.watch(supabaseClientProvider);
-  return ProfileDataSource(supabase);
+  final dio = ref.watch(apiClientProvider);
+  return ProfileDataSource(supabase, dio);
 }
 
 /// AuthRepository provider

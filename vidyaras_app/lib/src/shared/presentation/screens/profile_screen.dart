@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../features/home/2_application/notifiers/home_notifier.dart';
 import '../theme/app_colors.dart';
@@ -59,7 +60,7 @@ class ProfileScreen extends ConsumerWidget {
                     enrolledCount: userProfile.enrolledCount,
                     completedCount: userProfile.completedCount,
                     certificatesCount: userProfile.certificatesCount,
-                    onEditTap: () => _showComingSoonSnackbar(context, 'Edit Profile'),
+                    onEditTap: () => context.push('/profile/edit'),
                   ),
                 ),
 

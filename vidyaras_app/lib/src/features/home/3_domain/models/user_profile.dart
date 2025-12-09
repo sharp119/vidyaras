@@ -12,6 +12,7 @@ class UserProfile with _$UserProfile {
     required String name,
     String? email,
     String? avatarUrl,
+    String? bio,
     @Default(false) bool isPremium,
     @Default(0) int enrolledCount,
     @Default(0) int completedCount,

@@ -49,6 +49,7 @@ dependencies:
   url_launcher: ^6.2.0
   permission_handler: ^11.0.0
   share_plus: ^10.1.4
+  image_picker: ^1.0.7
 
   # Icons
   cupertino_icons: ^1.0.8

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../shared/presentation/components/buttons/social_login_button.dart';
 import '../../../../shared/presentation/components/typography/bilingual_text.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';

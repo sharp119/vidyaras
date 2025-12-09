@@ -11,14 +11,16 @@ import '../../3_domain/models/pricing_option.dart';
 import '../../3_domain/models/course_review.dart';
 import '../../3_domain/repositories/home_repository.dart';
 import '../../../auth/3_domain/repositories/auth_repository.dart';
+import '../../../auth/4_data/datasources/profile_datasource.dart';
 
-/// Mock implementation of HomeRepository
-/// Returns sample data for development with actual user info
-/// TODO: Replace with actual API implementation for stats and courses
+/// Implementation of HomeRepository
+/// Fetches real user statistics from API
+/// TODO: Replace mock courses with actual API data
 class HomeRepositoryImpl implements HomeRepository {
   final AuthRepository _authRepository;
+  final ProfileDataSource _profileDataSource;
 
-  HomeRepositoryImpl(this._authRepository);
+  HomeRepositoryImpl(this._authRepository, this._profileDataSource);
 
   @override
   Future<Either<Failure, HomeData>> getHomeData() async {
@@ -27,31 +29,45 @@ class HomeRepositoryImpl implements HomeRepository {
       final userResult = await _authRepository.getCurrentUser();
 
       // If we can't get user, return error
-      final user = userResult.fold(
-        (failure) => null,
-        (user) => user,
-      );
+      final user = userResult.fold((failure) => null, (user) => user);
 
       if (user == null) {
         return left(const AuthFailure(message: 'User not authenticated'));
       }
 
-      // Simulate network delay
-      await Future.delayed(const Duration(milliseconds: 500));
+      // Fetch real user statistics from API
+      Map<String, dynamic>? statsData;
+      try {
+        statsData = await _profileDataSource.getUserStatistics();
+      } catch (e) {
+        print('Failed to fetch user statistics: $e');
+        // Continue with default values if API fails
+      }
 
-      // Build UserProfile from actual user + mock stats
-      // TODO: Fetch actual stats from API
+      // Extract statistics from API response
+      final stats = statsData?['stats'] as Map<String, dynamic>?;
+      final enrolledCount = stats?['activeEnrollments'] as int? ?? 0;
+      final completedCount = stats?['completedEnrollments'] as int? ?? 0;
+      final referralPoints = stats?['referralPoints'] as int? ?? 0;
+      final certificatesCount = stats?['certificatesCount'] as int? ?? 0;
+
+      // Build UserProfile from actual user + API stats
       final userProfile = UserProfile(
         id: user.id,
         name: user.name ?? user.email ?? 'User',
         email: user.email,
         avatarUrl: user.avatarUrl,
-        isPremium: false, // TODO: Fetch from API
-        enrolledCount: 2, // TODO: Fetch from API
-        completedCount: 0, // TODO: Fetch from API
-        certificatesCount: 1, // TODO: Fetch from API
-        referralPoints: 150, // TODO: Fetch from API
-        interests: ['music', 'wellness'], // TODO: Fetch from API
+        bio: user.bio,
+        isPremium: false, // TODO: Fetch from user profile
+        enrolledCount: enrolledCount,
+        completedCount: completedCount,
+        certificatesCount: certificatesCount,
+        referralPoints: referralPoints,
+        interests:
+            (user.preferences['interests'] as List?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            [],
         createdAt: user.createdAt,
       );
 
@@ -155,7 +171,9 @@ class HomeRepositoryImpl implements HomeRepository {
 
       return right(homeData);
     } catch (e) {
-      return left(DataFailure(message: 'Failed to load home data: ${e.toString()}'));
+      return left(
+        DataFailure(message: 'Failed to load home data: ${e.toString()}'),
+      );
     }
   }
 
@@ -199,10 +217,7 @@ class HomeRepositoryImpl implements HomeRepository {
     // Get the actual authenticated user
     final userResult = await _authRepository.getCurrentUser();
 
-    final user = userResult.fold(
-      (failure) => null,
-      (user) => user,
-    );
+    final user = userResult.fold((failure) => null, (user) => user);
 
     // Use actual user data or fallback to default
     final userProfile = user != null
@@ -1034,10 +1049,7 @@ class HomeRepositoryImpl implements HomeRepository {
               ],
             ),
           ],
-          pricing: const PricingOption(
-            fullPrice: 0,
-            isFree: true,
-          ),
+          pricing: const PricingOption(fullPrice: 0, isFree: true),
           reviews: [
             CourseReview(
               id: 'r1',

@@ -40,6 +40,12 @@ mixin _$AppUser {
   /// Verified via MSG91 OTP
   String? get phoneNumber => throw _privateConstructorUsedError;
 
+  /// User biography (max 500 characters)
+  String? get bio => throw _privateConstructorUsedError;
+
+  /// Referral points earned
+  int get referralPoints => throw _privateConstructorUsedError;
+
   /// Whether user has completed onboarding
   bool get isOnboarded => throw _privateConstructorUsedError;
 
@@ -76,6 +82,8 @@ abstract class $AppUserCopyWith<$Res> {
     String? name,
     String? avatarUrl,
     String? phoneNumber,
+    String? bio,
+    int referralPoints,
     bool isOnboarded,
     Map<String, dynamic> preferences,
     String role,
@@ -105,6 +113,8 @@ class _$AppUserCopyWithImpl<$Res, $Val extends AppUser>
     Object? name = freezed,
     Object? avatarUrl = freezed,
     Object? phoneNumber = freezed,
+    Object? bio = freezed,
+    Object? referralPoints = null,
     Object? isOnboarded = null,
     Object? preferences = null,
     Object? role = null,
@@ -137,6 +147,14 @@ class _$AppUserCopyWithImpl<$Res, $Val extends AppUser>
                 ? _value.phoneNumber
                 : phoneNumber // ignore: cast_nullable_to_non_nullable
                       as String?,
+            bio: freezed == bio
+                ? _value.bio
+                : bio // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            referralPoints: null == referralPoints
+                ? _value.referralPoints
+                : referralPoints // ignore: cast_nullable_to_non_nullable
+                      as int,
             isOnboarded: null == isOnboarded
                 ? _value.isOnboarded
                 : isOnboarded // ignore: cast_nullable_to_non_nullable
@@ -178,6 +196,8 @@ abstract class _$$AppUserImplCopyWith<$Res> implements $AppUserCopyWith<$Res> {
     String? name,
     String? avatarUrl,
     String? phoneNumber,
+    String? bio,
+    int referralPoints,
     bool isOnboarded,
     Map<String, dynamic> preferences,
     String role,
@@ -206,6 +226,8 @@ class __$$AppUserImplCopyWithImpl<$Res>
     Object? name = freezed,
     Object? avatarUrl = freezed,
     Object? phoneNumber = freezed,
+    Object? bio = freezed,
+    Object? referralPoints = null,
     Object? isOnboarded = null,
     Object? preferences = null,
     Object? role = null,
@@ -238,6 +260,14 @@ class __$$AppUserImplCopyWithImpl<$Res>
             ? _value.phoneNumber
             : phoneNumber // ignore: cast_nullable_to_non_nullable
                   as String?,
+        bio: freezed == bio
+            ? _value.bio
+            : bio // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        referralPoints: null == referralPoints
+            ? _value.referralPoints
+            : referralPoints // ignore: cast_nullable_to_non_nullable
+                  as int,
         isOnboarded: null == isOnboarded
             ? _value.isOnboarded
             : isOnboarded // ignore: cast_nullable_to_non_nullable
@@ -273,6 +303,8 @@ class _$AppUserImpl implements _AppUser {
     required this.name,
     required this.avatarUrl,
     this.phoneNumber,
+    this.bio,
+    this.referralPoints = 0,
     this.isOnboarded = false,
     final Map<String, dynamic> preferences = const {},
     this.role = 'student',
@@ -308,6 +340,15 @@ class _$AppUserImpl implements _AppUser {
   @override
   final String? phoneNumber;
 
+  /// User biography (max 500 characters)
+  @override
+  final String? bio;
+
+  /// Referral points earned
+  @override
+  @JsonKey()
+  final int referralPoints;
+
   /// Whether user has completed onboarding
   @override
   @JsonKey()
@@ -340,7 +381,7 @@ class _$AppUserImpl implements _AppUser {
 
   @override
   String toString() {
-    return 'AppUser(id: $id, email: $email, fullName: $fullName, name: $name, avatarUrl: $avatarUrl, phoneNumber: $phoneNumber, isOnboarded: $isOnboarded, preferences: $preferences, role: $role, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'AppUser(id: $id, email: $email, fullName: $fullName, name: $name, avatarUrl: $avatarUrl, phoneNumber: $phoneNumber, bio: $bio, referralPoints: $referralPoints, isOnboarded: $isOnboarded, preferences: $preferences, role: $role, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -357,6 +398,9 @@ class _$AppUserImpl implements _AppUser {
                 other.avatarUrl == avatarUrl) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
+            (identical(other.bio, bio) || other.bio == bio) &&
+            (identical(other.referralPoints, referralPoints) ||
+                other.referralPoints == referralPoints) &&
             (identical(other.isOnboarded, isOnboarded) ||
                 other.isOnboarded == isOnboarded) &&
             const DeepCollectionEquality().equals(
@@ -380,6 +424,8 @@ class _$AppUserImpl implements _AppUser {
     name,
     avatarUrl,
     phoneNumber,
+    bio,
+    referralPoints,
     isOnboarded,
     const DeepCollectionEquality().hash(_preferences),
     role,
@@ -409,6 +455,8 @@ abstract class _AppUser implements AppUser {
     required final String? name,
     required final String? avatarUrl,
     final String? phoneNumber,
+    final String? bio,
+    final int referralPoints,
     final bool isOnboarded,
     final Map<String, dynamic> preferences,
     final String role,
@@ -442,6 +490,14 @@ abstract class _AppUser implements AppUser {
   /// Verified via MSG91 OTP
   @override
   String? get phoneNumber;
+
+  /// User biography (max 500 characters)
+  @override
+  String? get bio;
+
+  /// Referral points earned
+  @override
+  int get referralPoints;
 
   /// Whether user has completed onboarding
   @override

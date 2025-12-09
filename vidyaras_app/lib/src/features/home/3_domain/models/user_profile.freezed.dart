@@ -25,6 +25,7 @@ mixin _$UserProfile {
   String get name => throw _privateConstructorUsedError;
   String? get email => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
+  String? get bio => throw _privateConstructorUsedError;
   bool get isPremium => throw _privateConstructorUsedError;
   int get enrolledCount => throw _privateConstructorUsedError;
   int get completedCount => throw _privateConstructorUsedError;
@@ -55,6 +56,7 @@ abstract class $UserProfileCopyWith<$Res> {
     String name,
     String? email,
     String? avatarUrl,
+    String? bio,
     bool isPremium,
     int enrolledCount,
     int completedCount,
@@ -84,6 +86,7 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
     Object? name = null,
     Object? email = freezed,
     Object? avatarUrl = freezed,
+    Object? bio = freezed,
     Object? isPremium = null,
     Object? enrolledCount = null,
     Object? completedCount = null,
@@ -109,6 +112,10 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
             avatarUrl: freezed == avatarUrl
                 ? _value.avatarUrl
                 : avatarUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            bio: freezed == bio
+                ? _value.bio
+                : bio // ignore: cast_nullable_to_non_nullable
                       as String?,
             isPremium: null == isPremium
                 ? _value.isPremium
@@ -158,6 +165,7 @@ abstract class _$$UserProfileImplCopyWith<$Res>
     String name,
     String? email,
     String? avatarUrl,
+    String? bio,
     bool isPremium,
     int enrolledCount,
     int completedCount,
@@ -186,6 +194,7 @@ class __$$UserProfileImplCopyWithImpl<$Res>
     Object? name = null,
     Object? email = freezed,
     Object? avatarUrl = freezed,
+    Object? bio = freezed,
     Object? isPremium = null,
     Object? enrolledCount = null,
     Object? completedCount = null,
@@ -211,6 +220,10 @@ class __$$UserProfileImplCopyWithImpl<$Res>
         avatarUrl: freezed == avatarUrl
             ? _value.avatarUrl
             : avatarUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        bio: freezed == bio
+            ? _value.bio
+            : bio // ignore: cast_nullable_to_non_nullable
                   as String?,
         isPremium: null == isPremium
             ? _value.isPremium
@@ -253,6 +266,7 @@ class _$UserProfileImpl implements _UserProfile {
     required this.name,
     this.email,
     this.avatarUrl,
+    this.bio,
     this.isPremium = false,
     this.enrolledCount = 0,
     this.completedCount = 0,
@@ -273,6 +287,8 @@ class _$UserProfileImpl implements _UserProfile {
   final String? email;
   @override
   final String? avatarUrl;
+  @override
+  final String? bio;
   @override
   @JsonKey()
   final bool isPremium;
@@ -303,7 +319,7 @@ class _$UserProfileImpl implements _UserProfile {
 
   @override
   String toString() {
-    return 'UserProfile(id: $id, name: $name, email: $email, avatarUrl: $avatarUrl, isPremium: $isPremium, enrolledCount: $enrolledCount, completedCount: $completedCount, certificatesCount: $certificatesCount, referralPoints: $referralPoints, interests: $interests, createdAt: $createdAt)';
+    return 'UserProfile(id: $id, name: $name, email: $email, avatarUrl: $avatarUrl, bio: $bio, isPremium: $isPremium, enrolledCount: $enrolledCount, completedCount: $completedCount, certificatesCount: $certificatesCount, referralPoints: $referralPoints, interests: $interests, createdAt: $createdAt)';
   }
 
   @override
@@ -316,6 +332,7 @@ class _$UserProfileImpl implements _UserProfile {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl) &&
+            (identical(other.bio, bio) || other.bio == bio) &&
             (identical(other.isPremium, isPremium) ||
                 other.isPremium == isPremium) &&
             (identical(other.enrolledCount, enrolledCount) ||
@@ -342,6 +359,7 @@ class _$UserProfileImpl implements _UserProfile {
     name,
     email,
     avatarUrl,
+    bio,
     isPremium,
     enrolledCount,
     completedCount,
@@ -371,6 +389,7 @@ abstract class _UserProfile implements UserProfile {
     required final String name,
     final String? email,
     final String? avatarUrl,
+    final String? bio,
     final bool isPremium,
     final int enrolledCount,
     final int completedCount,
@@ -391,6 +410,8 @@ abstract class _UserProfile implements UserProfile {
   String? get email;
   @override
   String? get avatarUrl;
+  @override
+  String? get bio;
   @override
   bool get isPremium;
   @override

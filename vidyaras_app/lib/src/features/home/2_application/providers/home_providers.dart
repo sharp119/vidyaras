@@ -10,7 +10,8 @@ part 'home_providers.g.dart';
 @riverpod
 HomeRepository homeRepository(HomeRepositoryRef ref) {
   final authRepository = ref.watch(authRepositoryProvider);
-  return HomeRepositoryImpl(authRepository);
+  final profileDataSource = ref.watch(profileDataSourceProvider);
+  return HomeRepositoryImpl(authRepository, profileDataSource);
 }
 
 /// Provider for fetching course detail by ID

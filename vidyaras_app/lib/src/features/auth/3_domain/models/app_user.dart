@@ -28,6 +28,12 @@ class AppUser with _$AppUser {
     /// Verified via MSG91 OTP
     String? phoneNumber,
 
+    /// User biography (max 500 characters)
+    String? bio,
+
+    /// Referral points earned
+    @Default(0) int referralPoints,
+
     /// Whether user has completed onboarding
     @Default(false) bool isOnboarded,
 
