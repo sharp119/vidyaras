@@ -12,6 +12,7 @@ class PrimaryButton extends StatelessWidget {
     this.icon,
     this.isLoading = false,
     this.fullWidth = true,
+    this.backgroundColor,
   });
 
   final VoidCallback? onPressed;
@@ -19,6 +20,7 @@ class PrimaryButton extends StatelessWidget {
   final IconData? icon;
   final bool isLoading;
   final bool fullWidth;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +35,11 @@ class PrimaryButton extends StatelessWidget {
       child: FilledButton(
         onPressed: isLoading ? null : onPressed,
         style: FilledButton.styleFrom(
+          backgroundColor: backgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          // Background color is handled by theme (primary)
-          // Disabled color is handled by theme
+          // Background color is handled by theme (primary) if backgroundColor is null
         ),
         child: isLoading
             ? SizedBox(

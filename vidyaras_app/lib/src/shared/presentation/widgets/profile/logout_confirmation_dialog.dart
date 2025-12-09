@@ -64,9 +64,7 @@ class LogoutConfirmationDialog extends StatelessWidget {
                     Navigator.of(context).pop();
                     onConfirm();
                   },
-                  gradient: const LinearGradient(
-                    colors: [AppColors.error, Color(0xFFDC2626)],
-                  ),
+                  backgroundColor: AppColors.error,
                 ),
               ),
             ],

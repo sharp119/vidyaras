@@ -77,12 +77,7 @@ class ReferralCard extends StatelessWidget {
             onPressed: onInviteTap,
             label: 'Invite Friends',
             fullWidth: true,
-            gradient: LinearGradient(
-              colors: [
-                AppColors.referralAccent,
-                AppColors.referralAccent.withOpacity(0.8),
-              ],
-            ),
+            backgroundColor: AppColors.referralAccent,
           ),
         ],
       ),
