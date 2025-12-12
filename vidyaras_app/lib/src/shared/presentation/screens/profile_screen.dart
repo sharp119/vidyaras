@@ -71,7 +71,8 @@ class ProfileScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: ReferralCard(
                     points: userProfile.referralPoints,
-                    onInviteTap: () => _handleShareReferral(context, userProfile.name),
+                    onInviteTap: () =>
+                        _handleShareReferral(context, userProfile.name),
                   ),
                 ),
 
@@ -79,11 +80,13 @@ class ProfileScreen extends ConsumerWidget {
                 ProfileMyLearningSection(
                   enrolledCount: userProfile.enrolledCount,
                   certificatesCount: userProfile.certificatesCount,
-                  onCertificatesTap: () => _showComingSoonSnackbar(context, 'Certificates'),
+                  onCertificatesTap: () =>
+                      _showComingSoonSnackbar(context, 'Certificates'),
                 ),
 
-                // Settings Section
-                const ProfileSettingsSection(),
+                ProfileSettingsSection(
+                  onAccountSettingsTap: () => context.push('/profile/edit'),
+                ),
 
                 // About Section
                 const ProfileAboutSection(),
@@ -109,11 +112,7 @@ class ProfileScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
+            const Icon(Icons.error_outline, size: 64, color: AppColors.error),
             const SizedBox(height: 24),
             const Text(
               'Unable to load profile',
@@ -148,7 +147,8 @@ class ProfileScreen extends ConsumerWidget {
 
   void _handleShareReferral(BuildContext context, String userName) {
     final referralCode = userName.toUpperCase().replaceAll(' ', '');
-    final message = '''
+    final message =
+        '''
 Join VidyaRas and explore traditional Indian arts, wellness, and personal development!
 
 🎵 Music • 🧘 Wellness • 🎨 Arts • 💃 Dance
@@ -158,10 +158,7 @@ Use my referral code: $referralCode
 Download the app and start your learning journey today!
 ''';
 
-    Share.share(
-      message,
-      subject: 'Join VidyaRas with me!',
-    );
+    Share.share(message, subject: 'Join VidyaRas with me!');
   }
 
   void _showComingSoonSnackbar(BuildContext context, String feature) {
@@ -170,9 +167,7 @@ Download the app and start your learning journey today!
         content: Text('$feature - Coming Soon!'),
         backgroundColor: AppColors.primary,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }

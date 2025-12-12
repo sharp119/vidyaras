@@ -28,7 +28,7 @@ mixin _$CourseMaterial {
       throw _privateConstructorUsedError; // pdf, video, doc, image, other
   String get fileUrl => throw _privateConstructorUsedError;
   double? get fileSizeMb => throw _privateConstructorUsedError;
-  String? get sectionId => throw _privateConstructorUsedError;
+  String? get moduleId => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this CourseMaterial to a JSON map.
@@ -55,7 +55,7 @@ abstract class $CourseMaterialCopyWith<$Res> {
     String type,
     String fileUrl,
     double? fileSizeMb,
-    String? sectionId,
+    String? moduleId,
     DateTime? createdAt,
   });
 }
@@ -81,7 +81,7 @@ class _$CourseMaterialCopyWithImpl<$Res, $Val extends CourseMaterial>
     Object? type = null,
     Object? fileUrl = null,
     Object? fileSizeMb = freezed,
-    Object? sectionId = freezed,
+    Object? moduleId = freezed,
     Object? createdAt = freezed,
   }) {
     return _then(
@@ -110,9 +110,9 @@ class _$CourseMaterialCopyWithImpl<$Res, $Val extends CourseMaterial>
                 ? _value.fileSizeMb
                 : fileSizeMb // ignore: cast_nullable_to_non_nullable
                       as double?,
-            sectionId: freezed == sectionId
-                ? _value.sectionId
-                : sectionId // ignore: cast_nullable_to_non_nullable
+            moduleId: freezed == moduleId
+                ? _value.moduleId
+                : moduleId // ignore: cast_nullable_to_non_nullable
                       as String?,
             createdAt: freezed == createdAt
                 ? _value.createdAt
@@ -140,7 +140,7 @@ abstract class _$$CourseMaterialImplCopyWith<$Res>
     String type,
     String fileUrl,
     double? fileSizeMb,
-    String? sectionId,
+    String? moduleId,
     DateTime? createdAt,
   });
 }
@@ -165,7 +165,7 @@ class __$$CourseMaterialImplCopyWithImpl<$Res>
     Object? type = null,
     Object? fileUrl = null,
     Object? fileSizeMb = freezed,
-    Object? sectionId = freezed,
+    Object? moduleId = freezed,
     Object? createdAt = freezed,
   }) {
     return _then(
@@ -194,9 +194,9 @@ class __$$CourseMaterialImplCopyWithImpl<$Res>
             ? _value.fileSizeMb
             : fileSizeMb // ignore: cast_nullable_to_non_nullable
                   as double?,
-        sectionId: freezed == sectionId
-            ? _value.sectionId
-            : sectionId // ignore: cast_nullable_to_non_nullable
+        moduleId: freezed == moduleId
+            ? _value.moduleId
+            : moduleId // ignore: cast_nullable_to_non_nullable
                   as String?,
         createdAt: freezed == createdAt
             ? _value.createdAt
@@ -217,7 +217,7 @@ class _$CourseMaterialImpl implements _CourseMaterial {
     this.type = 'pdf',
     required this.fileUrl,
     this.fileSizeMb,
-    this.sectionId,
+    this.moduleId,
     this.createdAt,
   });
 
@@ -239,13 +239,13 @@ class _$CourseMaterialImpl implements _CourseMaterial {
   @override
   final double? fileSizeMb;
   @override
-  final String? sectionId;
+  final String? moduleId;
   @override
   final DateTime? createdAt;
 
   @override
   String toString() {
-    return 'CourseMaterial(id: $id, courseId: $courseId, title: $title, type: $type, fileUrl: $fileUrl, fileSizeMb: $fileSizeMb, sectionId: $sectionId, createdAt: $createdAt)';
+    return 'CourseMaterial(id: $id, courseId: $courseId, title: $title, type: $type, fileUrl: $fileUrl, fileSizeMb: $fileSizeMb, moduleId: $moduleId, createdAt: $createdAt)';
   }
 
   @override
@@ -261,8 +261,8 @@ class _$CourseMaterialImpl implements _CourseMaterial {
             (identical(other.fileUrl, fileUrl) || other.fileUrl == fileUrl) &&
             (identical(other.fileSizeMb, fileSizeMb) ||
                 other.fileSizeMb == fileSizeMb) &&
-            (identical(other.sectionId, sectionId) ||
-                other.sectionId == sectionId) &&
+            (identical(other.moduleId, moduleId) ||
+                other.moduleId == moduleId) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -277,7 +277,7 @@ class _$CourseMaterialImpl implements _CourseMaterial {
     type,
     fileUrl,
     fileSizeMb,
-    sectionId,
+    moduleId,
     createdAt,
   );
 
@@ -306,7 +306,7 @@ abstract class _CourseMaterial implements CourseMaterial {
     final String type,
     required final String fileUrl,
     final double? fileSizeMb,
-    final String? sectionId,
+    final String? moduleId,
     final DateTime? createdAt,
   }) = _$CourseMaterialImpl;
 
@@ -326,7 +326,7 @@ abstract class _CourseMaterial implements CourseMaterial {
   @override
   double? get fileSizeMb;
   @override
-  String? get sectionId;
+  String? get moduleId;
   @override
   DateTime? get createdAt;
 

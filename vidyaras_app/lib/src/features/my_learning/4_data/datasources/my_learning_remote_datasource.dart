@@ -51,6 +51,9 @@ abstract class MyLearningRemoteDataSource {
     required String userId,
     required String courseId,
   });
+
+  /// Fetch modules for a course
+  Future<List<SectionInfo>> getCourseModules({required String courseId});
 }
 
 /// Implementation using Supabase
@@ -103,43 +106,46 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
           courseId: courseId,
         );
 
-        courses.add(EnrolledCourse(
-          id: courseId,
-          title: courseData['title'] as String,
-          instructor: courseData['instructor'] as String,
-          thumbnailUrl: courseData['thumbnail_url'] as String?,
-          description: courseData['description'] as String?,
-          rating: (courseData['rating'] as num?)?.toDouble() ?? 0.0,
-          reviewCount: courseData['review_count'] as int? ?? 0,
-          enrolledCount: courseData['enrolled_count'] as int? ?? 0,
-          price: courseData['price'] != null
-              ? (courseData['price'] is String
-                  ? courseData['price'] as String
-                  : courseData['price'].toString())
-              : null,
-          duration: courseData['duration'] != null
-              ? (courseData['duration'] is String
-                  ? courseData['duration'] as String
-                  : courseData['duration'].toString())
-              : null,
-          isLive: courseData['is_live'] as bool? ?? false,
-          isRecorded: courseData['is_recorded'] as bool? ?? false,
-          enrollmentId: enrollment['id'] as String,
-          enrolledAt: enrollment['enrolled_at'] != null
-              ? DateTime.parse(enrollment['enrolled_at'] as String)
-              : null,
-          enrollmentStatus: enrollment['status'] as String? ?? 'active',
-          lastAccessedAt: enrollment['last_accessed_at'] != null
-              ? DateTime.parse(enrollment['last_accessed_at'] as String)
-              : null,
-          progress: (progressData['progress_percentage'] as num).toDouble() / 100,
-          totalLectures: progressData['total_lectures'] as int,
-          completedLectures: progressData['completed_lectures'] as int,
-          totalDurationMinutes: progressData['total_duration_minutes'] as int,
-          createdAt: courseData['created_at'] != null
-              ? DateTime.parse(courseData['created_at'] as String)
-              : null,
-        ));
+        courses.add(
+          EnrolledCourse(
+            id: courseId,
+            title: courseData['title'] as String,
+            instructor: courseData['instructor'] as String,
+            thumbnailUrl: courseData['thumbnail_url'] as String?,
+            description: courseData['description'] as String?,
+            rating: (courseData['rating'] as num?)?.toDouble() ?? 0.0,
+            reviewCount: courseData['review_count'] as int? ?? 0,
+            enrolledCount: courseData['enrolled_count'] as int? ?? 0,
+            price: courseData['price'] != null
+                ? (courseData['price'] is String
+                      ? courseData['price'] as String
+                      : courseData['price'].toString())
+                : null,
+            duration: courseData['duration'] != null
+                ? (courseData['duration'] is String
+                      ? courseData['duration'] as String
+                      : courseData['duration'].toString())
+                : null,
+            isLive: courseData['is_live'] as bool? ?? false,
+            isRecorded: courseData['is_recorded'] as bool? ?? false,
+            enrollmentId: enrollment['id'] as String,
+            enrolledAt: enrollment['enrolled_at'] != null
+                ? DateTime.parse(enrollment['enrolled_at'] as String)
+                : null,
+            enrollmentStatus: enrollment['status'] as String? ?? 'active',
+            lastAccessedAt: enrollment['last_accessed_at'] != null
+                ? DateTime.parse(enrollment['last_accessed_at'] as String)
+                : null,
+            progress:
+                (progressData['progress_percentage'] as num).toDouble() / 100,
+            totalLectures: progressData['total_lectures'] as int,
+            completedLectures: progressData['completed_lectures'] as int,
+            totalDurationMinutes: progressData['total_duration_minutes'] as int,
+            createdAt: courseData['created_at'] != null
+                ? DateTime.parse(courseData['created_at'] as String)
+                : null,
+          ),
+        );
       }
 
       return courses;
@@ -183,8 +189,7 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
           .eq('course_id', courseId)
           .single();
 
-      final courseData =
-          enrollmentResponse['courses'] as Map<String, dynamic>;
+      final courseData = enrollmentResponse['courses'] as Map<String, dynamic>;
 
       // Fetch all related data in parallel
       final results = await Future.wait([
@@ -192,15 +197,17 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
         getCourseLiveClasses(courseId: courseId),
         getCourseMaterials(courseId: courseId),
         getCourseProgress(userId: userId, courseId: courseId),
+        getCourseModules(courseId: courseId),
       ]);
 
       final lectures = results[0] as List<Lecture>;
       final liveClasses = results[1] as List<LiveClass>;
       final materials = results[2] as List<CourseMaterial>;
       final progressData = results[3] as Map<String, dynamic>;
+      final modules = results[4] as List<SectionInfo>;
 
-      // Build sections from lectures
-      final sections = _buildSections(lectures);
+      // Build sections from lectures and modules
+      final sections = _buildSections(lectures, modules);
 
       return EnrolledCourse(
         id: courseId,
@@ -213,13 +220,13 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
         enrolledCount: courseData['enrolled_count'] as int? ?? 0,
         price: courseData['price'] != null
             ? (courseData['price'] is String
-                ? courseData['price'] as String
-                : courseData['price'].toString())
+                  ? courseData['price'] as String
+                  : courseData['price'].toString())
             : null,
         duration: courseData['duration'] != null
             ? (courseData['duration'] is String
-                ? courseData['duration'] as String
-                : courseData['duration'].toString())
+                  ? courseData['duration'] as String
+                  : courseData['duration'].toString())
             : null,
         isLive: courseData['is_live'] as bool? ?? false,
         isRecorded: courseData['is_recorded'] as bool? ?? false,
@@ -227,8 +234,7 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
         enrolledAt: enrollmentResponse['enrolled_at'] != null
             ? DateTime.parse(enrollmentResponse['enrolled_at'] as String)
             : null,
-        enrollmentStatus:
-            enrollmentResponse['status'] as String? ?? 'active',
+        enrollmentStatus: enrollmentResponse['status'] as String? ?? 'active',
         lastAccessedAt: enrollmentResponse['last_accessed_at'] != null
             ? DateTime.parse(enrollmentResponse['last_accessed_at'] as String)
             : null,
@@ -274,12 +280,12 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
             .maybeSingle();
 
         final isCompleted = completionResponse != null;
-        final completedAt = completionResponse != null &&
+        final completedAt =
+            completionResponse != null &&
                 completionResponse['completed_at'] != null
             ? DateTime.parse(completionResponse['completed_at'] as String)
             : null;
-        final watchedSeconds =
-            completionResponse?['watched_seconds'] as int?;
+        final watchedSeconds = completionResponse?['watched_seconds'] as int?;
 
         // Check if lecture is locked due to quiz requirement
         bool isLocked = false;
@@ -290,26 +296,29 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
           isLocked = !isCompleted;
         }
 
-        lectures.add(Lecture(
-          id: lectureData['id'] as String,
-          courseId: lectureData['course_id'] as String,
-          sectionId: lectureData['section_id'] as String,
-          sectionTitle: lectureData['section_title'] as String,
-          title: lectureData['title'] as String,
-          description: lectureData['description'] as String?,
-          orderIndex: lectureData['order_index'] as int,
-          type: lectureData['type'] as String? ?? 'video',
-          durationMinutes: lectureData['duration_minutes'] as int?,
-          videoUrl: lectureData['video_url'] as String?,
-          requiredQuizId: lectureData['required_quiz_id'] as String?,
-          isCompleted: isCompleted,
-          isLocked: isLocked,
-          completedAt: completedAt,
-          watchedSeconds: watchedSeconds,
-          createdAt: lectureData['created_at'] != null
-              ? DateTime.parse(lectureData['created_at'] as String)
-              : null,
-        ));
+        lectures.add(
+          Lecture(
+            id: lectureData['id'] as String,
+            courseId: lectureData['course_id'] as String,
+            moduleId:
+                lectureData['module_id'] as String? ??
+                '', // Handle potential nulls during migration
+            title: lectureData['title'] as String,
+            description: lectureData['description'] as String?,
+            orderIndex: lectureData['order_index'] as int,
+            type: lectureData['type'] as String? ?? 'video',
+            durationMinutes: lectureData['duration_minutes'] as int?,
+            videoUrl: lectureData['video_url'] as String?,
+            requiredQuizId: lectureData['required_quiz_id'] as String?,
+            isCompleted: isCompleted,
+            isLocked: isLocked,
+            completedAt: completedAt,
+            watchedSeconds: watchedSeconds,
+            createdAt: lectureData['created_at'] != null
+                ? DateTime.parse(lectureData['created_at'] as String)
+                : null,
+          ),
+        );
       }
 
       return lectures;
@@ -331,23 +340,25 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
           .order('scheduled_at');
 
       return response
-          .map((data) => LiveClass(
-                id: data['id'] as String,
-                courseId: data['course_id'] as String,
-                lectureId: data['lecture_id'] as String?,
-                title: data['title'] as String,
-                description: data['description'] as String?,
-                scheduledAt: DateTime.parse(data['scheduled_at'] as String),
-                durationMinutes: data['duration_minutes'] as int? ?? 120,
-                zoomLink: data['zoom_link'] as String,
-                meetingId: data['meeting_id'] as String?,
-                passcode: data['passcode'] as String?,
-                recordingUrl: data['recording_url'] as String?,
-                status: data['status'] as String? ?? 'upcoming',
-                createdAt: data['created_at'] != null
-                    ? DateTime.parse(data['created_at'] as String)
-                    : null,
-              ))
+          .map(
+            (data) => LiveClass(
+              id: data['id'] as String,
+              courseId: data['course_id'] as String,
+              lectureId: data['lecture_id'] as String?,
+              title: data['title'] as String,
+              description: data['description'] as String?,
+              scheduledAt: DateTime.parse(data['scheduled_at'] as String),
+              durationMinutes: data['duration_minutes'] as int? ?? 120,
+              zoomLink: data['zoom_link'] as String,
+              meetingId: data['meeting_id'] as String?,
+              passcode: data['passcode'] as String?,
+              recordingUrl: data['recording_url'] as String?,
+              status: data['status'] as String? ?? 'upcoming',
+              createdAt: data['created_at'] != null
+                  ? DateTime.parse(data['created_at'] as String)
+                  : null,
+            ),
+          )
           .toList();
     } catch (e) {
       print('❌ Error fetching live classes: $e');
@@ -367,8 +378,9 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
           .eq('user_id', userId)
           .eq('status', 'active');
 
-      final courseIds =
-          enrollments.map((e) => e['course_id'] as String).toList();
+      final courseIds = enrollments
+          .map((e) => e['course_id'] as String)
+          .toList();
 
       if (courseIds.isEmpty) return [];
 
@@ -381,23 +393,25 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
           .order('scheduled_at');
 
       return response
-          .map((data) => LiveClass(
-                id: data['id'] as String,
-                courseId: data['course_id'] as String,
-                lectureId: data['lecture_id'] as String?,
-                title: data['title'] as String,
-                description: data['description'] as String?,
-                scheduledAt: DateTime.parse(data['scheduled_at'] as String),
-                durationMinutes: data['duration_minutes'] as int? ?? 120,
-                zoomLink: data['zoom_link'] as String,
-                meetingId: data['meeting_id'] as String?,
-                passcode: data['passcode'] as String?,
-                recordingUrl: data['recording_url'] as String?,
-                status: data['status'] as String? ?? 'upcoming',
-                createdAt: data['created_at'] != null
-                    ? DateTime.parse(data['created_at'] as String)
-                    : null,
-              ))
+          .map(
+            (data) => LiveClass(
+              id: data['id'] as String,
+              courseId: data['course_id'] as String,
+              lectureId: data['lecture_id'] as String?,
+              title: data['title'] as String,
+              description: data['description'] as String?,
+              scheduledAt: DateTime.parse(data['scheduled_at'] as String),
+              durationMinutes: data['duration_minutes'] as int? ?? 120,
+              zoomLink: data['zoom_link'] as String,
+              meetingId: data['meeting_id'] as String?,
+              passcode: data['passcode'] as String?,
+              recordingUrl: data['recording_url'] as String?,
+              status: data['status'] as String? ?? 'upcoming',
+              createdAt: data['created_at'] != null
+                  ? DateTime.parse(data['created_at'] as String)
+                  : null,
+            ),
+          )
           .toList();
     } catch (e) {
       print('❌ Error fetching upcoming live classes: $e');
@@ -417,18 +431,20 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
           .order('created_at');
 
       return response
-          .map((data) => CourseMaterial(
-                id: data['id'] as String,
-                courseId: data['course_id'] as String,
-                title: data['title'] as String,
-                type: data['type'] as String? ?? 'pdf',
-                fileUrl: data['file_url'] as String,
-                fileSizeMb: (data['file_size_mb'] as num?)?.toDouble(),
-                sectionId: data['section_id'] as String?,
-                createdAt: data['created_at'] != null
-                    ? DateTime.parse(data['created_at'] as String)
-                    : null,
-              ))
+          .map(
+            (data) => CourseMaterial(
+              id: data['id'] as String,
+              courseId: data['course_id'] as String,
+              title: data['title'] as String,
+              type: data['type'] as String? ?? 'pdf',
+              fileUrl: data['file_url'] as String,
+              fileSizeMb: (data['file_size_mb'] as num?)?.toDouble(),
+              moduleId: data['module_id'] as String?,
+              createdAt: data['created_at'] != null
+                  ? DateTime.parse(data['created_at'] as String)
+                  : null,
+            ),
+          )
           .toList();
     } catch (e) {
       print('❌ Error fetching course materials: $e');
@@ -505,8 +521,9 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
             sum + ((completion['watched_seconds'] as int?) ?? 0) ~/ 60,
       );
 
-      final progressPercentage =
-          totalLectures > 0 ? (completedLectures / totalLectures) * 100 : 0.0;
+      final progressPercentage = totalLectures > 0
+          ? (completedLectures / totalLectures) * 100
+          : 0.0;
 
       return {
         'course_id': courseId,
@@ -540,31 +557,59 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
     }
   }
 
-  /// Helper method to build section info from lectures
-  List<SectionInfo> _buildSections(List<Lecture> lectures) {
-    final Map<String, List<Lecture>> lecturesBySection = {};
+  @override
+  Future<List<SectionInfo>> getCourseModules({required String courseId}) async {
+    try {
+      final response = await _supabase
+          .from('modules')
+          .select()
+          .eq('course_id', courseId)
+          .order('order_index');
 
+      return response
+          .map(
+            (data) => SectionInfo(
+              id: data['id'] as String,
+              title: data['title'] as String,
+              totalDurationMinutes: 0, // Calculated later
+              lectureCount: 0, // Calculated later
+              completedCount: 0, // Calculated later
+            ),
+          )
+          .toList();
+    } catch (e) {
+      print('❌ Error fetching course modules: $e');
+      rethrow;
+    }
+  }
+
+  /// Helper method to build section info from lectures and modules
+  List<SectionInfo> _buildSections(
+    List<Lecture> lectures,
+    List<SectionInfo> modules,
+  ) {
+    final Map<String, List<Lecture>> lecturesByModule = {};
+
+    // Group lectures by module ID
     for (final lecture in lectures) {
-      if (!lecturesBySection.containsKey(lecture.sectionId)) {
-        lecturesBySection[lecture.sectionId] = [];
+      if (!lecturesByModule.containsKey(lecture.moduleId)) {
+        lecturesByModule[lecture.moduleId] = [];
       }
-      lecturesBySection[lecture.sectionId]!.add(lecture);
+      lecturesByModule[lecture.moduleId]!.add(lecture);
     }
 
-    return lecturesBySection.entries.map((entry) {
-      final sectionLectures = entry.value;
-      final totalDuration = sectionLectures.fold<int>(
+    // Return modules in order, with updated stats
+    return modules.map((module) {
+      final moduleLectures = lecturesByModule[module.id] ?? [];
+      final totalDuration = moduleLectures.fold<int>(
         0,
         (sum, l) => sum + (l.durationMinutes ?? 0),
       );
-      final completedCount =
-          sectionLectures.where((l) => l.isCompleted).length;
+      final completedCount = moduleLectures.where((l) => l.isCompleted).length;
 
-      return SectionInfo(
-        id: entry.key,
-        title: sectionLectures.first.sectionTitle,
+      return module.copyWith(
         totalDurationMinutes: totalDuration,
-        lectureCount: sectionLectures.length,
+        lectureCount: moduleLectures.length,
         completedCount: completedCount,
       );
     }).toList();

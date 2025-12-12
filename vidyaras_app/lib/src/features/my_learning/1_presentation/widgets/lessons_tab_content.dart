@@ -4,74 +4,73 @@ import 'package:go_router/go_router.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
 import '../../2_application/providers/my_learning_providers.dart';
 import '../../3_domain/models/lecture.dart';
+import '../../3_domain/models/enrolled_course.dart';
 
 /// Tab content showing course lessons/lectures
 /// Displays sections with lectures, showing completion and lock status
 class LessonsTabContent extends ConsumerWidget {
-  const LessonsTabContent({
-    super.key,
-    required this.courseId,
-  });
+  const LessonsTabContent({super.key, required this.courseId});
 
   final String courseId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final lecturesAsync = ref.watch(
-      courseLecturesProvider(courseId: courseId),
-    );
+    final courseAsync = ref.watch(courseDetailsProvider(courseId: courseId));
 
-    return lecturesAsync.when(
-      data: (lectures) {
-        if (lectures.isEmpty) {
+    return courseAsync.when(
+      data: (course) {
+        if (course.sections.isEmpty && course.lectures.isEmpty) {
           return _EmptyState();
         }
 
-        // Group lectures by section
-        final Map<String, List<Lecture>> lecturesBySection = {};
-        for (final lecture in lectures) {
-          if (!lecturesBySection.containsKey(lecture.sectionId)) {
-            lecturesBySection[lecture.sectionId] = [];
-          }
-          lecturesBySection[lecture.sectionId]!.add(lecture);
+        // Use pre-grouped lectures from the course model
+        final lecturesByModule = course.lecturesBySection;
+
+        // If we have sections, use them to order the display
+        if (course.sections.isNotEmpty) {
+          return ListView.builder(
+            padding: const EdgeInsets.all(20),
+            itemCount: course.sections.length,
+            itemBuilder: (context, index) {
+              final section = course.sections[index];
+              final sectionLectures = lecturesByModule[section.id] ?? [];
+
+              if (sectionLectures.isEmpty) {
+                // Skip empty sections if desired, or show empty state
+                // For now we show them as they might have description
+              }
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: _SectionCard(
+                  title: section.title,
+                  completed: section.completedCount,
+                  total: section.lectureCount,
+                  lectures: sectionLectures,
+                  courseId: courseId,
+                ),
+              );
+            },
+          );
         }
 
-        // Sort lectures within each section
-        for (final key in lecturesBySection.keys) {
-          lecturesBySection[key]!
-              .sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
-        }
-
-        return ListView.builder(
+        // Fallback for courses without sections (shouldn't happen with new architecture, but safe to handle)
+        return ListView(
           padding: const EdgeInsets.all(20),
-          itemCount: lecturesBySection.length,
-          itemBuilder: (context, index) {
-            final sectionId = lecturesBySection.keys.elementAt(index);
-            final sectionLectures = lecturesBySection[sectionId]!;
-            final sectionTitle = sectionLectures.first.sectionTitle;
-
-            // Calculate section progress
-            final completed =
-                sectionLectures.where((l) => l.isCompleted).length;
-            final total = sectionLectures.length;
-
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 24),
-              child: _SectionCard(
-                title: sectionTitle,
-                completed: completed,
-                total: total,
-                lectures: sectionLectures,
-                courseId: courseId,
-              ),
-            );
-          },
+          children: [
+            _SectionCard(
+              title: 'Course Content',
+              completed: course.lectures.where((l) => l.isCompleted).length,
+              total: course.lectures.length,
+              lectures: course.lectures,
+              courseId: courseId,
+            ),
+          ],
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Text('Error: ${error.toString()}'),
-      ),
+      error: (error, stack) =>
+          Center(child: Text('Error: ${error.toString()}')),
     );
   }
 }
@@ -110,9 +109,7 @@ class _SectionCardState extends State<_SectionCard> {
           // Section Header
           InkWell(
             onTap: () => setState(() => _isExpanded = !_isExpanded),
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(12),
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -153,9 +150,7 @@ class _SectionCardState extends State<_SectionCard> {
                               : 0,
                           strokeWidth: 3,
                           backgroundColor: AppColors.surfaceLight,
-                          valueColor: AlwaysStoppedAnimation(
-                            AppColors.primary,
-                          ),
+                          valueColor: AlwaysStoppedAnimation(AppColors.primary),
                         ),
                       ),
                       Text(
@@ -170,9 +165,7 @@ class _SectionCardState extends State<_SectionCard> {
                   ),
                   const SizedBox(width: 8),
                   Icon(
-                    _isExpanded
-                        ? Icons.expand_less
-                        : Icons.expand_more,
+                    _isExpanded ? Icons.expand_less : Icons.expand_more,
                     color: AppColors.textSecondary,
                   ),
                 ],
@@ -183,10 +176,10 @@ class _SectionCardState extends State<_SectionCard> {
           // Lectures List
           if (_isExpanded) ...[
             const Divider(height: 1),
-            ...widget.lectures.map((lecture) => _LectureItem(
-                  lecture: lecture,
-                  courseId: widget.courseId,
-                )),
+            ...widget.lectures.map(
+              (lecture) =>
+                  _LectureItem(lecture: lecture, courseId: widget.courseId),
+            ),
           ],
         ],
       ),
@@ -195,10 +188,7 @@ class _SectionCardState extends State<_SectionCard> {
 }
 
 class _LectureItem extends StatelessWidget {
-  const _LectureItem({
-    required this.lecture,
-    required this.courseId,
-  });
+  const _LectureItem({required this.lecture, required this.courseId});
 
   final Lecture lecture;
   final String courseId;
@@ -222,10 +212,7 @@ class _LectureItem extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(
-              color: AppColors.surfaceLight,
-              width: 1,
-            ),
+            bottom: BorderSide(color: AppColors.surfaceLight, width: 1),
           ),
         ),
         child: Column(
@@ -242,22 +229,22 @@ class _LectureItem extends StatelessWidget {
                     color: lecture.isCompleted
                         ? AppColors.success.withValues(alpha: 0.1)
                         : lecture.isLocked
-                            ? AppColors.surfaceLight
-                            : AppColors.primary.withValues(alpha: 0.1),
+                        ? AppColors.surfaceLight
+                        : AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     lecture.isCompleted
                         ? Icons.check_circle
                         : lecture.isLocked
-                            ? Icons.lock
-                            : Icons.play_circle_outline,
+                        ? Icons.lock
+                        : Icons.play_circle_outline,
                     size: 20,
                     color: lecture.isCompleted
                         ? AppColors.success
                         : lecture.isLocked
-                            ? AppColors.textTertiary
-                            : AppColors.primary,
+                        ? AppColors.textTertiary
+                        : AppColors.primary,
                   ),
                 ),
 
@@ -431,9 +418,7 @@ class _QuizPrompt extends StatelessWidget {
         child: Row(
           children: [
             Icon(
-              isCompleted
-                  ? Icons.check_circle
-                  : Icons.quiz_outlined,
+              isCompleted ? Icons.check_circle : Icons.quiz_outlined,
               size: 20,
               color: isCompleted ? AppColors.success : AppColors.primary,
             ),
@@ -506,10 +491,7 @@ class _EmptyState extends StatelessWidget {
             Text(
               'Course content will be available soon',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
             ),
           ],
         ),

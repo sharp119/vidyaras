@@ -9,8 +9,7 @@ class Lecture with _$Lecture {
   const factory Lecture({
     required String id,
     required String courseId,
-    required String sectionId,
-    required String sectionTitle,
+    required String moduleId,
     required String title,
     String? description,
     required int orderIndex,

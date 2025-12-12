@@ -56,29 +56,25 @@ class EnrolledCourse with _$EnrolledCourse {
 extension EnrolledCourseX on EnrolledCourse {
   /// Get next upcoming live class
   LiveClass? get nextLiveClass {
-    final upcoming = liveClasses
-        .where((lc) => lc.isUpcoming)
-        .toList()
+    final upcoming = liveClasses.where((lc) => lc.isUpcoming).toList()
       ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
     return upcoming.isEmpty ? null : upcoming.first;
   }
 
   /// Get all past live classes with recordings
   List<LiveClass> get pastClasses {
-    return liveClasses
-        .where((lc) => lc.isCompleted && lc.hasRecording)
-        .toList()
+    return liveClasses.where((lc) => lc.isCompleted && lc.hasRecording).toList()
       ..sort((a, b) => b.scheduledAt.compareTo(a.scheduledAt));
   }
 
-  /// Get lectures organized by section
+  /// Get lectures organized by section/module
   Map<String, List<Lecture>> get lecturesBySection {
     final Map<String, List<Lecture>> result = {};
     for (final lecture in lectures) {
-      if (!result.containsKey(lecture.sectionId)) {
-        result[lecture.sectionId] = [];
+      if (!result.containsKey(lecture.moduleId)) {
+        result[lecture.moduleId] = [];
       }
-      result[lecture.sectionId]!.add(lecture);
+      result[lecture.moduleId]!.add(lecture);
     }
     // Sort lectures within each section by order
     for (final key in result.keys) {
@@ -89,10 +85,9 @@ extension EnrolledCourseX on EnrolledCourse {
 
   /// Get next incomplete lecture
   Lecture? get nextLecture {
-    final incomplete = lectures
-        .where((l) => !l.isCompleted && !l.isLocked)
-        .toList()
-      ..sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
+    final incomplete =
+        lectures.where((l) => !l.isCompleted && !l.isLocked).toList()
+          ..sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
     return incomplete.isEmpty ? null : incomplete.first;
   }
 
@@ -101,8 +96,7 @@ extension EnrolledCourseX on EnrolledCourse {
       totalLectures > 0 && completedLectures == totalLectures;
 
   /// Format progress percentage
-  String get progressPercentage =>
-      '${(progress * 100).toInt()}%';
+  String get progressPercentage => '${(progress * 100).toInt()}%';
 
   /// Get estimated remaining time in hours
   int get estimatedRemainingHours {

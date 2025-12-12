@@ -23,8 +23,7 @@ Lecture _$LectureFromJson(Map<String, dynamic> json) {
 mixin _$Lecture {
   String get id => throw _privateConstructorUsedError;
   String get courseId => throw _privateConstructorUsedError;
-  String get sectionId => throw _privateConstructorUsedError;
-  String get sectionTitle => throw _privateConstructorUsedError;
+  String get moduleId => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   int get orderIndex => throw _privateConstructorUsedError;
@@ -57,8 +56,7 @@ abstract class $LectureCopyWith<$Res> {
   $Res call({
     String id,
     String courseId,
-    String sectionId,
-    String sectionTitle,
+    String moduleId,
     String title,
     String? description,
     int orderIndex,
@@ -92,8 +90,7 @@ class _$LectureCopyWithImpl<$Res, $Val extends Lecture>
   $Res call({
     Object? id = null,
     Object? courseId = null,
-    Object? sectionId = null,
-    Object? sectionTitle = null,
+    Object? moduleId = null,
     Object? title = null,
     Object? description = freezed,
     Object? orderIndex = null,
@@ -118,13 +115,9 @@ class _$LectureCopyWithImpl<$Res, $Val extends Lecture>
                 ? _value.courseId
                 : courseId // ignore: cast_nullable_to_non_nullable
                       as String,
-            sectionId: null == sectionId
-                ? _value.sectionId
-                : sectionId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            sectionTitle: null == sectionTitle
-                ? _value.sectionTitle
-                : sectionTitle // ignore: cast_nullable_to_non_nullable
+            moduleId: null == moduleId
+                ? _value.moduleId
+                : moduleId // ignore: cast_nullable_to_non_nullable
                       as String,
             title: null == title
                 ? _value.title
@@ -195,8 +188,7 @@ abstract class _$$LectureImplCopyWith<$Res> implements $LectureCopyWith<$Res> {
   $Res call({
     String id,
     String courseId,
-    String sectionId,
-    String sectionTitle,
+    String moduleId,
     String title,
     String? description,
     int orderIndex,
@@ -229,8 +221,7 @@ class __$$LectureImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? courseId = null,
-    Object? sectionId = null,
-    Object? sectionTitle = null,
+    Object? moduleId = null,
     Object? title = null,
     Object? description = freezed,
     Object? orderIndex = null,
@@ -255,13 +246,9 @@ class __$$LectureImplCopyWithImpl<$Res>
             ? _value.courseId
             : courseId // ignore: cast_nullable_to_non_nullable
                   as String,
-        sectionId: null == sectionId
-            ? _value.sectionId
-            : sectionId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        sectionTitle: null == sectionTitle
-            ? _value.sectionTitle
-            : sectionTitle // ignore: cast_nullable_to_non_nullable
+        moduleId: null == moduleId
+            ? _value.moduleId
+            : moduleId // ignore: cast_nullable_to_non_nullable
                   as String,
         title: null == title
             ? _value.title
@@ -326,8 +313,7 @@ class _$LectureImpl implements _Lecture {
   const _$LectureImpl({
     required this.id,
     required this.courseId,
-    required this.sectionId,
-    required this.sectionTitle,
+    required this.moduleId,
     required this.title,
     this.description,
     required this.orderIndex,
@@ -351,9 +337,7 @@ class _$LectureImpl implements _Lecture {
   @override
   final String courseId;
   @override
-  final String sectionId;
-  @override
-  final String sectionTitle;
+  final String moduleId;
   @override
   final String title;
   @override
@@ -387,7 +371,7 @@ class _$LectureImpl implements _Lecture {
 
   @override
   String toString() {
-    return 'Lecture(id: $id, courseId: $courseId, sectionId: $sectionId, sectionTitle: $sectionTitle, title: $title, description: $description, orderIndex: $orderIndex, type: $type, durationMinutes: $durationMinutes, videoUrl: $videoUrl, requiredQuizId: $requiredQuizId, isCompleted: $isCompleted, isLocked: $isLocked, completedAt: $completedAt, watchedSeconds: $watchedSeconds, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Lecture(id: $id, courseId: $courseId, moduleId: $moduleId, title: $title, description: $description, orderIndex: $orderIndex, type: $type, durationMinutes: $durationMinutes, videoUrl: $videoUrl, requiredQuizId: $requiredQuizId, isCompleted: $isCompleted, isLocked: $isLocked, completedAt: $completedAt, watchedSeconds: $watchedSeconds, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -398,10 +382,8 @@ class _$LectureImpl implements _Lecture {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.courseId, courseId) ||
                 other.courseId == courseId) &&
-            (identical(other.sectionId, sectionId) ||
-                other.sectionId == sectionId) &&
-            (identical(other.sectionTitle, sectionTitle) ||
-                other.sectionTitle == sectionTitle) &&
+            (identical(other.moduleId, moduleId) ||
+                other.moduleId == moduleId) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.description, description) ||
                 other.description == description) &&
@@ -434,8 +416,7 @@ class _$LectureImpl implements _Lecture {
     runtimeType,
     id,
     courseId,
-    sectionId,
-    sectionTitle,
+    moduleId,
     title,
     description,
     orderIndex,
@@ -469,8 +450,7 @@ abstract class _Lecture implements Lecture {
   const factory _Lecture({
     required final String id,
     required final String courseId,
-    required final String sectionId,
-    required final String sectionTitle,
+    required final String moduleId,
     required final String title,
     final String? description,
     required final int orderIndex,
@@ -493,9 +473,7 @@ abstract class _Lecture implements Lecture {
   @override
   String get courseId;
   @override
-  String get sectionId;
-  @override
-  String get sectionTitle;
+  String get moduleId;
   @override
   String get title;
   @override

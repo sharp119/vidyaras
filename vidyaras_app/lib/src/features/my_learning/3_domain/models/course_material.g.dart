@@ -14,7 +14,7 @@ _$CourseMaterialImpl _$$CourseMaterialImplFromJson(Map<String, dynamic> json) =>
       type: json['type'] as String? ?? 'pdf',
       fileUrl: json['fileUrl'] as String,
       fileSizeMb: (json['fileSizeMb'] as num?)?.toDouble(),
-      sectionId: json['sectionId'] as String?,
+      moduleId: json['moduleId'] as String?,
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
@@ -29,6 +29,6 @@ Map<String, dynamic> _$$CourseMaterialImplToJson(
   'type': instance.type,
   'fileUrl': instance.fileUrl,
   'fileSizeMb': instance.fileSizeMb,
-  'sectionId': instance.sectionId,
+  'moduleId': instance.moduleId,
   'createdAt': instance.createdAt?.toIso8601String(),
 };

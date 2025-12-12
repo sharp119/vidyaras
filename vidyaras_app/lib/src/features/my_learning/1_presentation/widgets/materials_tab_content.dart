@@ -8,10 +8,7 @@ import '../../3_domain/models/course_material.dart';
 /// Tab content showing course materials (PDFs, docs, etc.)
 /// Displays downloadable resources organized by type or section
 class MaterialsTabContent extends ConsumerWidget {
-  const MaterialsTabContent({
-    super.key,
-    required this.courseId,
-  });
+  const MaterialsTabContent({super.key, required this.courseId});
 
   final String courseId;
 
@@ -28,13 +25,16 @@ class MaterialsTabContent extends ConsumerWidget {
         }
 
         // Group materials by section (if section is null, use "General")
-        final Map<String, List<CourseMaterial>> materialsBySection = {};
+        // Use course modules for section titles if available
+        // Note: For now we group by moduleId itself or 'General'
+        // In the future we might want to pass formatted module titles
+        final Map<String, List<CourseMaterial>> materialsByModule = {};
         for (final material in materials) {
-          final section = material.sectionId ?? 'General';
-          if (!materialsBySection.containsKey(section)) {
-            materialsBySection[section] = [];
+          final module = material.moduleId ?? 'General';
+          if (!materialsByModule.containsKey(module)) {
+            materialsByModule[module] = [];
           }
-          materialsBySection[section]!.add(material);
+          materialsByModule[module]!.add(material);
         }
 
         return ListView(
@@ -92,7 +92,7 @@ class MaterialsTabContent extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // Materials by Section
-            ...materialsBySection.entries.map((entry) {
+            ...materialsByModule.entries.map((entry) {
               final sectionName = entry.key;
               final sectionMaterials = entry.value;
 
@@ -104,11 +104,7 @@ class MaterialsTabContent extends ConsumerWidget {
                     // Section Header
                     Row(
                       children: [
-                        Icon(
-                          Icons.folder,
-                          size: 18,
-                          color: AppColors.primary,
-                        ),
+                        Icon(Icons.folder, size: 18, color: AppColors.primary),
                         const SizedBox(width: 8),
                         Text(
                           sectionName,
@@ -143,10 +139,12 @@ class MaterialsTabContent extends ConsumerWidget {
                     const SizedBox(height: 12),
 
                     // Material Items
-                    ...sectionMaterials.map((material) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: _MaterialItem(material: material),
-                        )),
+                    ...sectionMaterials.map(
+                      (material) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: _MaterialItem(material: material),
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -157,9 +155,8 @@ class MaterialsTabContent extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Text('Error: ${error.toString()}'),
-      ),
+      error: (error, stack) =>
+          Center(child: Text('Error: ${error.toString()}')),
     );
   }
 }
@@ -218,10 +215,7 @@ class _MaterialItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: AppColors.surfaceLight,
-            width: 1,
-          ),
+          border: Border.all(color: AppColors.surfaceLight, width: 1),
         ),
         child: Row(
           children: [
@@ -303,11 +297,7 @@ class _MaterialItem extends StatelessWidget {
                 color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                Icons.download,
-                size: 20,
-                color: AppColors.primary,
-              ),
+              child: Icon(Icons.download, size: 20, color: AppColors.primary),
             ),
           ],
         ),
@@ -325,11 +315,7 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.folder_open,
-              size: 64,
-              color: AppColors.textTertiary,
-            ),
+            Icon(Icons.folder_open, size: 64, color: AppColors.textTertiary),
             const SizedBox(height: 16),
             const Text(
               'No Materials Available',
@@ -343,10 +329,7 @@ class _EmptyState extends StatelessWidget {
             Text(
               'Course materials will be added by the instructor',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
             ),
           ],
         ),

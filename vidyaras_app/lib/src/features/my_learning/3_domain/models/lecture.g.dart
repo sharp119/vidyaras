@@ -10,8 +10,7 @@ _$LectureImpl _$$LectureImplFromJson(Map<String, dynamic> json) =>
     _$LectureImpl(
       id: json['id'] as String,
       courseId: json['courseId'] as String,
-      sectionId: json['sectionId'] as String,
-      sectionTitle: json['sectionTitle'] as String,
+      moduleId: json['moduleId'] as String,
       title: json['title'] as String,
       description: json['description'] as String?,
       orderIndex: (json['orderIndex'] as num).toInt(),
@@ -37,8 +36,7 @@ Map<String, dynamic> _$$LectureImplToJson(_$LectureImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'courseId': instance.courseId,
-      'sectionId': instance.sectionId,
-      'sectionTitle': instance.sectionTitle,
+      'moduleId': instance.moduleId,
       'title': instance.title,
       'description': instance.description,
       'orderIndex': instance.orderIndex,
