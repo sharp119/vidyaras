@@ -2,10 +2,12 @@ import java.util.Properties
 import java.io.FileInputStream
 
 val keystorePropertiesFile = rootProject.file("key.properties")
-val keystoreProperties = Properties()
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        load(FileInputStream(keystorePropertiesFile))
+    }
 }
+val hasReleaseKeystore = keystorePropertiesFile.exists()
 
 plugins {
     id("com.android.application")
@@ -29,11 +31,23 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["storePassword"] as String
+        if (hasReleaseKeystore) {
+            create("release") {
+                keyAlias = keystoreProperties["keyAlias"]?.toString()
+                    ?: error("Missing keyAlias in key.properties")
+                keyPassword = keystoreProperties["keyPassword"]?.toString()
+                    ?: error("Missing keyPassword in key.properties")
+                val storeFilePath = keystoreProperties["storeFile"]?.toString()
+                    ?: error("Missing storeFile in key.properties")
+                storeFile = file(storeFilePath)
+                storePassword = keystoreProperties["storePassword"]?.toString()
+                    ?: error("Missing storePassword in key.properties")
+            }
+        } else {
+            // Fallback so debug builds work even without a release keystore
+            create("release") {
+                initWith(getByName("debug"))
+            }
         }
     }
 
