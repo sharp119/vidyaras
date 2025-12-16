@@ -74,7 +74,9 @@ class _TabButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 15,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
+            color: isSelected
+                ? AppColors.textOnPrimary
+                : AppColors.textSecondary,
           ),
         ),
       ),

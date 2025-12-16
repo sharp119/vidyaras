@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
 import '../../../../shared/presentation/components/cards/stats_card.dart';
+import '../../../../shared/presentation/components/navigation/unified_header.dart';
 import '../../2_application/notifiers/test_notifier.dart';
-import '../../2_application/providers/test_providers.dart';
 import '../widgets/available_test_card.dart';
 import '../widgets/completed_test_card.dart'; // Make sure this is imported
 import '../widgets/locked_tab_placeholder.dart';
@@ -133,62 +133,10 @@ class TestSeriesScreen extends ConsumerWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Container(
-          height: 200,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Test Series',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Practice and track your progress',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-                Builder(
-                  builder: (context) => InkWell(
-                    onTap: () => context.push('/performance'),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.assessment_outlined,
-                        size: 32,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        UnifiedHeader(
+          title: 'Practice and track your progress',
+          actionIcon: Icons.assessment_outlined,
+          actionRoute: '/performance',
         ),
         Positioned(
           left: 20,

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../features/home/2_application/notifiers/home_notifier.dart';
 import '../../../features/home/3_domain/models/course.dart';
 import '../../../features/home/1_presentation/widgets/category_pills.dart';
-import '../theme/app_colors.dart';
 import '../widgets/courses/courses_tab_bar.dart';
 import '../widgets/courses/course_search_bar.dart';
 import '../widgets/courses/course_filters_bottom_sheet.dart';
@@ -83,20 +82,13 @@ class _CoursesScreenState extends ConsumerState<CoursesScreen> {
   @override
   Widget build(BuildContext context) {
     final homeState = ref.watch(homeNotifierProvider);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        title: const Text(
-          'Courses',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        backgroundColor: AppColors.surface,
-        elevation: 0,
+        title: Text('Courses', style: theme.textTheme.headlineMedium),
         centerTitle: false,
       ),
       body: homeState.when(
@@ -106,11 +98,11 @@ class _CoursesScreenState extends ConsumerState<CoursesScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              Icon(Icons.error_outline, size: 48, color: colorScheme.error),
               const SizedBox(height: 16),
               Text(
                 message,
-                style: const TextStyle(color: AppColors.textSecondary),
+                style: theme.textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -157,7 +149,9 @@ class _CoursesScreenState extends ConsumerState<CoursesScreen> {
             filteredCourses = filteredCourses.where((c) => c.isLive).toList();
           }
           if (_filters.showRecordedOnly == true) {
-            filteredCourses = filteredCourses.where((c) => c.isRecorded).toList();
+            filteredCourses = filteredCourses
+                .where((c) => c.isRecorded)
+                .toList();
           }
           if (_filters.minRating != null) {
             filteredCourses = filteredCourses
@@ -169,8 +163,9 @@ class _CoursesScreenState extends ConsumerState<CoursesScreen> {
           if (_filters.sortBy != null) {
             switch (_filters.sortBy) {
               case 'popular':
-                filteredCourses.sort((a, b) =>
-                    b.enrolledCount.compareTo(a.enrolledCount));
+                filteredCourses.sort(
+                  (a, b) => b.enrolledCount.compareTo(a.enrolledCount),
+                );
                 break;
               case 'rating':
                 filteredCourses.sort((a, b) => b.rating.compareTo(a.rating));
@@ -188,42 +183,44 @@ class _CoursesScreenState extends ConsumerState<CoursesScreen> {
           // Separate courses for different tabs
           final myCourses = _selectedTab == 0
               ? (_searchQuery.isEmpty &&
-                      _selectedCategory == 'all' &&
-                      !_filters.hasActiveFilters
-                  ? homeData.myCourses
-                  : filteredCourses
-                      .where((c) => homeData.myCourses.contains(c))
-                      .toList())
+                        _selectedCategory == 'all' &&
+                        !_filters.hasActiveFilters
+                    ? homeData.myCourses
+                    : filteredCourses
+                          .where((c) => homeData.myCourses.contains(c))
+                          .toList())
               : <Course>[];
 
           final recommendedCourses = _selectedTab == 1
               ? (_searchQuery.isEmpty &&
-                      _selectedCategory == 'all' &&
-                      !_filters.hasActiveFilters
-                  ? homeData.recommendedCourses
-                  : filteredCourses
-                      .where((c) => homeData.recommendedCourses.contains(c))
-                      .toList())
+                        _selectedCategory == 'all' &&
+                        !_filters.hasActiveFilters
+                    ? homeData.recommendedCourses
+                    : filteredCourses
+                          .where((c) => homeData.recommendedCourses.contains(c))
+                          .toList())
               : <Course>[];
 
           final freeCourses = _selectedTab == 1
               ? (_searchQuery.isEmpty &&
-                      _selectedCategory == 'all' &&
-                      !_filters.hasActiveFilters
-                  ? homeData.freeCourses
-                  : filteredCourses
-                      .where((c) => homeData.freeCourses.contains(c))
-                      .toList())
+                        _selectedCategory == 'all' &&
+                        !_filters.hasActiveFilters
+                    ? homeData.freeCourses
+                    : filteredCourses
+                          .where((c) => homeData.freeCourses.contains(c))
+                          .toList())
               : <Course>[];
 
           // Other courses (not in recommended or free)
           final otherCourses = _selectedTab == 1
               ? filteredCourses
-                  .where((c) =>
-                      !homeData.recommendedCourses.contains(c) &&
-                      !homeData.freeCourses.contains(c) &&
-                      !homeData.myCourses.contains(c))
-                  .toList()
+                    .where(
+                      (c) =>
+                          !homeData.recommendedCourses.contains(c) &&
+                          !homeData.freeCourses.contains(c) &&
+                          !homeData.myCourses.contains(c),
+                    )
+                    .toList()
               : <Course>[];
 
           return Column(
@@ -252,14 +249,14 @@ class _CoursesScreenState extends ConsumerState<CoursesScreen> {
 
               // Category Pills
               SelectableCategoryPills(
-                categories: const [
+                categories: [
                   CategoryItem(
                     id: 'all',
                     label: 'All',
                     icon: Icons.grid_view,
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
-                  CategoryItem(
+                  const CategoryItem(
                     id: 'music',
                     label: 'Music',
                     icon: Icons.music_note,
