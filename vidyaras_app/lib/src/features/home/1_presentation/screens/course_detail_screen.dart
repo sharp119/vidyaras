@@ -5,24 +5,17 @@ import 'package:intl/intl.dart';
 import '../../2_application/providers/home_providers.dart';
 import '../../3_domain/models/course_detail.dart';
 import '../../3_domain/models/enrollment_message_data.dart';
-import '../widgets/course_stats_card.dart';
 import '../widgets/curriculum_section_card.dart';
 import '../widgets/batch_info_card.dart';
-import '../widgets/pricing_card.dart';
-import '../widgets/course_review_card.dart';
 import '../widgets/enrollment_options_bottom_sheet.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
-import '../../../../shared/presentation/components/buttons/primary_button.dart';
 import '../../../auth/2_application/providers/auth_providers.dart';
 import '../../../auth/3_domain/models/app_user.dart' as domain;
 
 /// Course detail screen showing comprehensive course information
 /// Displays curriculum, pricing, reviews, and enrollment options
 class CourseDetailScreen extends ConsumerStatefulWidget {
-  const CourseDetailScreen({
-    super.key,
-    required this.courseId,
-  });
+  const CourseDetailScreen({super.key, required this.courseId});
 
   final String courseId;
 
@@ -30,20 +23,16 @@ class CourseDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<CourseDetailScreen> createState() => _CourseDetailScreenState();
 }
 
-class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  bool _selectedFullPayment = true;
+class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
+  bool _selectedFullPayment = false; // Default to EMI
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -53,10 +42,23 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
 
     return Scaffold(
       body: SafeArea(
-        top: false, // Allow content to go under status bar
-        bottom: true, // Respect bottom system UI
+        top: false,
+        bottom: false,
         child: courseDetailAsync.when(
-          data: (courseDetail) => _buildContent(context, courseDetail),
+          data: (courseDetail) => Stack(
+            children: [
+              // Scrollable content
+              _buildContent(context, courseDetail),
+
+              // Fixed bottom pricing section
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: _buildFixedBottomSection(courseDetail),
+              ),
+            ],
+          ),
           loading: () => _buildLoading(),
           error: (error, stack) => _buildError(error),
         ),
@@ -67,7 +69,6 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
   Widget _buildContent(BuildContext context, CourseDetail courseDetail) {
     final screenWidth = MediaQuery.of(context).size.width;
     final horizontalPadding = screenWidth * 0.0549;
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return CustomScrollView(
       slivers: [
@@ -85,18 +86,10 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
 
                 // Course Info Section
                 _buildCourseInfoSection(courseDetail),
-                const SizedBox(height: 16),
-
-                // Tags Section
-                _buildTagsSection(courseDetail),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
 
                 // Description
                 _buildDescriptionSection(courseDetail),
-                const SizedBox(height: 24),
-
-                // Stats Cards
-                _buildStatsSection(courseDetail),
                 const SizedBox(height: 24),
 
                 // Tabs Section
@@ -112,17 +105,8 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
                   const SizedBox(height: 24),
                 ],
 
-                // Pricing Section
-                if (!courseDetail.pricing.isFree) ...[
-                  _buildPricingSection(courseDetail),
-                  const SizedBox(height: 24),
-                ],
-
-                // CTA Button
-                _buildCTAButton(courseDetail),
-
-                // Bottom padding respecting system UI
-                SizedBox(height: bottomPadding > 0 ? bottomPadding + 16 : 32),
+                // Bottom padding for fixed section (pricing + button ~200px)
+                const SizedBox(height: 200),
               ],
             ),
           ),
@@ -133,14 +117,14 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
 
   Widget _buildHeroHeader(CourseDetail courseDetail) {
     return SliverAppBar(
-      expandedHeight: 240,
+      expandedHeight: 220,
       pinned: true,
       stretch: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.primary, // Orange when collapsed
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 14, top: 16),
+        padding: const EdgeInsets.only(left: 8, top: 8),
         child: CircleAvatar(
           backgroundColor: Colors.black.withOpacity(0.5),
           child: IconButton(
@@ -150,28 +134,6 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
           ),
         ),
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 15, top: 16),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: courseDetail.basicInfo.isLive
-                  ? const Color(0xFFEF4444)
-                  : AppColors.primary,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              courseDetail.basicInfo.isLive ? 'LIVE CLASSES' : 'RECORDED COURSE',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
-      ],
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           fit: StackFit.expand,
@@ -180,9 +142,8 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
               CachedNetworkImage(
                 imageUrl: courseDetail.basicInfo.thumbnailUrl!,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: AppColors.surfaceLight,
-                ),
+                placeholder: (context, url) =>
+                    Container(color: AppColors.surfaceLight),
                 errorWidget: (context, url, error) => Container(
                   color: AppColors.surfaceLight,
                   child: const Icon(Icons.image_not_supported, size: 48),
@@ -190,18 +151,6 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
               )
             else
               Container(color: AppColors.surfaceLight),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.3),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
           ],
         ),
         stretchModes: const [StretchMode.zoomBackground],
@@ -215,151 +164,214 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Badges row at top
+        Row(
+          children: [
+            if (courseDetail.basicInfo.isLive ||
+                courseDetail.basicInfo.isRecorded)
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: courseDetail.basicInfo.isLive
+                      ? AppColors.error
+                      : AppColors.primary,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  courseDetail.basicInfo.isLive ? 'LIVE' : 'RECORDED',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.accent,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Text(
+                'BESTSELLER',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 18),
+
+        // Course title
         Text(
           courseDetail.basicInfo.title,
           style: textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
+            fontSize: 26,
           ),
-          maxLines: 2,
+          maxLines: 3,
           overflow: TextOverflow.ellipsis,
         ),
-        const SizedBox(height: 8),
-        Text(
-          courseDetail.basicInfo.instructor,
-          style: textTheme.bodyMedium?.copyWith(
-            color: AppColors.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 18),
+
+        // Instructor row with avatar and rating
         Row(
           children: [
-            const Icon(Icons.star, color: Color(0xFFFBBF24), size: 18),
-            const SizedBox(width: 4),
-            Text(
-              courseDetail.basicInfo.rating.toStringAsFixed(1),
-              style: textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+            Container(
+              width: 53,
+              height: 53,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.person,
+                size: 31,
+                color: AppColors.primary,
               ),
             ),
-            const SizedBox(width: 2),
-            Text(
-              '(${courseDetail.basicInfo.reviewCount})',
-              style: textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(width: 16),
-            const Icon(Icons.person_outline,
-                color: AppColors.textSecondary, size: 18),
-            const SizedBox(width: 4),
-            Text(
-              '${courseDetail.basicInfo.enrolledCount} students',
-              style: textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    courseDetail.basicInfo.instructor,
+                    style: textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.star,
+                        color: Color(0xFFFBBF24),
+                        size: 18,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        courseDetail.basicInfo.rating.toStringAsFixed(1),
+                        style: textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${courseDetail.basicInfo.reviewCount} REVIEWS',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 22),
+
+        // Stats row (Duration, Lessons, Level)
+        Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceLight,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _StatItem(
+                icon: Icons.access_time,
+                label: 'DURATION',
+                value: courseDetail.basicInfo.duration ?? '12 Hours',
+              ),
+              Container(width: 1, height: 40, color: AppColors.border),
+              _StatItem(
+                icon: Icons.videocam_outlined,
+                label: 'LESSONS',
+                value:
+                    '${courseDetail.curriculum.length * 5}', // Approximate based on sections
+              ),
+              Container(width: 1, height: 40, color: AppColors.border),
+              _StatItem(
+                icon: Icons.signal_cellular_alt,
+                label: 'LEVEL',
+                value: 'Beginner',
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildTagsSection(CourseDetail courseDetail) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        if (courseDetail.basicInfo.isLive || courseDetail.basicInfo.isRecorded)
-          Chip(
-            label: Text(
-              courseDetail.basicInfo.isLive ? 'Live Classes' : 'Recorded',
-              style: textTheme.labelSmall?.copyWith(
-                color: AppColors.textPrimary,
-              ),
-            ),
-            backgroundColor: AppColors.surfaceLight,
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-            visualDensity: VisualDensity.compact,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
+  Widget _StatItem({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Expanded(
+      child: Column(
+        children: [
+          Icon(icon, size: 22, color: AppColors.textSecondary),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+              letterSpacing: 0.5,
             ),
           ),
-        if (courseDetail.language != null)
-          Chip(
-            label: Text(
-              'Bilingual',
-              style: textTheme.labelSmall?.copyWith(
-                color: AppColors.textPrimary,
-              ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
             ),
-            backgroundColor: AppColors.surfaceLight,
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-            visualDensity: VisualDensity.compact,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-        if (courseDetail.hasCertificate)
-          Chip(
-            avatar: const Icon(
-              Icons.workspace_premium_outlined,
-              size: 12,
-              color: AppColors.accentDark,
-            ),
-            label: Text(
-              'Certificate',
-              style: textTheme.labelSmall?.copyWith(
-                color: AppColors.accentDark,
-              ),
-            ),
-            backgroundColor: AppColors.accent.withOpacity(0.1),
-            padding: const EdgeInsets.only(left: 6, right: 8, top: 3, bottom: 3),
-            visualDensity: VisualDensity.compact,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildDescriptionSection(CourseDetail courseDetail) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Text(
-      courseDetail.description,
-      style: textTheme.bodyLarge?.copyWith(
-        color: AppColors.textSecondary,
-      ),
-    );
-  }
-
-  Widget _buildStatsSection(CourseDetail courseDetail) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: CourseStatsCard(
-            icon: Icons.timer_outlined,
-            value: courseDetail.basicInfo.duration ?? 'N/A',
-            label: 'Duration',
+        Text(
+          'About Course',
+          style: textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: CourseStatsCard(
-            icon: courseDetail.basicInfo.isLive
-                ? Icons.calendar_today_outlined
-                : Icons.schedule_outlined,
-            value: courseDetail.basicInfo.isLive
-                ? (courseDetail.liveBatch?.schedule ?? 'See batch')
-                : (courseDetail.accessDays != null
-                    ? '${courseDetail.accessDays} days'
-                    : 'Lifetime'),
-            label: courseDetail.basicInfo.isLive ? 'Schedule' : 'Access',
+        const SizedBox(height: 12),
+        Text(
+          courseDetail.description,
+          style: textTheme.bodyMedium?.copyWith(
+            color: AppColors.textSecondary,
+            height: 1.6,
           ),
         ),
       ],
@@ -368,210 +380,154 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
 
   Widget _buildTabsSection(CourseDetail courseDetail) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          height: 44,
-          decoration: BoxDecoration(
-            color: AppColors.surfaceLight,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: TabBar(
-            controller: _tabController,
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicator: BoxDecoration(
-              borderRadius: BorderRadius.circular(6),
-              color: Colors.white,
-            ),
-            labelColor: AppColors.textPrimary,
-            unselectedLabelColor: AppColors.textSecondary,
-            labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-            indicatorPadding: const EdgeInsets.all(4),
-            tabs: const [
-              Tab(text: 'Overview'),
-              Tab(text: 'Curriculum'),
-              Tab(text: 'Reviews'),
-            ],
+        Text(
+          'Syllabus',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          height: 400,
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              _buildOverviewTab(courseDetail),
-              _buildCurriculumTab(courseDetail),
-              _buildReviewsTab(courseDetail),
-            ],
-          ),
-        ),
+        ...courseDetail.curriculum.asMap().entries.map((entry) {
+          final index = entry.key;
+          final section = entry.value;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: CurriculumSectionCard(
+              section: section,
+              sectionNumber: index,
+            ),
+          );
+        }),
       ],
     );
   }
 
-  Widget _buildOverviewTab(CourseDetail courseDetail) {
-    final textTheme = Theme.of(context).textTheme;
+  Widget _buildFixedBottomSection(CourseDetail courseDetail) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
-    return SingleChildScrollView(
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 16,
+        bottom: bottomPadding > 0 ? bottomPadding + 16 : 20,
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            'What You\'ll Learn',
-            style: textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+          // Payment mode selector
+          if (!courseDetail.pricing.isFree) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: _buildPaymentModeOption(
+                    title: 'Pay Full',
+                    price: '₹${courseDetail.pricing.fullPrice}',
+                    isSelected: _selectedFullPayment,
+                    onTap: () => setState(() => _selectedFullPayment = true),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                if (courseDetail.pricing.emiMonthlyPrice != null)
+                  Expanded(
+                    child: _buildPaymentModeOption(
+                      title: 'Monthly EMI',
+                      price: '₹${courseDetail.pricing.emiMonthlyPrice}/mo',
+                      isSelected: !_selectedFullPayment,
+                      onTap: () => setState(() => _selectedFullPayment = false),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          // Enroll button
+          SizedBox(
+            width: double.infinity,
+            height: 57,
+            child: ElevatedButton(
+              onPressed: () => _showEnrollmentOptions(courseDetail),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                courseDetail.pricing.isFree
+                    ? 'Enroll Now (Free)'
+                    : 'Contact Us to Enroll',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 12),
-          ...courseDetail.whatYouLearn.map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.check_circle_outline,
-                        size: 18, color: AppColors.success),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        item,
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )),
-          const SizedBox(height: 24),
-          Text(
-            'Course Includes',
-            style: textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          ...courseDetail.courseIncludes.map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('• '),
-                    Expanded(
-                      child: Text(
-                        item,
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )),
-          const SizedBox(height: 24),
-          Text(
-            'Prerequisites',
-            style: textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          ...courseDetail.prerequisites.map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('• '),
-                    Expanded(
-                      child: Text(
-                        item,
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )),
         ],
       ),
     );
   }
 
-  Widget _buildCurriculumTab(CourseDetail courseDetail) {
-    return ListView.separated(
-      itemCount: courseDetail.curriculum.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 24),
-      itemBuilder: (context, index) {
-        return CurriculumSectionCard(
-          section: courseDetail.curriculum[index],
-          sectionNumber: index,
-        );
-      },
-    );
-  }
-
-  Widget _buildReviewsTab(CourseDetail courseDetail) {
-    if (courseDetail.reviews.isEmpty) {
-      return Center(
-        child: Text(
-          'No reviews yet',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
+  Widget _buildPaymentModeOption({
+    required String title,
+    required String price,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.surface : AppColors.surfaceLight,
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.border,
+            width: isSelected ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: isSelected
+                    ? AppColors.textPrimary
+                    : AppColors.textSecondary,
               ),
-        ),
-      );
-    }
-
-    return ListView.separated(
-      itemCount: courseDetail.reviews.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 16),
-      itemBuilder: (context, index) {
-        return CourseReviewCard(review: courseDetail.reviews[index]);
-      },
-    );
-  }
-
-  Widget _buildPricingSection(CourseDetail courseDetail) {
-    return Row(
-      children: [
-        Expanded(
-          child: PricingCard(
-            title: 'Pay Full',
-            price: courseDetail.pricing.fullPrice,
-            isSelected: _selectedFullPayment,
-            onTap: () => setState(() => _selectedFullPayment = true),
-          ),
-        ),
-        if (courseDetail.pricing.emiMonthlyPrice != null) ...[
-          const SizedBox(width: 12),
-          Expanded(
-            child: PricingCard(
-              title: 'Monthly EMI',
-              price: courseDetail.pricing.emiMonthlyPrice!,
-              subtitle: '/mo',
-              isSelected: !_selectedFullPayment,
-              onTap: () => setState(() => _selectedFullPayment = false),
             ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildCTAButton(CourseDetail courseDetail) {
-    final label = courseDetail.pricing.isFree
-        ? 'Enroll Now (Free)'
-        : 'Contact Us to Enroll';
-
-    return PrimaryButton(
-      label: label,
-      onPressed: () => _showEnrollmentOptions(courseDetail),
-      fullWidth: true,
+            const SizedBox(height: 4),
+            Text(
+              price,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: isSelected ? AppColors.primary : AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -602,9 +558,8 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => EnrollmentOptionsBottomSheet(
-        enrollmentData: enrollmentData,
-      ),
+      builder: (context) =>
+          EnrollmentOptionsBottomSheet(enrollmentData: enrollmentData),
     );
   }
 
@@ -625,8 +580,9 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
       // Course data
       courseTitle: courseDetail.basicInfo.title,
       instructor: courseDetail.basicInfo.instructor,
-      courseType:
-          courseDetail.basicInfo.isLive ? 'Live Classes' : 'Recorded Course',
+      courseType: courseDetail.basicInfo.isLive
+          ? 'Live Classes'
+          : 'Recorded Course',
 
       // Pricing
       selectedPrice: selectedPrice,
@@ -648,11 +604,7 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
   }
 
   Widget _buildLoading() {
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 
   Widget _buildError(Object error) {

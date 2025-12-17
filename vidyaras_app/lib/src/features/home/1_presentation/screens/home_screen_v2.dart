@@ -8,9 +8,11 @@ import '../../../auth/2_application/providers/auth_providers.dart';
 import '../../2_application/notifiers/home_notifier.dart';
 import '../../../../shared/presentation/widgets/adaptive_header.dart';
 import '../widgets/category_pills.dart';
-import '../widgets/course_list_card.dart';
+
 import '../widgets/large_course_card.dart';
 import '../widgets/refer_earn_card.dart';
+import '../widgets/compact_course_resume_card.dart';
+import '../../../my_learning/2_application/providers/my_learning_providers.dart';
 
 /// Home screen V2 - Exact UI match with screenshots
 class HomeScreenV2 extends ConsumerWidget {
@@ -144,102 +146,79 @@ class HomeScreenV2 extends ConsumerWidget {
                 // Spacing to account for the overlapping stats card
                 SliverToBoxAdapter(child: SizedBox(height: 50 + offset)),
 
-                // Category Pills
+                // Continue Learning Section - Show only most recently accessed course
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8, bottom: 24),
-                    child: CategoryPills(
-                      categories: const [
-                        CategoryItem(
-                          id: 'music',
-                          label: 'Music',
-                          icon: Icons.music_note,
-                          color: Color(0xFFA855F7),
-                        ),
-                        CategoryItem(
-                          id: 'wellness',
-                          label: 'Wellness',
-                          icon: Icons.spa,
-                          color: Color(0xFF10B981),
-                        ),
-                        CategoryItem(
-                          id: 'yoga',
-                          label: 'Yoga',
-                          icon: Icons.self_improvement,
-                          color: Color(0xFF8B5CF6),
-                        ),
-                        CategoryItem(
-                          id: 'arts',
-                          label: 'Arts',
-                          icon: Icons.palette,
-                          color: Color(0xFFEC4899),
-                        ),
-                      ],
-                      onCategoryTap: (categoryId) {
-                        // Navigate to all courses
-                        // In a real app we would pass the categoryId to pre-filter
-                        context.push('/courses');
-                      },
-                    ),
+                  child: Consumer(
+                    builder: (context, ref, _) {
+                      final enrolledCoursesAsync = ref.watch(
+                        enrolledCoursesProvider,
+                      );
+
+                      return enrolledCoursesAsync.when(
+                        data: (courses) {
+                          if (courses.isEmpty) {
+                            return const SizedBox.shrink();
+                          }
+
+                          // Find most recently accessed course
+                          final sortedCourses = [...courses]
+                            ..sort((a, b) {
+                              final aTime =
+                                  a.lastAccessedAt ??
+                                  a.enrolledAt ??
+                                  DateTime(2000);
+                              final bTime =
+                                  b.lastAccessedAt ??
+                                  b.enrolledAt ??
+                                  DateTime(2000);
+                              return bTime.compareTo(aTime);
+                            });
+                          final mostRecentCourse = sortedCourses.first;
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Section header
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Text(
+                                  'Continue Learning',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Compact course resume card
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                child: CompactCourseResumeCard(
+                                  course: mostRecentCourse,
+                                  onResume: () {
+                                    context.push(
+                                      '/my-learning/course/${mostRecentCourse.id}',
+                                    );
+                                  },
+                                  onViewAll: () {
+                                    context.push('/my-learning');
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
+                          );
+                        },
+                        loading: () => const SizedBox.shrink(),
+                        error: (_, __) => const SizedBox.shrink(),
+                      );
+                    },
                   ),
                 ),
-
-                // Continue Learning Section
-                if (data.myCourses.isNotEmpty) ...[
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Continue Learning',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              context.push('/my-learning');
-                            },
-                            child: const Text(
-                              'View All',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final course = data.myCourses[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: CourseListCard(
-                            title: course.title,
-                            instructor: course.instructor,
-                            thumbnailUrl: course.thumbnailUrl,
-                            rating: course.rating,
-                            price: course.price,
-                            onTap: () {
-                              // TODO: Navigate to course details
-                            },
-                          ),
-                        );
-                      }, childCount: data.myCourses.length),
-                    ),
-                  ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
-                ],
 
                 // Recommended For You Section
                 if (data.recommendedCourses.isNotEmpty) ...[
@@ -248,21 +227,8 @@ class HomeScreenV2 extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.accent.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.auto_awesome,
-                              size: 20,
-                              color: AppColors.accent,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
                           const Text(
-                            'Recommended For You',
+                            'Discovery',
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -270,14 +236,25 @@ class HomeScreenV2 extends ConsumerWidget {
                             ),
                           ),
                           const Spacer(),
-                          TextButton(
-                            onPressed: () => context.push('/courses'),
-                            child: const Text(
-                              'View All',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
+                          InkWell(
+                            onTap: () => context.push('/courses'),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Text(
+                                'View All',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.primary,
+                                ),
                               ),
                             ),
                           ),
@@ -285,22 +262,49 @@ class HomeScreenV2 extends ConsumerWidget {
                       ),
                     ),
                   ),
+
+                  // Spacing after title
+                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
+
+                  // Category Pills
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 20,
-                        top: 8,
-                        bottom: 16,
-                      ),
-                      child: Text(
-                        'Based on your interests in ${data.userProfile.interests?.join(', ') ?? 'music, wellness'}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: CategoryPills(
+                        categories: const [
+                          CategoryItem(
+                            id: 'music',
+                            label: 'Music',
+                            icon: Icons.music_note,
+                            color: Color(0xFFA855F7),
+                          ),
+                          CategoryItem(
+                            id: 'wellness',
+                            label: 'Wellness',
+                            icon: Icons.spa,
+                            color: Color(0xFF10B981),
+                          ),
+                          CategoryItem(
+                            id: 'yoga',
+                            label: 'Yoga',
+                            icon: Icons.self_improvement,
+                            color: Color(0xFF8B5CF6),
+                          ),
+                          CategoryItem(
+                            id: 'arts',
+                            label: 'Arts',
+                            icon: Icons.palette,
+                            color: Color(0xFFEC4899),
+                          ),
+                        ],
+                        onCategoryTap: (categoryId) {
+                          // Navigate to all courses with category filter
+                          context.push('/courses?category=$categoryId');
+                        },
                       ),
                     ),
                   ),
+
                   // Vertical list of recommended courses (show first 3-4)
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),

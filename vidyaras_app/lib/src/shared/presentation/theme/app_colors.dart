@@ -30,7 +30,9 @@ class AppColors {
   static const Color textPrimary = Color(0xFF1F2937); // Gray 900
   @Deprecated('Use Theme.of(context).colorScheme.onSurfaceVariant or similar')
   static const Color textSecondary = Color(0xFF4B5563); // Gray 700
-  @Deprecated('Use Theme.of(context).colorScheme.onSurfaceVariant (with opacity) or similar')
+  @Deprecated(
+    'Use Theme.of(context).colorScheme.onSurfaceVariant (with opacity) or similar',
+  )
   static const Color textTertiary = Color(0xFF9CA3AF); // Gray 400
   @Deprecated('Use Theme.of(context).colorScheme.onPrimary or similar')
   static const Color textOnPrimary = Color(0xFFFFFFFF);
