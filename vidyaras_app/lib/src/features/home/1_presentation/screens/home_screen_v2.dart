@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
+import '../../../../shared/presentation/theme/app_gradients.dart';
 import '../../../../shared/presentation/components/cards/stats_card.dart';
 import '../../../auth/2_application/providers/auth_providers.dart';
 import '../../2_application/notifiers/home_notifier.dart';
-import '../widgets/home_header.dart';
+import '../../../../shared/presentation/widgets/adaptive_header.dart';
 import '../widgets/category_pills.dart';
 import '../widgets/course_list_card.dart';
 import '../widgets/large_course_card.dart';
@@ -60,18 +61,53 @@ class HomeScreenV2 extends ConsumerWidget {
                     clipBehavior: Clip.none,
                     children: [
                       // Orange Header
-                      HomeHeader(
-                        userName: currentUserAsync.when(
-                          data: (user) => user?.name ?? 'Guest',
-                          loading: () => 'Loading...',
-                          error: (_, __) => 'Guest',
+                      AdaptiveHeader(
+                        title: const Text(
+                          'VidyaRas',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            height: 1.2,
+                          ),
                         ),
-                        onSearchTap: () {
-                          // TODO: Navigate to search
-                        },
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Welcome back,',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              currentUserAsync.when(
+                                data: (user) => user?.name ?? 'Guest',
+                                loading: () => 'Loading...',
+                                error: (_, __) => 'Guest',
+                              ),
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                height: 1.2,
+                              ),
+                            ),
+                          ],
+                        ),
+                        showNotification: true,
                         onNotificationTap: () {
                           // TODO: Open notifications
                         },
+                        gradient: AppGradients.orange,
+                        showSearch: true,
+                        onSearchTap: () {
+                          // TODO: Navigate to search
+                        },
+                        searchPlaceholder: 'Search courses, teachers...',
                       ),
                       // Stats Card positioned to overlap header bottom
                       Positioned(

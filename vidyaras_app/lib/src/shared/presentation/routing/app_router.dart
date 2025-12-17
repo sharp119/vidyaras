@@ -193,7 +193,7 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
-    // All Courses Screen
+    // All Courses Screen - Browse all available courses
     GoRoute(
       path: '/courses',
       name: 'all-courses',
