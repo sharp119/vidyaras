@@ -26,13 +26,23 @@ class CoursesController extends StateNotifier<CoursesState> {
     state = state.copyWith(isLoading: true, failure: null);
     final result = await _repository.getCourses();
 
-    state = result.fold(
-      (failure) => state.copyWith(isLoading: false, failure: failure),
-      (courses) => state.copyWith(
-        isLoading: false,
-        courses: courses,
-        filteredCourses: courses, // Initially, all courses are shown
-      ),
+    result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, failure: failure);
+      },
+      (courses) {
+        // Update courses and set loading to false
+        state = state.copyWith(
+          isLoading: false,
+          courses: courses,
+          filteredCourses: courses,
+        );
+
+        // Reapply filters if any are active
+        if (state.selectedCategory != 'All' || state.searchQuery.isNotEmpty) {
+          _applyFilters();
+        }
+      },
     );
   }
 

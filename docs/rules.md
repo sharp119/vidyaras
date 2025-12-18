@@ -27,3 +27,151 @@ We use a **Feature-First Layered Architecture**, inspired by Clean Architecture.
 ### Directory Structure
 
 The following structure must be used for every feature:
+
+---
+
+## 🎨 UI Component Patterns & Common Mistakes
+
+### Screen Headers in CustomScrollView
+
+**❌ WRONG - Using SliverAppBar directly:**
+```dart
+CustomScrollView(
+  slivers: [
+    SliverAppBar(
+      expandedHeight: 0,
+      floating: false,
+      pinned: true,
+      backgroundColor: AppColors.background,
+      title: Text('Screen Title'),
+    ),
+    // ... rest of content
+  ],
+)
+```
+
+**✅ CORRECT - Use AppHeader wrapped in SliverToBoxAdapter:**
+```dart
+CustomScrollView(
+  slivers: [
+    SliverToBoxAdapter(
+      child: AppHeader(
+        title: 'Screen Title',
+        backgroundColor: AppColors.background,
+      ),
+    ),
+    // ... rest of content
+  ],
+)
+```
+
+**Why:** 
+- `AppHeader` is the shared component used consistently across the app
+- It includes proper SafeArea handling internally
+- Maintains consistent styling and spacing
+- Avoids custom SliverAppBar configurations that break design consistency
+
+**Location:** `lib/src/shared/presentation/components/navigation/app_header.dart`
+
+---
+
+### Stats Cards - Always Use Shared Component
+
+**❌ WRONG - Creating custom stats card with different styling:**
+```dart
+Container(
+  decoration: BoxDecoration(
+    color: AppColors.primary, // Wrong - purple background
+    borderRadius: BorderRadius.circular(20),
+  ),
+  child: Row(
+    children: [
+      // Custom stat items with white text
+    ],
+  ),
+)
+```
+
+**✅ CORRECT - Use shared StatsCard component:**
+```dart
+import '../../../../shared/presentation/components/cards/stats_card.dart';
+
+StatsCard(
+  stats: [
+    StatCardItem(
+      icon: Icons.local_fire_department,
+      value: dayStreak,
+      label: 'Day Streak',
+      iconColor: const Color(0xFFFF9800),
+    ),
+    StatCardItem(
+      icon: Icons.timer_outlined,
+      value: '${totalHours}h',
+      label: 'Hours Spent',
+      iconColor: const Color(0xFF00BCD4),
+    ),
+    StatCardItem(
+      icon: Icons.check_circle_outline,
+      value: completedCount,
+      label: 'Completed',
+      iconColor: AppColors.success,
+    ),
+  ],
+)
+```
+
+**Why:**
+- Consistent white/light background (`AppColors.surface`)
+- Standard circular icon containers with colored backgrounds
+- Consistent shadow styling matching home screen
+- Large, bold numbers (32px font) for readability
+- Maintains design system consistency
+
+**Location:** `lib/src/shared/presentation/components/cards/stats_card.dart`
+
+---
+
+### Common Structural Mistakes
+
+**❌ WRONG - Extra closing parentheses in Scaffold:**
+```dart
+return Scaffold(
+  body: CustomScrollView(
+    slivers: [
+      // content
+    ],
+  ),
+), // Extra closing paren - causes syntax error
+);
+```
+
+**✅ CORRECT - Proper nesting:**
+```dart
+return Scaffold(
+  body: CustomScrollView(
+    slivers: [
+      // content
+    ],
+  ),
+); // Only one closing paren for Scaffold
+```
+
+**Why:** 
+- Flutter's widget tree must have balanced parentheses
+- Each widget constructor needs exactly one closing parenthesis
+- Extra parentheses cause "Expected to find ';'" errors
+
+---
+
+### Checklist Before Creating New UI Components
+
+Before creating any new UI component, verify:
+
+1. ✅ Does a shared component already exist in `lib/src/shared/presentation/components/`?
+2. ✅ Have you checked `docs/component_usage_guide.md` for existing patterns?
+3. ✅ Are you using `AppColors` and `AppGradients` (no hardcoded colors)?
+4. ✅ Does the component match the design system used in other screens?
+5. ✅ For stats/metrics displays, are you using `StatsCard`?
+6. ✅ For screen headers, are you using `AppHeader` or `GradientHeader`?
+
+**If any answer is NO, review existing components first before creating new ones.**

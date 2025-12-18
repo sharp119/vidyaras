@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
 
 /// Community screen placeholder
 /// TODO: Implement full community screen with chat
@@ -8,38 +7,25 @@ class CommunityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Community'),
-        backgroundColor: AppColors.surface,
-      ),
+      backgroundColor: colorScheme.surface,
+      appBar: AppBar(title: const Text('Community')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Icon(
               Icons.chat_bubble_outline,
               size: 80,
-              color: AppColors.textTertiary,
+              color: colorScheme.outline,
             ),
-            SizedBox(height: 24),
-            Text(
-              'Community',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Coming soon',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
-            ),
+            const SizedBox(height: 24),
+            Text('Community', style: theme.textTheme.displaySmall),
+            const SizedBox(height: 8),
+            Text('Coming soon', style: theme.textTheme.bodyLarge),
           ],
         ),
       ),

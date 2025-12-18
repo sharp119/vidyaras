@@ -193,11 +193,14 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
-    // All Courses Screen
+    // All Courses Screen - Browse all available courses
     GoRoute(
       path: '/courses',
       name: 'all-courses',
-      builder: (context, state) => const AllCoursesScreen(),
+      builder: (context, state) {
+        final category = state.uri.queryParameters['category'];
+        return AllCoursesScreen(initialCategory: category);
+      },
     ),
 
     // My Learning Hub - Shows all enrolled courses

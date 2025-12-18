@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../features/auth/2_application/providers/auth_providers.dart';
 import '../../../features/home/2_application/notifiers/home_notifier.dart';
-import '../theme/app_colors.dart';
 import '../components/buttons/primary_button.dart';
 import '../components/inputs/text_input_field.dart';
 
@@ -110,19 +109,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       ref.invalidate(homeNotifierProvider);
 
       if (mounted) {
+        final colorScheme = Theme.of(context).colorScheme;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Avatar updated successfully'),
-            backgroundColor: AppColors.success,
+          SnackBar(
+            content: const Text('Avatar updated successfully'),
+            backgroundColor: colorScheme.tertiary,
           ),
         );
       }
     } catch (e) {
       if (mounted) {
+        final colorScheme = Theme.of(context).colorScheme;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to upload avatar: ${e.toString()}'),
-            backgroundColor: AppColors.error,
+            backgroundColor: colorScheme.error,
           ),
         );
       }
@@ -144,7 +145,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       await profileDataSource.updateProfileViaAPI(
         name: _nameController.text.trim(),
         fullName: _nameController.text.trim(),
-        bio: _bioController.text.trim().isEmpty ? null : _bioController.text.trim(),
+        bio: _bioController.text.trim().isEmpty
+            ? null
+            : _bioController.text.trim(),
       );
 
       // Refresh current user data
@@ -152,20 +155,22 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       ref.invalidate(homeNotifierProvider);
 
       if (mounted) {
+        final colorScheme = Theme.of(context).colorScheme;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully'),
-            backgroundColor: AppColors.success,
+          SnackBar(
+            content: const Text('Profile updated successfully'),
+            backgroundColor: colorScheme.tertiary,
           ),
         );
         context.pop();
       }
     } catch (e) {
       if (mounted) {
+        final colorScheme = Theme.of(context).colorScheme;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to update profile: ${e.toString()}'),
-            backgroundColor: AppColors.error,
+            backgroundColor: colorScheme.error,
           ),
         );
       }
@@ -178,21 +183,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        title: const Text(
-          'Edit Profile',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        backgroundColor: AppColors.surface,
-        elevation: 0,
+        title: Text('Edit Profile', style: theme.textTheme.headlineMedium),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
           onPressed: () => context.pop(),
         ),
       ),
@@ -237,32 +236,32 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: _isUploadingAvatar
-                            ? AppColors.textTertiary
-                            : AppColors.primary,
+                            ? colorScheme.outline
+                            : colorScheme.primary,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: AppColors.surface,
+                          color: colorScheme.surfaceContainerLow,
                           width: 3,
                         ),
                       ),
                       child: _isUploadingAvatar
-                          ? const Padding(
-                              padding: EdgeInsets.all(12.0),
+                          ? Padding(
+                              padding: const EdgeInsets.all(12.0),
                               child: SizedBox(
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
+                                    colorScheme.onPrimary,
                                   ),
                                 ),
                               ),
                             )
                           : IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.camera_alt,
-                                color: Colors.white,
+                                color: colorScheme.onPrimary,
                                 size: 20,
                               ),
                               onPressed: _handleAvatarUpload,
@@ -301,46 +300,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               decoration: InputDecoration(
                 labelText: 'Bio',
                 hintText: 'Tell us about yourself...',
-                labelStyle: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-                hintStyle: const TextStyle(
-                  color: AppColors.textTertiary,
-                  fontSize: 14,
-                ),
-                filled: true,
-                fillColor: AppColors.surface,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.primary,
-                    width: 2,
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.error,
-                    width: 1,
-                  ),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.error,
-                    width: 2,
-                  ),
-                ),
                 counterText: '',
               ),
               validator: (value) {
@@ -354,10 +313,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             const SizedBox(height: 8),
             Text(
               '${_bioController.text.length}/500 characters',
-              style: const TextStyle(
-                color: AppColors.textTertiary,
-                fontSize: 12,
-              ),
+              style: theme.textTheme.bodySmall,
               textAlign: TextAlign.right,
             ),
 
