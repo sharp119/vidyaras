@@ -36,8 +36,9 @@ final apiClientProvider = Provider<Dio>((ref) {
       },
       onError: (error, handler) {
         // Log errors for debugging
-        // TODO: Replace with proper logging solution (e.g., logger package)
-        // print('API Error: ${error.response?.statusCode} - ${error.message}');
+        print(
+          'API Error: ${error.response?.statusCode} - ${error.requestOptions.uri}',
+        );
         return handler.next(error);
       },
     ),

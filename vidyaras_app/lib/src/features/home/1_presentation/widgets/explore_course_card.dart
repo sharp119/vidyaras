@@ -13,6 +13,7 @@ class ExploreCourseCard extends StatelessWidget {
     this.duration,
     this.lessonCount,
     this.category,
+    this.isFree = false,
     this.onTap,
   });
 
@@ -24,6 +25,7 @@ class ExploreCourseCard extends StatelessWidget {
   final String? duration;
   final int? lessonCount;
   final String? category;
+  final bool isFree;
   final VoidCallback? onTap;
 
   @override
@@ -190,14 +192,22 @@ class ExploreCourseCard extends StatelessWidget {
                   // Footer: Price | Duration | Lessons
                   Row(
                     children: [
-                      if (price != null)
+                      // Price - show 'Free' for free courses or the price
+                      if (isFree)
+                        Text(
+                          'Free',
+                          style: textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF10B981), // Green for free
+                            fontSize: 18,
+                          ),
+                        )
+                      else if (price != null)
                         Text(
                           price!,
                           style: textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: const Color(
-                              0xFFFF5722,
-                            ), // Orange/Red color from image
+                            color: const Color(0xFFFF5722), // Orange/Red
                             fontSize: 18,
                           ),
                         ),

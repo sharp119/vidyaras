@@ -42,13 +42,15 @@ class CourseCard extends StatelessWidget {
                       imageUrl: thumbnailUrl!,
                       fit: BoxFit.cover,
                       placeholder: (context, url) => Container(
-                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
+                        child: const Center(child: CircularProgressIndicator()),
                       ),
                       errorWidget: (context, url, error) => Container(
-                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                         child: Icon(
                           Icons.image_not_supported,
                           size: 48,
@@ -57,7 +59,9 @@ class CourseCard extends StatelessWidget {
                       ),
                     )
                   : Container(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       child: Icon(
                         Icons.play_circle_outline,
                         size: 48,
@@ -100,9 +104,20 @@ class CourseCard extends StatelessWidget {
                       ],
                       if (price != null)
                         Text(
-                          price!,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          price == '₹0' || price == '₹0.0' || price == '₹0.00'
+                              ? 'Free'
+                              : price!,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
                                 fontWeight: FontWeight.bold,
+                                color:
+                                    price == '₹0' ||
+                                        price == '₹0.0' ||
+                                        price == '₹0.00'
+                                    ? const Color(
+                                        0xFF10B981,
+                                      ) // Success green for free
+                                    : null,
                               ),
                         ),
                     ],
@@ -122,10 +137,7 @@ class CourseCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.labelSmall,
                     ),
                     const SizedBox(height: 8),
-                    ProgressBar(
-                      progress: progress!,
-                      showPercentage: true,
-                    ),
+                    ProgressBar(progress: progress!, showPercentage: true),
                   ],
                 ),
               ),
