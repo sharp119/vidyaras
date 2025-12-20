@@ -1,12 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vidyaras_app/src/features/courses/3_domain/repositories/courses_repository.dart';
-import 'package:vidyaras_app/src/features/courses/4_data/repositories/courses_repository_impl.dart';
 import 'courses_state.dart';
-
-// Repository Provider
-final coursesRepositoryProvider = Provider<CoursesRepository>((ref) {
-  return CoursesRepositoryImpl();
-});
+import 'providers/courses_providers.dart';
 
 // Controller Provider
 final coursesControllerProvider =

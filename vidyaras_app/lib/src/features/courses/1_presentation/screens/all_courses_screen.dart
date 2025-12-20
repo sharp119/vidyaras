@@ -263,6 +263,7 @@ class _AllCoursesScreenState extends ConsumerState<AllCoursesScreen> {
                             ? course.categories!.first.toUpperCase()
                             : 'Music', // Default to MUSIC to match design vibe if missing (title in design is "Classical Hindustani")
                         lessonCount: 24,
+                        isFree: course.isFree,
                         onTap: () {
                           // Navigate to course detail
                           context.push('/course/${course.id}');
