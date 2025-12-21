@@ -39,3 +39,18 @@ docs/mockups/
 **/build/
 **/android/build/
 **/ios/build/
+
+# Secrets & Keys
+*.jks
+*.keystore
+*.env
+*.env.*
+!*.env.example
+
+# SQL files (migrations should be in supabase/migrations/)
+*.sql
+!supabase/migrations/*.sql
+
+# Firebase
+firebase-debug.log
+.firebase/
