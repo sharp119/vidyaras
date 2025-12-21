@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vidyaras_app/src/features/courses/3_domain/repositories/courses_repository.dart';
+import '../../3_domain/repositories/courses_repository.dart';
 import 'courses_state.dart';
-import 'package:vidyaras_app/src/features/courses/4_data/providers/data_providers.dart';
+import '../../4_data/providers/data_providers.dart';
 
 // Controller Provider
 final coursesControllerProvider =

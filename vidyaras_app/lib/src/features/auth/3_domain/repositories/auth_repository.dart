@@ -27,7 +27,9 @@ abstract class AuthRepository {
   /// Returns Either<String, void> where:
   /// - Left: Error message
   /// - Right: Success
-  Future<Either<String, void>> completeOnboarding(Map<String, dynamic> preferences);
+  Future<Either<String, void>> completeOnboarding(
+    Map<String, dynamic> preferences,
+  );
 
   /// Sign out
   /// Returns Either<String, void> where:
@@ -40,4 +42,10 @@ abstract class AuthRepository {
   /// - Left: Error message
   /// - Right: true if exists, false otherwise
   Future<Either<String, bool>> phoneExists(String phoneNumber);
+
+  /// Get user statistics (enrollments, completions, referral points, etc.)
+  /// Returns Either<String, Map<String, dynamic>> where:
+  /// - Left: Error message
+  /// - Right: User statistics data
+  Future<Either<String, Map<String, dynamic>>> getUserStatistics();
 }
