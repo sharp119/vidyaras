@@ -1,11 +1,12 @@
-# VidyaRas Student App — Design System (Mobile)
+# VidyaRas Design System Documentation
 
-This folder contains the **source-of-truth design system docs** for the **VidyaRas learner (student) Flutter app** (Android-first, bilingual Hindi+English), created to fix the current lack of visual cohesion across screens.
+This folder contains the design system documentation for VidyaRas platforms:
+- **Mobile App (Flutter)**: Student/learner interface (Android-first, bilingual Hindi+English)
+- **Web Dashboard (Next.js)**: Admin/Teacher interface
 
-## Scope
+## Quick Start
 
-- **In scope**: Learner app (Flutter) UI foundations, tokens, components, patterns, accessibility, content (bilingual) rules, and governance.
-- **Out of scope**: Admin/Teacher web dashboard UI (see `docs/design_system.md` and `docs/plans/ui_style_guidelines.md`).
+📖 **[DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)** - Consolidated design system reference for both platforms
 
 ## Why this exists
 
@@ -15,24 +16,26 @@ Screens currently use different header styles, gradients, spacing, radii, typogr
 - **Speed**: Compose screens from shared components instead of re-inventing UI per feature.
 - **Quality**: Better accessibility, readability, and UX for a broad audience.
 
-## Reading order (recommended)
+## Mobile App Design System (Detailed Docs)
 
-1. `00_product_and_audience.md` — Target audience and design direction
-2. `01_design_system_architecture.md` — System structure and layers
-3. `02_foundations_tokens.md` — Color, typography, spacing, radius, elevation
-4. `03_components.md` — Component contracts and variants
-5. `04_patterns_and_templates.md` — Screen templates and layout patterns
-6. `05_content_and_i18n.md` — Bilingual content rules
-7. `06_accessibility.md` — Touch targets, contrast, semantics
-8. `07_cohesion_audit_and_migration.md` — Migration checklist
-9. `08_governance_and_versioning.md` — Change management
+For detailed mobile app design system documentation:
+
+1. *(Coming soon)* `00_product_and_audience.md` — Target audience and design direction
+2. *(Coming soon)* `01_design_system_architecture.md` — System structure
+3. *(Coming soon)* `02_foundations_tokens.md` — Tokens detail
+4. *(Coming soon)* `03_components.md` — Component contracts
+5. *(Coming soon)* `04_patterns_and_templates.md` — Screen templates
+6. *(Coming soon)* `05_content_and_i18n.md` — Bilingual rules
+7. *(Coming soon)* `06_accessibility.md` — Accessibility guidelines
+8. *(Coming soon)* `07_cohesion_audit_and_migration.md` — Migration checklist
+9. *(Coming soon)* `08_governance_and_versioning.md` — Change management
 10. `09_pr_checklist_and_guardrails.md` — **PR checklist to prevent UI drift**
-11. `MIGRATION_PATTERNS.md` — **Common patterns and fixes (read before migrating code)**
+11. `MIGRATION_PATTERNS.md` — **Common migration patterns**
 
-## Relationship to existing repo docs
+## Related Documentation
 
-- **PRD**: `docs/prd.md` (vision, audience, UX principles).
-- **Flutter component inventory**: `docs/component_usage_guide.md` (what exists today).
-- **Web/admin design tokens**: `docs/design_system.md`, `docs/plans/ui_style_guidelines.md` (different platform + different constraints).
+- **PRD**: [`../prd.md`](../prd.md) - Product vision and principles
+- **Flutter Components**: [`../component_usage_guide.md`](../component_usage_guide.md) - Component inventory
+- **Web Dashboard UI**: [`../plans/ui_style_guidelines.md`](../plans/ui_style_guidelines.md) - Next.js admin UI
 
 
