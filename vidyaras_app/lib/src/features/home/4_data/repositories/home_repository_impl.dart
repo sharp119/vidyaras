@@ -6,21 +6,15 @@ import '../../3_domain/models/course.dart';
 import '../../3_domain/models/course_detail.dart';
 import '../../3_domain/repositories/home_repository.dart';
 import '../../../auth/3_domain/repositories/auth_repository.dart';
-import '../../../auth/4_data/datasources/profile_datasource.dart';
 import '../datasources/home_remote_datasource.dart';
 
 /// Implementation of HomeRepository
 /// Fetches user statistics and course data from API
 class HomeRepositoryImpl implements HomeRepository {
   final AuthRepository _authRepository;
-  final ProfileDataSource _profileDataSource;
   final HomeRemoteDataSource _homeRemoteDataSource;
 
-  HomeRepositoryImpl(
-    this._authRepository,
-    this._profileDataSource,
-    this._homeRemoteDataSource,
-  );
+  HomeRepositoryImpl(this._authRepository, this._homeRemoteDataSource);
 
   @override
   Future<Either<Failure, HomeData>> getHomeData() async {
@@ -38,7 +32,16 @@ class HomeRepositoryImpl implements HomeRepository {
       // Fetch real user statistics from API
       Map<String, dynamic>? statsData;
       try {
-        statsData = await _profileDataSource.getUserStatistics();
+        final statsResult = await _authRepository.getUserStatistics();
+        statsResult.fold(
+          (error) {
+            print('Failed to fetch user statistics: $error');
+            statsData = null;
+          },
+          (data) {
+            statsData = data;
+          },
+        );
       } catch (e) {
         print('Failed to fetch user statistics: $e');
         // Continue with default values if API fails

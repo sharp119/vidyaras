@@ -27,7 +27,7 @@ final homeRemoteDataSourceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef HomeRemoteDataSourceRef = AutoDisposeProviderRef<HomeRemoteDataSource>;
-String _$homeRepositoryHash() => r'3a4d9c15d9cb93ad5a4a6e484de0e93195c0fc0b';
+String _$homeRepositoryHash() => r'7e162898d6c5620fd9cc6a29250c3bac27c6f1ba';
 
 /// HomeRepository provider - wires concrete repository implementation
 ///

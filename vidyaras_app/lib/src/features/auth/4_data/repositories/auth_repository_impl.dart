@@ -32,16 +32,18 @@ class AuthRepositoryImpl implements AuthRepository {
       // For mobile OAuth, the actual sign-in happens via deep link callback
       // The auth state listener will trigger navigation after callback
       // We return a placeholder user here - actual user will be fetched by auth state listener
-      return right(AppUser(
-        id: 'pending',
-        email: 'pending',
-        fullName: null,
-        name: null,
-        avatarUrl: null,
-        phoneNumber: null,
-        isOnboarded: false,
-        createdAt: DateTime.now(),
-      ));
+      return right(
+        AppUser(
+          id: 'pending',
+          email: 'pending',
+          fullName: null,
+          name: null,
+          avatarUrl: null,
+          phoneNumber: null,
+          isOnboarded: false,
+          createdAt: DateTime.now(),
+        ),
+      );
     } on AuthException catch (e) {
       return left('Google sign-in failed: ${e.message}');
     } catch (e) {
@@ -106,13 +108,22 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-  @override
   Future<Either<String, bool>> phoneExists(String phoneNumber) async {
     try {
       final exists = await _profileDataSource.phoneExists(phoneNumber);
       return right(exists);
     } catch (e) {
       return left('Failed to check phone existence: $e');
+    }
+  }
+
+  @override
+  Future<Either<String, Map<String, dynamic>>> getUserStatistics() async {
+    try {
+      final statistics = await _profileDataSource.getUserStatistics();
+      return right(statistics);
+    } catch (e) {
+      return left('Failed to get user statistics: $e');
     }
   }
 }
