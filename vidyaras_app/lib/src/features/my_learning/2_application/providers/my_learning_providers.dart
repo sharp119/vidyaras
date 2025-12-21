@@ -1,38 +1,20 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../../main.dart'; // For supabase client
-import '../../3_domain/repositories/my_learning_repository.dart';
 import '../../3_domain/models/enrolled_course.dart';
 import '../../3_domain/models/lecture.dart';
 import '../../3_domain/models/live_class.dart';
 import '../../3_domain/models/course_material.dart';
-import '../../4_data/datasources/my_learning_remote_datasource.dart';
-import '../../4_data/repositories/my_learning_repository_impl.dart';
+import '../../3_domain/repositories/my_learning_repository.dart';
+import '../../4_data/providers/data_providers.dart';
 import '../../../auth/2_application/providers/auth_providers.dart';
+
+// Re-export data providers for external use
+export '../../4_data/providers/data_providers.dart';
 
 part 'my_learning_providers.g.dart';
 
-/// Provides the remote data source instance
-@riverpod
-MyLearningRemoteDataSource myLearningRemoteDataSource(
-  MyLearningRemoteDataSourceRef ref,
-) {
-  return MyLearningRemoteDataSourceImpl(supabase);
-}
-
-/// Provides the repository instance
-@riverpod
-MyLearningRepository myLearningRepository(
-  MyLearningRepositoryRef ref,
-) {
-  final dataSource = ref.watch(myLearningRemoteDataSourceProvider);
-  return MyLearningRepositoryImpl(dataSource);
-}
-
 /// Fetches all enrolled courses for the current user
 @riverpod
-Future<List<EnrolledCourse>> enrolledCourses(
-  EnrolledCoursesRef ref,
-) async {
+Future<List<EnrolledCourse>> enrolledCourses(EnrolledCoursesRef ref) async {
   final user = await ref.watch(currentUserProvider.future);
   if (user == null) return [];
 
@@ -104,9 +86,7 @@ Future<List<LiveClass>> courseLiveClasses(
 
 /// Fetches upcoming live classes across all enrolled courses
 @riverpod
-Future<List<LiveClass>> upcomingLiveClasses(
-  UpcomingLiveClassesRef ref,
-) async {
+Future<List<LiveClass>> upcomingLiveClasses(UpcomingLiveClassesRef ref) async {
   final user = await ref.watch(currentUserProvider.future);
   if (user == null) return [];
 

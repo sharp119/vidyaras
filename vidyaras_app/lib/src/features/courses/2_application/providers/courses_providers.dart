@@ -1,33 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../home/3_domain/models/course.dart';
-import '../../3_domain/repositories/courses_repository.dart';
-import '../../4_data/datasources/courses_remote_datasource.dart';
-import '../../4_data/repositories/courses_repository_impl.dart';
+import '../../4_data/providers/data_providers.dart';
+
+// Re-export data providers for external use
+export '../../4_data/providers/data_providers.dart';
 
 part 'courses_providers.g.dart';
-
-/// Supabase client provider
-@riverpod
-SupabaseClient supabaseClient(SupabaseClientRef ref) {
-  return Supabase.instance.client;
-}
-
-/// Courses remote data source provider
-@riverpod
-CoursesRemoteDataSource coursesRemoteDataSource(
-  CoursesRemoteDataSourceRef ref,
-) {
-  final supabase = ref.watch(supabaseClientProvider);
-  return CoursesRemoteDataSource(supabase);
-}
-
-/// Courses repository provider
-@riverpod
-CoursesRepository coursesRepository(CoursesRepositoryRef ref) {
-  final dataSource = ref.watch(coursesRemoteDataSourceProvider);
-  return CoursesRepositoryImpl(dataSource);
-}
 
 /// Provider for fetching all courses
 @riverpod

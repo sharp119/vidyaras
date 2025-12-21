@@ -1,25 +1,13 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../auth/2_application/providers/auth_providers.dart';
 import '../../3_domain/models/quiz.dart';
 import '../../3_domain/models/quiz_question.dart';
-import '../../3_domain/repositories/quiz_repository.dart';
-import '../../4_data/repositories/quiz_repository_impl.dart';
+import '../../4_data/providers/data_providers.dart';
+
+// Re-export data providers for external use
+export '../../4_data/providers/data_providers.dart';
 
 part 'quiz_providers.g.dart';
-
-/// Provider for Supabase client
-@riverpod
-SupabaseClient supabaseClient(SupabaseClientRef ref) {
-  return Supabase.instance.client;
-}
-
-/// Provider for QuizRepository
-@riverpod
-QuizRepository quizRepository(QuizRepositoryRef ref) {
-  final supabase = ref.watch(supabaseClientProvider);
-  return QuizRepositoryImpl(supabase);
-}
 
 /// Provider to fetch all published quizzes for the current user
 @riverpod

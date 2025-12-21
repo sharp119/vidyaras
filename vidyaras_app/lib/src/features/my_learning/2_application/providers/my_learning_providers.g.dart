@@ -6,49 +6,6 @@ part of 'my_learning_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$myLearningRemoteDataSourceHash() =>
-    r'cc91f12de7d447456dcc9aeabc3be412b2cdb26e';
-
-/// Provides the remote data source instance
-///
-/// Copied from [myLearningRemoteDataSource].
-@ProviderFor(myLearningRemoteDataSource)
-final myLearningRemoteDataSourceProvider =
-    AutoDisposeProvider<MyLearningRemoteDataSource>.internal(
-      myLearningRemoteDataSource,
-      name: r'myLearningRemoteDataSourceProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$myLearningRemoteDataSourceHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef MyLearningRemoteDataSourceRef =
-    AutoDisposeProviderRef<MyLearningRemoteDataSource>;
-String _$myLearningRepositoryHash() =>
-    r'32f70842f87518048e3994680a8d9bec36a654d9';
-
-/// Provides the repository instance
-///
-/// Copied from [myLearningRepository].
-@ProviderFor(myLearningRepository)
-final myLearningRepositoryProvider =
-    AutoDisposeProvider<MyLearningRepository>.internal(
-      myLearningRepository,
-      name: r'myLearningRepositoryProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$myLearningRepositoryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef MyLearningRepositoryRef = AutoDisposeProviderRef<MyLearningRepository>;
 String _$enrolledCoursesHash() => r'7f3b2856d4ec71721e2abd77b1de2d8082862b2c';
 
 /// Fetches all enrolled courses for the current user

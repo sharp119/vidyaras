@@ -6,65 +6,6 @@ part of 'home_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$supabaseClientHash() => r'36e9cae00709545a85bfe4a5a2cb98d8686a01ea';
-
-/// Supabase client provider (shared)
-///
-/// Copied from [supabaseClient].
-@ProviderFor(supabaseClient)
-final supabaseClientProvider = AutoDisposeProvider<SupabaseClient>.internal(
-  supabaseClient,
-  name: r'supabaseClientProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$supabaseClientHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef SupabaseClientRef = AutoDisposeProviderRef<SupabaseClient>;
-String _$homeRemoteDataSourceHash() =>
-    r'9cd3bd01e9c70d382abf57b5c66d1dafbe42fca3';
-
-/// Provider for HomeRemoteDataSource
-///
-/// Copied from [homeRemoteDataSource].
-@ProviderFor(homeRemoteDataSource)
-final homeRemoteDataSourceProvider =
-    AutoDisposeProvider<HomeRemoteDataSource>.internal(
-      homeRemoteDataSource,
-      name: r'homeRemoteDataSourceProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$homeRemoteDataSourceHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef HomeRemoteDataSourceRef = AutoDisposeProviderRef<HomeRemoteDataSource>;
-String _$homeRepositoryHash() => r'3a4d9c15d9cb93ad5a4a6e484de0e93195c0fc0b';
-
-/// Provider for HomeRepository
-///
-/// Copied from [homeRepository].
-@ProviderFor(homeRepository)
-final homeRepositoryProvider = AutoDisposeProvider<HomeRepository>.internal(
-  homeRepository,
-  name: r'homeRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$homeRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef HomeRepositoryRef = AutoDisposeProviderRef<HomeRepository>;
 String _$courseDetailHash() => r'dd48c310c81873fdc612684ac6118e6b21fcd5f8';
 
 /// Copied from Dart SDK

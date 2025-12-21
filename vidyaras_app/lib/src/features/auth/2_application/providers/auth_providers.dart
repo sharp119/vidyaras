@@ -2,40 +2,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../3_domain/repositories/auth_repository.dart';
 import '../../3_domain/models/app_user.dart';
-import '../../4_data/datasources/profile_datasource.dart';
-import '../../4_data/repositories/auth_repository_impl.dart';
-import '../../4_data/services/msg91_service.dart';
-import '../../../../shared/providers/api_client_provider.dart';
+import '../../4_data/providers/data_providers.dart';
+import '../../../../shared/providers/supabase_provider.dart';
+
+// Re-export data providers for external use
+export '../../4_data/providers/data_providers.dart';
 
 part 'auth_providers.g.dart';
-
-/// Supabase client provider
-@riverpod
-SupabaseClient supabaseClient(SupabaseClientRef ref) {
-  return Supabase.instance.client;
-}
-
-/// ProfileDataSource provider
-@riverpod
-ProfileDataSource profileDataSource(ProfileDataSourceRef ref) {
-  final supabase = ref.watch(supabaseClientProvider);
-  final dio = ref.watch(apiClientProvider);
-  return ProfileDataSource(supabase, dio);
-}
-
-/// AuthRepository provider
-@riverpod
-AuthRepository authRepository(AuthRepositoryRef ref) {
-  final supabase = ref.watch(supabaseClientProvider);
-  final profileDataSource = ref.watch(profileDataSourceProvider);
-  return AuthRepositoryImpl(supabase, profileDataSource);
-}
-
-/// MSG91 Service provider
-@riverpod
-Msg91Service msg91Service(Msg91ServiceRef ref) {
-  return Msg91Service();
-}
 
 /// Current user provider
 /// Watches auth state and fetches current user

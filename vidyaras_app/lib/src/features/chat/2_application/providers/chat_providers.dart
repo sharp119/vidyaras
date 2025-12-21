@@ -1,24 +1,13 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../../main.dart'; // For supabase client
 import '../../3_domain/models/chat_message.dart';
 import '../../3_domain/models/chat_room.dart';
-import '../../3_domain/repositories/chat_repository.dart';
-import '../../4_data/datasources/chat_remote_datasource.dart';
-import '../../4_data/repositories/chat_repository_impl.dart';
+import '../../4_data/providers/data_providers.dart';
 import '../../../auth/2_application/providers/auth_providers.dart';
 
+// Re-export data providers for external use
+export '../../4_data/providers/data_providers.dart';
+
 part 'chat_providers.g.dart';
-
-@riverpod
-ChatRemoteDataSource chatRemoteDataSource(ChatRemoteDataSourceRef ref) {
-  return ChatRemoteDataSourceImpl(supabase);
-}
-
-@riverpod
-ChatRepository chatRepository(ChatRepositoryRef ref) {
-  final dataSource = ref.watch(chatRemoteDataSourceProvider);
-  return ChatRepositoryImpl(dataSource);
-}
 
 @riverpod
 Future<List<ChatRoom>> chatRooms(ChatRoomsRef ref) async {

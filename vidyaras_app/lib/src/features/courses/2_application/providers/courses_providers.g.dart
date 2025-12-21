@@ -6,67 +6,6 @@ part of 'courses_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$supabaseClientHash() => r'36e9cae00709545a85bfe4a5a2cb98d8686a01ea';
-
-/// Supabase client provider
-///
-/// Copied from [supabaseClient].
-@ProviderFor(supabaseClient)
-final supabaseClientProvider = AutoDisposeProvider<SupabaseClient>.internal(
-  supabaseClient,
-  name: r'supabaseClientProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$supabaseClientHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef SupabaseClientRef = AutoDisposeProviderRef<SupabaseClient>;
-String _$coursesRemoteDataSourceHash() =>
-    r'a8ba8ea2fb977f13cd6c97eb1ce4b5da2fefe9aa';
-
-/// Courses remote data source provider
-///
-/// Copied from [coursesRemoteDataSource].
-@ProviderFor(coursesRemoteDataSource)
-final coursesRemoteDataSourceProvider =
-    AutoDisposeProvider<CoursesRemoteDataSource>.internal(
-      coursesRemoteDataSource,
-      name: r'coursesRemoteDataSourceProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$coursesRemoteDataSourceHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef CoursesRemoteDataSourceRef =
-    AutoDisposeProviderRef<CoursesRemoteDataSource>;
-String _$coursesRepositoryHash() => r'27efd719a5c17100de273ba7ac7488b8a7e09fa2';
-
-/// Courses repository provider
-///
-/// Copied from [coursesRepository].
-@ProviderFor(coursesRepository)
-final coursesRepositoryProvider =
-    AutoDisposeProvider<CoursesRepository>.internal(
-      coursesRepository,
-      name: r'coursesRepositoryProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$coursesRepositoryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef CoursesRepositoryRef = AutoDisposeProviderRef<CoursesRepository>;
 String _$allCoursesHash() => r'1d17e00ace57b6b9c77c57ef833ba84c6a828a1a';
 
 /// Provider for fetching all courses

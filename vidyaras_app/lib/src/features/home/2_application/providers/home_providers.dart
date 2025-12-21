@@ -1,38 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../3_domain/repositories/home_repository.dart';
 import '../../3_domain/models/course_detail.dart';
-import '../../4_data/repositories/home_repository_impl.dart';
-import '../../4_data/datasources/home_remote_datasource.dart';
-import '../../../auth/2_application/providers/auth_providers.dart';
+import '../../4_data/providers/data_providers.dart';
+
+// Re-export data providers for external use
+export '../../4_data/providers/data_providers.dart';
 
 part 'home_providers.g.dart';
-
-/// Supabase client provider (shared)
-@riverpod
-SupabaseClient supabaseClient(SupabaseClientRef ref) {
-  return Supabase.instance.client;
-}
-
-/// Provider for HomeRemoteDataSource
-@riverpod
-HomeRemoteDataSource homeRemoteDataSource(HomeRemoteDataSourceRef ref) {
-  final supabase = ref.watch(supabaseClientProvider);
-  return HomeRemoteDataSource(supabase);
-}
-
-/// Provider for HomeRepository
-@riverpod
-HomeRepository homeRepository(HomeRepositoryRef ref) {
-  final authRepository = ref.watch(authRepositoryProvider);
-  final profileDataSource = ref.watch(profileDataSourceProvider);
-  final homeRemoteDataSource = ref.watch(homeRemoteDataSourceProvider);
-  return HomeRepositoryImpl(
-    authRepository,
-    profileDataSource,
-    homeRemoteDataSource,
-  );
-}
 
 /// Provider for fetching course detail by ID
 @riverpod

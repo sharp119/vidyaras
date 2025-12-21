@@ -1,28 +1,7 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../3_domain/repositories/onboarding_repository.dart';
-import '../../4_data/datasources/onboarding_local_datasource.dart';
-import '../../4_data/repositories/onboarding_repository_impl.dart';
+import '../../4_data/providers/data_providers.dart';
 
-part 'onboarding_providers.g.dart';
+// Re-export data providers for external use
+export '../../4_data/providers/data_providers.dart';
 
-/// Supabase client provider
-@riverpod
-SupabaseClient supabaseClient(SupabaseClientRef ref) {
-  return Supabase.instance.client;
-}
-
-/// Provider for OnboardingLocalDataSource
-@riverpod
-OnboardingLocalDataSource onboardingLocalDataSource(
-    OnboardingLocalDataSourceRef ref) {
-  final supabase = ref.watch(supabaseClientProvider);
-  return OnboardingLocalDataSource(supabase);
-}
-
-/// Provider for OnboardingRepository
-@riverpod
-OnboardingRepository onboardingRepository(OnboardingRepositoryRef ref) {
-  final localDataSource = ref.watch(onboardingLocalDataSourceProvider);
-  return OnboardingRepositoryImpl(localDataSource);
-}
+// Note: onboardingRepository and onboardingLocalDataSource are now defined
+// in 4_data/providers/data_providers.dart and re-exported above for use in presentation layer

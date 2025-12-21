@@ -6,44 +6,6 @@ part of 'quiz_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$supabaseClientHash() => r'36e9cae00709545a85bfe4a5a2cb98d8686a01ea';
-
-/// Provider for Supabase client
-///
-/// Copied from [supabaseClient].
-@ProviderFor(supabaseClient)
-final supabaseClientProvider = AutoDisposeProvider<SupabaseClient>.internal(
-  supabaseClient,
-  name: r'supabaseClientProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$supabaseClientHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef SupabaseClientRef = AutoDisposeProviderRef<SupabaseClient>;
-String _$quizRepositoryHash() => r'a28e2e0607874fe0c10b4f4e8b51cea77eb4e3a6';
-
-/// Provider for QuizRepository
-///
-/// Copied from [quizRepository].
-@ProviderFor(quizRepository)
-final quizRepositoryProvider = AutoDisposeProvider<QuizRepository>.internal(
-  quizRepository,
-  name: r'quizRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$quizRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef QuizRepositoryRef = AutoDisposeProviderRef<QuizRepository>;
 String _$publishedQuizzesHash() => r'9822dcf087bf279a4844f122db8e24cbae6f619f';
 
 /// Provider to fetch all published quizzes for the current user
