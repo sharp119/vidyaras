@@ -1,298 +1,463 @@
-# VidyaRas Design System - Complete Reference
-
-This document consolidates design system documentation for both platforms of VidyaRas:
-- **Part 1**: Mobile App (Flutter - Student Interface)
-- **Part 2**: Web Dashboard (Next.js - Admin/Teacher Interface)
+# VidyaRas Design System
+> Complete visual guidelines for a warm, culturally authentic, and digitally clear learning experience.
 
 ---
 
-# Part 1: Mobile App Design System (Flutter)
+## 1. Color Palette
 
-**Platform**: Flutter (Android-first)  
-**Audience**: Students/Learners  
-**Languages**: Bilingual (Hindi + English)  
-**Status**: Partially Implemented - Migration In Progress
+### Primary Accent
+| Color | Hex | Usage |
+|-------|-----|-------|
+| **Orange** | `#FF5722` | Primary CTAs, active navigation, progress indicators, key highlights |
 
----
+> Signifies warmth, enthusiasm, and cultural vibrancy.
 
-## Foundation Tokens ✅
+### Secondary Accent
+| Color | Hex | Usage |
+|-------|-----|-------|
+| Teal/Blue | `#00BCD4` | Subtle secondary accents, attribute tags |
+| Green | `#4CAF50` | "Completed" states, success indicators |
 
-### Colors
-**Implemented** in `app_colors.dart`:
-- ✅ Surfaces: `background`, `surface`, `surfaceLight`, `surfaceTint`
-- ✅ Text: `textPrimary`, `textSecondary`, `textTertiary`, `textOnBrand`
-- ✅ Borders: `borderSubtle`, `border`, `divider`
-- ✅ Actions: `primary`, `primaryPressed`, `accent`, `accentPressed`, `disabled`
-- ✅ Status: `success`, `warning`, `error`, `info`
-- ✅ Categories: `categoryMusic`, `categoryWellness`, etc.
+### Neutrals
+| Color | Hex | Usage |
+|-------|-----|-------|
+| White | `#FFFFFF` | Primary background, content areas |
+| Light Gray | `#F5F5F5` | Subtle backgrounds, inactive states |
+| Medium Gray | `#E0E0E0` | Dividers, borders |
+| Dark Gray | `#424242` | Secondary text, icons |
+| Black | `#212121` | Primary text, strong headings |
 
-**Missing**:
-- ❌ `color.focus.ring` - Focus ring with opacity
-- ❌ `color.surface.raised` - Semantic alias
+### Semantic Colors
+| Purpose | Hex | Usage |
+|---------|-----|-------|
+| Success | `#4CAF50` | Completed actions, success states |
+| Warning | `#FF9800` | Moderate alerts, "Good" score |
+| Error | `#F44336` | Errors, important warnings |
+| Live/New | `#E53935` | 🔴 Live badge, "New" badge |
 
-### Spacing
-**Implemented** in `app_spacing.dart`:
-- 4dp baseline: `xxs=4, xs=8, sm=12, md=16, lg=20, xl=24, xxl=32, xxxl=40, huge=48, massive=64`
-- Screen gutters: `screenPadding=20`, `screenPaddingCompact=16`
-- Section: `sectionGap=24`, `itemGap=12`, `itemGapTight=8`
-- Card: `cardPadding=16`, `cardPaddingLarge=20`
+### Category Icon Colors
+| Category | Icon Color | Background (10% opacity) |
+|----------|------------|--------------------------|
+| Music | `#2196F3` | `#2196F31A` |
+| Wellness | `#4CAF50` | `#4CAF501A` |
+| Yoga | `#FF5722` | `#FF57221A` |
+| Arts | `#E91E63` | `#E91E631A` |
 
-### Radius
-**Implemented** in `app_spacing.dart` (AppRadius):
-- Scale: `sm=8, md=12, lg=16, xl=20, xxl=24, full=999`
-- Semantic: `card=16`, `button=12`, `input=12`, `chip=8`, `bottomSheet=20`
-
-### Elevation
-**Implemented** in `app_spacing.dart` (AppElevation):
-- `none`, `card`, `cardRaised`, `overlay`, `fab`
-
-### Typography
-**Implemented** via Material `textTheme`:
-- Display: `displayLarge` (32/40, 700)
-- Headlines: `headlineLarge` (24/32, 700), `headlineMedium` (20/28, 700), `headlineSmall` (18/26, 600)
-- Titles: `titleLarge` (16/24, 600), `titleMedium` (14/20, 600), `titleSmall` (12/16, 600)
-- Body: `bodyLarge` (16/24, 400), `bodyMedium` (14/20, 400), `bodySmall` (12/16, 400)
-- Labels: `labelLarge` (14/20, 600), `labelMedium` (12/16, 500), `labelSmall` (10/12, 500)
-
-**Missing**:
-- ❌ **Devanagari Font**: Need `Hind` or `Noto Sans Devanagari` for Hindi
-
-### Gradients
-**Implemented** in `app_gradients.dart`:
-- Hero: `hero` (Indigo→Violet), `heroWarm` (Saffron→Orange)
-- CTA: `cta` (Indigo→Violet), `ctaAccent` (Saffron→Orange)
-
-### Motion
-**Implemented** in `app_spacing.dart`:
-- Duration: `micro=120ms`, `standard=200ms`, `page=320ms`, `slow=500ms`
-- Curves: `enter`, `exit`, `standard`, `bounce`
-
-### Icon Sizes
-**Implemented** in `app_spacing.dart`:
-- `xs=16, sm=20, md=24, lg=32, xl=40, xxl=48, hero=64`
+### Score Badge Colors
+| Score Level | Background | Text |
+|-------------|------------|------|
+| Excellent | `#4CAF50` | White |
+| Good | `#FF9800` | White |
+| Needs Work | `#F44336` | White |
 
 ---
 
-## Components ✅ **28 Total**
+## 2. Typography
 
-### Buttons (6/6)
-- ✅ `PrimaryButton`, `SecondaryButton`, `AppTextButton`
-- ✅ `SocialLoginButton`, `AppIconButton`, `AppBackButton`
+### Font Families
+| Script | Recommendation |
+|--------|----------------|
+| **English & Hindi** | Clean sans-serif (Roboto, Noto Sans, Open Sans) with Devanagari support |
 
-### Inputs (3/3)
-- ✅ `TextInputField`, `PasswordInputField`, `CheckboxWithLabel`
+### Font Sizes (sp)
+| Level | Size | Usage |
+|-------|------|-------|
+| **H1** | 24sp | Screen titles ("My Learning") |
+| **H2** | 20sp | Major section titles ("Continue Learning", "My Courses") |
+| **H3** | 16sp | Card titles, sub-section headers |
+| **Body** | 14sp | Descriptions, chat messages |
+| **Helper** | 12sp | Metadata, timestamps, instructor names, review counts |
+| **Button** | 14-16sp | Depends on button prominence |
 
-### Typography (3/3)
-- ✅ `BilingualText`, `BadgeLabel`, `LanguageToggle`
-
-### Layout (4/4)
-- ✅ `FeatureIconContainer`, `DividerWithText`, `SectionHeader`, `AvatarWithBadge`
-
-### Cards (6/6)
-- ✅ `ProfileCard`, `ReferralCard`, `CourseCard`
-- ✅ `SelectableOptionCard`, `StatsRow`, `StatsCard`
-
-### Navigation (3/3)
-- ✅ `BottomNavBar`, `AppHeader`, `GradientHeader`
-
-### Progress (4/4)
-- ✅ `ProgressBar`, `CarouselDots`, `StepIndicator`, `StarRating`
-
----
-
-## Patterns ✅
-
-### Pattern Widgets
-- ✅ `HeroHeader`, `HeroHeaderCompact`
-- ✅ `AppSectionHeader`
-- ✅ `AppEmptyState`, `AppEmptyStateInline`
-- ✅ `AppLoadingState`, `AppLoadingInline`
-- ✅ `AppErrorState`
-- ✅ `AppSegmentedControl`
-
-**Missing**:
-- ❌ `AppSkeleton` - Incomplete implementation
+### Text Styles
+| Type | Weight | Color |
+|------|--------|-------|
+| Headings | Bold / Semi-Bold | `#212121` |
+| Body | Regular | `#424242` |
+| Helper | Regular | `#757575` |
+| CTA | Bold | `#FF5722` or white on orange |
 
 ---
 
-## Migration Status ⚠️
+## 3. Sizing Values
 
-### Code Quality Issues
+### Border Radius (dp)
+| Size | Value | Usage |
+|------|-------|-------|
+| Small | 8dp | Buttons, tags, input fields |
+| Medium | 12dp | Cards, modals |
+| Large | 16dp | Prominent cards, hero elements |
+| Pill | 24dp | Tab toggles, filter chips |
 
-**Hardcoded Colors**: 🔴 20 files still have `Color(0x...)` instead of `AppColors.*`
+### Icon Sizes (dp)
+| Size | Value | Usage |
+|------|-------|-------|
+| Standard | 24dp | Navigation, actionable icons |
+| Small | 20dp | Inline icons |
+| Large | 48dp+ | Illustrations, empty states |
 
-**Magic Number Spacing**: 🔴 23 matches of hardcoded `EdgeInsets` instead of `AppSpacing.*`
+### Circular Icon Containers
+| Property | Value |
+|----------|-------|
+| Diameter | 48dp |
+| Icon Size | 24dp (centered) |
+| Background | 10% opacity of icon color |
+| Border Radius | 50% (full circle) |
 
-**Inconsistent States**: Multiple screens use custom error/loading instead of pattern widgets
+### Button Dimensions (dp)
+| Property | Value |
+|----------|-------|
+| Standard Height | 48dp (minimum touch target) |
+| Horizontal Padding | 16dp (left & right) |
+| Vertical Padding | Centered within 48dp height |
 
-### Screen Migration Status
-
-**Tab Roots (Priority 1)**:
-- ⚠️ Home - Partially migrated
-- ⚠️ Learning - Needs audit
-- ⚠️ Community - Needs audit
-- ⚠️ Tests - Needs audit
-- ⚠️ Profile - Uses legacy `GradientHeader`, should use `HeroHeader`
-
----
-
-## Immediate Action Items
-
-### Critical ⚠️: Import Requirements
-
-**When using tokens, ALWAYS add imports**:
-```dart
-import '../theme/app_colors.dart';      // For AppColors.*
-import '../theme/app_spacing.dart';     // For AppSpacing.*
-import '../theme/app_gradients.dart';   // For AppGradients.*
-```
-
-**Common Error**: `The getter 'AppColors' isn't defined` → Missing import
-
-### High Priority
-1. **Fix 20 files with hardcoded colors** → Use `AppColors.*` + add imports
-2. **Fix 23 magic number spacing** → Use `AppSpacing.*` + add imports
-3. **Standardize error states** → Use `AppErrorState`
-4. **Configure Devanagari font** → Add `Hind`/`Noto Sans Devanagari`
-
-### Medium Priority
-5. **Complete tab root migration** → All use `HeroHeader`
-6. **Add focus ring token** → `color.focus.ring`
-7. **Complete skeleton loader** → Finish `AppSkeleton`
+### Card Elevation
+| State | Elevation | Usage |
+|-------|-----------|-------|
+| Default | 1 | Course cards, standard cards |
+| Pressed/Hover | 2 | Interactive feedback |
+| Modal/Dialog | 8-12 | Overlays above content |
 
 ---
 
-## Completion Metrics
+## 4. Spacing Scale
 
-| Category | Status | Completion |
-|----------|--------|------------|
-| Foundation Tokens | ✅ Complete | 95% |
-| Components | ✅ Complete | 100% |
-| Patterns | ✅ Mostly Complete | 90% |
-| Screen Migration | ⚠️ In Progress | 30% |
-| Code Quality | 🔴 Needs Work | 60% |
-| **Overall** | ⚠️ **In Progress** | **75%** |
+> Base unit: **4dp** for harmonious, predictable rhythm.
 
----
-
-# Part 2: Web Dashboard Design System (Next.js)
-
-**Platform**: Next.js 14+ (Web)  
-**Audience**: Admin/Teachers  
-**Stack**: Tailwind CSS v4 + shadcn/ui  
-**Status**: Implemented
+| Token | Value | Usage Example |
+|-------|-------|---------------|
+| `xs` | 4dp | Tight inline spacing |
+| `sm` | 8dp | Horizontal card margins |
+| `md-sm` | 12dp | Vertical card margins |
+| `md` | 16dp | Button padding, content insets |
+| `md-lg` | 24dp | Section spacing |
+| `lg` | 32dp | Major block separation |
+| `xl` | 48dp | Screen padding, hero spacing |
+| `xxl` | 64dp | Large decorative spacing |
 
 ---
 
-## Core Principles
+## 5. Dark Mode
 
-- **Consistency**: Use shared components and tokens (no hardcoded values)
-- **Simplicity**: Stick to defined palette and typography
-- **Accessibility**: Sufficient contrast + keyboard navigation
-
----
-
-## Colors
-
-All colors defined as CSS variables in `index.css` and mapped in `tailwind.config.ts`.
-
-### Primary
-- `bg-primary` - Main brand (Purple/Violet)
-- `text-primary-foreground` - Text on primary
-
-### Secondary
-- `bg-secondary` - Secondary actions/backgrounds
-- `text-secondary-foreground` - Text on secondary
-
-### Backgrounds
-- `bg-background` - Page background
-- `bg-card` - Card background (white/dark gray)
-- `bg-muted` - Muted background for inactive
-
-### Text
-- `text-foreground` - Primary text
-- `text-muted-foreground` - Secondary/helper text
+| Element | Light Mode | Dark Mode |
+|---------|------------|-----------|
+| Primary Background | `#FFFFFF` | `#121212` |
+| Surface/Card | `#FFFFFF` | `#1E1E1E` |
+| Primary Text | `#212121` | `#FFFFFF` |
+| Secondary Text | `#424242` | `#B0B0B0` |
+| Disabled Text | `#9E9E9E` | `#616161` |
+| Accent Orange | `#FF5722` | `#FF8A65` or `#FFB300` |
+| Divider/Border | `#E0E0E0` | `#363636` |
+| Icons (Inactive) | `#757575` | `#B0B0B0` |
+| Icons (Active) | `#FF5722` | `#FF8A65` |
 
 ---
 
-## Typography
+## 6. Motion & Animation
 
-**Font Family**: `Inter` (sans-serif)
+### Transition Durations
+| Speed | Duration | Usage |
+|-------|----------|-------|
+| Fast | 150ms | Micro-interactions, highlights |
+| Standard | 300ms | Screen transitions, component changes |
+| Slow | 500ms | Complex transitions, intros |
 
-**Headings**: `font-bold`, `tracking-tight`
-- H1: `text-3xl` or `text-2xl`
-- H2: `text-xl`
+### Easing Curves
+| Curve | Usage |
+|-------|-------|
+| `ease-in-out` | Default (smooth start and end) |
+| `ease-out` | Alerts, feedback (quick start, gentle end) |
+| Spring | Playful elements (physics-based bounce) |
 
-**Body**: `text-sm` or `text-base`
-
-**Small**: `text-xs`, `text-muted-foreground`
+### Loading States
+| Type | Implementation |
+|------|----------------|
+| **Skeleton** | Shimmering gray rectangles as placeholders |
+| **Spinner** | Circular progress indicator in primary orange |
 
 ---
 
-## Spacing
+## 7. Component States
 
-Use Tailwind's default spacing scale:
-- Layout padding: `p-4` or `p-6`
-- Component gap: `gap-4` or `gap-2`
-- Section spacing: `space-y-6`
+| State | Visual Treatment |
+|-------|------------------|
+| **Default** | Standard appearance |
+| **Hover** | Slight elevation increase, subtle gray overlay |
+| **Pressed** | Reduced elevation, darker overlay, border change |
+| **Disabled** | 50% opacity, `#9E9E9E` text, non-interactive |
+| **Focused** | 2dp orange ring border (keyboard nav, inputs) |
+
+### Empty States Design
+| Element | Guidelines |
+|---------|------------|
+| Illustration | Friendly, relevant visual |
+| Headline | Clear explanation ("No Courses Enrolled Yet") |
+| CTA Button | Primary action ("Explore Courses", "Start Quiz") |
+| Supporting Text | Optional context paragraph |
 
 ---
 
-## Components
+## 8. UI Components
 
-Use shadcn/ui components from `@/components/ui`.
+### Headers
+
+#### Orange Gradient Header (Primary)
+| Property | Value |
+|----------|-------|
+| Background | Linear gradient `#FF5722` → `#FF8A65` |
+| Text | White |
+| Usage | Home, My Learning, Community, Tests screens |
+
+#### White Header (Secondary)
+| Property | Value |
+|----------|-------|
+| Background | White with subtle shadow |
+| Text | `#212121` |
+| Usage | Course Detail, inner screens |
+
+### Bottom Navigation
+| Property | Value |
+|----------|-------|
+| Tabs | Home, Learning, Community, Tests, Profile |
+| Active | Icon + label in `#FF5722` |
+| Inactive | `#757575` |
+| Background | White or `#F5F5F5` |
 
 ### Buttons
-```tsx
-<Button>Action</Button>
-<Button variant="secondary">Cancel</Button>
-<Button variant="ghost">Icon</Button>
-<Button variant="destructive">Delete</Button>
-```
+
+#### Primary
+| Property | Value |
+|----------|-------|
+| Background | `#FF5722` |
+| Text | `#FFFFFF`, 14-16sp |
+| Border Radius | 8dp |
+| Height | 48dp |
+
+#### Secondary
+| Property | Value |
+|----------|-------|
+| Background | `#FFFFFF` |
+| Border | 1px `#FF5722` |
+| Text | `#FF5722` |
+
+#### Text Button
+| Property | Value |
+|----------|-------|
+| Background | None |
+| Text | `#FF5722` or `#424242` |
+
+### Tab Toggle
+| Property | Value |
+|----------|-------|
+| Active Tab | `#FF5722` border, white/orange fill |
+| Inactive Tab | `#E0E0E0` border, transparent |
+| Border Radius | 24dp (pill shape) |
+| Height | 40dp |
 
 ### Cards
-```tsx
-<Card>
-  <CardHeader>
-    <CardTitle>Title</CardTitle>
-  </CardHeader>
-  <CardContent>
-    Content
-  </CardContent>
-</Card>
+
+| Type | Key Features |
+|------|--------------|
+| **Course Card** | Thumbnail, title, instructor, rating, progress/price |
+| **Live Class Card** | 🔴 Live badge, scheduled time |
+| **Category Card** | Large icon/image, orange accent |
+| **Stat Card** | Number + label ("Active Courses") |
+
+### Badges & Tags
+
+| Badge Type | Background | Text | Usage |
+|------------|------------|------|-------|
+| New | `#E53935` | White | New courses |
+| Free | `#4CAF50` | White | Free courses |
+| Free Trial | `#FF5722` | White | Trial available |
+| Workshop | `#FF9800` | White | Workshop type |
+| Live | `#E53935` | White | Live indicator |
+| Due Today | `#E53935` | — | Assessment urgency |
+| Upcoming | `#757575` | — | Future items |
+
+### Attribute Tags (Course Detail)
+| Tag | Icon Color | Background |
+|-----|------------|------------|
+| Language | `#00BCD4` | `#00BCD41A` |
+| Certificate | `#4CAF50` | `#4CAF501A` |
+| Duration | `#757575` | `#7575751A` |
+
+### Input Fields
+
+#### Search Bar
+| Property | Value |
+|----------|-------|
+| Shape | Rounded rectangle (8dp) |
+| Background | `#F5F5F5` or white |
+| Border | `#E0E0E0` |
+| Icon | Search (left), orange on gradient headers |
+
+#### Text Input
+| Property | Value |
+|----------|-------|
+| Background | White |
+| Border | `#E0E0E0` (2dp orange on focus) |
+| Text | `#212121` |
+
+### Progress Indicators
+| Type | Track | Fill |
+|------|-------|------|
+| Linear | `#E0E0E0` | `#FF5722` |
+| Circular | `#E0E0E0` | `#FF5722` |
+| Percentage Label | Right-aligned, `#FF5722` |
+
+### Icons
+| State | Color |
+|-------|-------|
+| Inactive | `#757575` |
+| Active | `#FF5722` |
+
+---
+
+## 9. Screen-Specific Components
+
+### Modals/Dialogs
+| Property | Value |
+|----------|-------|
+| Background | White (rounded corners, 12dp) |
+| Overlay | 60% black semi-transparent |
+| Buttons | "Cancel" (secondary) + "Confirm" (primary) |
+| Position | Centered |
+
+### Snackbars/Toasts
+| Property | Value |
+|----------|-------|
+| Background | `#333333` |
+| Text | `#FFFFFF` |
+| Duration | 3-5 seconds (auto-dismiss) |
+| Position | Bottom of screen |
+
+### Dropdown Menus
+| Property | Value |
+|----------|-------|
+| Background | White |
+| Item hover | `#F5F5F5` |
+| Dividers | `#E0E0E0` between groups |
+
+### Announcement Cards
+| Property | Value |
+|----------|-------|
+| Background | White |
+| Left Accent | 4dp orange bar |
+| Icon | Relevant illustration |
+
+### Challenge Cards
+| Property | Value |
+|----------|-------|
+| Background | Dark overlay on image |
+| Text | White |
+| Badge | "Active" in green |
+| CTA | Orange outline button |
+
+### Forum Category Cards
+| Property | Value |
+|----------|-------|
+| Shape | Square, white background |
+| Border | 1dp `#E0E0E0` |
+| Icon | Circular, colored background |
+| Text | Center-aligned label |
+
+### Date/Time Pickers
+- Prefer native platform pickers (iOS/Android)
+- Custom: Align with VidyaRas aesthetic, clear selection states
+
+### Lists
+| Property | Value |
+|----------|-------|
+| Scrolling | Native behavior |
+| Dividers | Subtle `#E0E0E0` lines |
+| Pull-to-refresh | Standard platform spinner |
+
+---
+
+## 10. Accessibility
+
+### Touch Targets
+| Requirement | Value |
+|-------------|-------|
+| Minimum size | **48dp × 48dp** for all interactive elements |
+
+### Color Contrast (WCAG AA)
+| Content Type | Minimum Ratio |
+|--------------|---------------|
+| Regular text | 4.5:1 |
+| Large text (18pt bold / 24pt) | 3:1 |
+| UI components & graphics | 3:1 |
+
+### Font Scaling
+- Respect system font size preferences
+- Layouts must handle larger text gracefully
+- Text wrapping with responsive adjustments
+
+### Semantic Labeling
+- Use `contentDescription` (Android) / `accessibilityLabel` (iOS)
+- Clear, concise labels for all interactive elements
+- Proper semantic HTML elements where applicable
+
+---
+
+## Quick Reference
+
 ```
+═══════════════════════════════════════════
+COLORS
+═══════════════════════════════════════════
+Primary Orange:     #FF5722
+Orange Gradient:    #FF5722 → #FF8A65
+Dark Mode Orange:   #FF8A65
+Success Green:      #4CAF50
+Warning Orange:     #FF9800
+Live/New Red:       #E53935
+Error Red:          #F44336
+Teal Accent:        #00BCD4
 
-### Inputs
-Use `Input`, `Label`, `Textarea`. Always wrap inputs with `Label`.
+Category Colors:
+  Music:            #2196F3
+  Wellness:         #4CAF50
+  Yoga:             #FF5722
+  Arts:             #E91E63
 
----
+White:              #FFFFFF
+Light Gray:         #F5F5F5
+Medium Gray:        #E0E0E0
+Dark Gray:          #424242
+Black:              #212121
+Helper Text:        #757575
 
-## Layout
+Dark Mode BG:       #121212
+Dark Mode Surface:  #1E1E1E
+Dark Mode Text:     #FFFFFF
+Dark Mode Secondary:#B0B0B0
 
-Dashboard uses Sidebar layout:
-- **Page Wrapper**: Pages rendered inside `SidebarInset`
-- **Header**: Standard dashboard header or consistent page header
-- **Content**: Wrap in container (e.g., `max-w-4xl mx-auto`)
+═══════════════════════════════════════════
+TYPOGRAPHY (sp)
+═══════════════════════════════════════════
+H1: 24sp    H2: 20sp    H3: 16sp
+Body: 14sp  Helper: 12sp
 
----
+═══════════════════════════════════════════
+SPACING (dp)
+═══════════════════════════════════════════
+xs: 4    sm: 8     md-sm: 12   md: 16
+md-lg: 24   lg: 32   xl: 48     xxl: 64
 
-## Course Builder Specifics
+═══════════════════════════════════════════
+BORDER RADIUS (dp)
+═══════════════════════════════════════════
+Small: 8dp   Medium: 12dp   Large: 16dp   Pill: 24dp
 
-Course Builder should align with dashboard:
-- Remove custom full-screen headers that conflict with sidebar
-- Use standard breadcrumb navigation
-- Use `StepWizard` for multi-step, but within content area
+═══════════════════════════════════════════
+CIRCULAR ICONS (dp)
+═══════════════════════════════════════════
+Container: 48dp   Icon: 24dp   BG Opacity: 10%
 
----
-
-## References
-
-**Mobile App (Flutter)**:
-- Full design docs: `docs/design/`
-- Component guide: `docs/component_usage_guide.md`
-- PR checklist: `docs/design/09_pr_checklist_and_guardrails.md`
-- Migration patterns: `docs/design/MIG RATION_PATTERNS.md`
-
-**Web Dashboard (Next.js)**:
-- UI specifications: `docs/plans/ui_specs_README.md`
-- Style guidelines: `docs/plans/ui_style_guidelines.md`
+═══════════════════════════════════════════
+MOTION (ms)
+═══════════════════════════════════════════
+Fast: 150ms   Standard: 300ms   Slow: 500ms
+```
