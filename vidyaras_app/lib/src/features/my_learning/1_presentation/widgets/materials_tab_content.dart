@@ -26,11 +26,11 @@ class MaterialsTabContent extends ConsumerWidget {
 
         // Group materials by section (if section is null, use "General")
         // Use course modules for section titles if available
-        // Note: For now we group by moduleId itself or 'General'
+        // Note: For now we group by sectionId itself or 'General'
         // In the future we might want to pass formatted module titles
         final Map<String, List<CourseMaterial>> materialsByModule = {};
         for (final material in materials) {
-          final module = material.moduleId ?? 'General';
+          final module = material.sectionId ?? 'General';
           if (!materialsByModule.containsKey(module)) {
             materialsByModule[module] = [];
           }

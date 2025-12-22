@@ -137,7 +137,7 @@ class _CoursesScreenState extends ConsumerState<CoursesScreen> {
           // Apply category filter
           if (_selectedCategory != 'all') {
             filteredCourses = filteredCourses.where((course) {
-              return course.categories?.contains(_selectedCategory) ?? false;
+              return course.category?.toLowerCase() == _selectedCategory;
             }).toList();
           }
 

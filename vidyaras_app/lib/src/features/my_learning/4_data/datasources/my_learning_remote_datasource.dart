@@ -439,7 +439,7 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
               type: data['type'] as String? ?? 'pdf',
               fileUrl: data['file_url'] as String,
               fileSizeMb: (data['file_size_mb'] as num?)?.toDouble(),
-              moduleId: data['module_id'] as String?,
+              sectionId: data['section_id'] as String?, // Use correct SQL field
               createdAt: data['created_at'] != null
                   ? DateTime.parse(data['created_at'] as String)
                   : null,

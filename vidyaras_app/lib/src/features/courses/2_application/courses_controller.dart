@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../3_domain/repositories/courses_repository.dart';
+import '../3_domain/repositories/courses_repository.dart';
 import 'courses_state.dart';
-import '../../4_data/providers/data_providers.dart';
+import '../4_data/providers/data_providers.dart';
 
 // Controller Provider
 final coursesControllerProvider =
@@ -57,7 +57,8 @@ class CoursesController extends StateNotifier<CoursesState> {
     // Apply Category Filter
     if (state.selectedCategory != 'All') {
       filtered = filtered.where((course) {
-        return course.categories?.contains(state.selectedCategory) ?? false;
+        return course.category?.toLowerCase() ==
+            state.selectedCategory.toLowerCase();
       }).toList();
     }
 

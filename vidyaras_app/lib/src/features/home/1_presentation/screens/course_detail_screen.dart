@@ -92,9 +92,29 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
                 _buildDescriptionSection(courseDetail),
                 const SizedBox(height: 24),
 
-                // Tabs Section
-                _buildTabsSection(courseDetail),
-                const SizedBox(height: 24),
+                // What You'll Learn Section
+                if (courseDetail.whatYouLearn.isNotEmpty) ...[
+                  _buildWhatYouLearnSection(courseDetail),
+                  const SizedBox(height: 24),
+                ],
+
+                // Course Includes Section
+                if (courseDetail.courseIncludes.isNotEmpty) ...[
+                  _buildCourseIncludesSection(courseDetail),
+                  const SizedBox(height: 24),
+                ],
+
+                // Prerequisites Section
+                if (courseDetail.prerequisites.isNotEmpty) ...[
+                  _buildPrerequisitesSection(courseDetail),
+                  const SizedBox(height: 24),
+                ],
+
+                // Syllabus/Curriculum Section
+                if (courseDetail.curriculum.isNotEmpty) ...[
+                  _buildTabsSection(courseDetail),
+                  const SizedBox(height: 24),
+                ],
 
                 const Divider(height: 1, color: AppColors.border),
                 const SizedBox(height: 24),
@@ -102,6 +122,12 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
                 // Live Batch Info (only for live courses)
                 if (courseDetail.liveBatch != null) ...[
                   BatchInfoCard(batchInfo: courseDetail.liveBatch!),
+                  const SizedBox(height: 24),
+                ],
+
+                // Reviews Section (only if reviews exist)
+                if (courseDetail.reviews.isNotEmpty) ...[
+                  _buildReviewsSection(courseDetail),
                   const SizedBox(height: 24),
                 ],
 
@@ -398,6 +424,280 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
             child: CurriculumSectionCard(
               section: section,
               sectionNumber: index,
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  /// What You'll Learn section - shows learning outcomes with checkmarks
+  Widget _buildWhatYouLearnSection(CourseDetail courseDetail) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'What You\'ll Learn',
+          style: textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceLight,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            children: courseDetail.whatYouLearn.map((item) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        size: 16,
+                        color: AppColors.success,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        item,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Course Includes section - shows what's included (videos, downloads, etc.)
+  Widget _buildCourseIncludesSection(CourseDetail courseDetail) {
+    final textTheme = Theme.of(context).textTheme;
+
+    IconData getIncludeIcon(String item) {
+      final lower = item.toLowerCase();
+      if (lower.contains('video') || lower.contains('hour'))
+        return Icons.play_circle_outline;
+      if (lower.contains('download') || lower.contains('resource'))
+        return Icons.download;
+      if (lower.contains('article')) return Icons.article_outlined;
+      if (lower.contains('exercise') || lower.contains('practice'))
+        return Icons.edit_note;
+      if (lower.contains('certificate')) return Icons.card_membership;
+      if (lower.contains('access') || lower.contains('lifetime'))
+        return Icons.all_inclusive;
+      if (lower.contains('mobile') || lower.contains('tv'))
+        return Icons.devices;
+      return Icons.check_circle_outline;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'This Course Includes',
+          style: textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: courseDetail.courseIncludes.map((item) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceLight,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    getIncludeIcon(item),
+                    size: 18,
+                    color: AppColors.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    item,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  /// Prerequisites section - shows what students need before taking the course
+  Widget _buildPrerequisitesSection(CourseDetail courseDetail) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Prerequisites',
+          style: textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 16),
+        ...courseDetail.prerequisites.map((item) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.arrow_right,
+                  size: 20,
+                  color: AppColors.warning,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    item,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  /// Reviews section - shows course reviews if available
+  Widget _buildReviewsSection(CourseDetail courseDetail) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Reviews',
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            Text(
+              '${courseDetail.reviews.length} reviews',
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        ...courseDetail.reviews.take(3).map((review) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceLight,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 18,
+                      backgroundColor: AppColors.primary.withOpacity(0.1),
+                      child: Text(
+                        review.userName.isNotEmpty
+                            ? review.userName[0].toUpperCase()
+                            : 'U',
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            review.userName,
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          Row(
+                            children: List.generate(5, (index) {
+                              return Icon(
+                                index < review.rating
+                                    ? Icons.star
+                                    : Icons.star_border,
+                                size: 14,
+                                color: const Color(0xFFFBBF24),
+                              );
+                            }),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                if (review.reviewText.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    review.reviewText,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
             ),
           );
         }),

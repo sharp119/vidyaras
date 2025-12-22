@@ -13,7 +13,7 @@ class CourseMaterial with _$CourseMaterial {
     @Default('pdf') String type, // pdf, video, doc, image, other
     required String fileUrl,
     double? fileSizeMb,
-    String? moduleId,
+    String? sectionId, // matches SQL schema's section_id field
     DateTime? createdAt,
   }) = _CourseMaterial;
 

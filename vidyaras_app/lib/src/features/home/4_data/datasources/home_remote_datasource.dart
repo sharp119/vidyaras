@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../3_domain/models/course.dart';
 import '../../3_domain/models/course_detail.dart';
 import '../../3_domain/models/section_info.dart';
+import '../../3_domain/models/lesson_item.dart';
 import '../../3_domain/models/pricing_option.dart';
 
 /// Remote data source for home feature
@@ -21,12 +22,23 @@ class HomeRemoteDataSource {
       final response = await _supabase
           .from('courses')
           .select()
+          .eq('status', 'published') // Only show published courses
           .order('enrolled_count', ascending: false)
           .limit(10);
 
       print('✅ Successfully loaded ${response.length} featured courses');
 
       return (response as List).map((courseData) {
+        final isPremium = courseData['is_premium'] as bool? ?? false;
+        final price = courseData['price'];
+        final isFree =
+            !isPremium &&
+            (price == null ||
+                price == 0 ||
+                price == '0' ||
+                price == '0.00' ||
+                (price is num && price == 0));
+
         return Course(
           id: courseData['id'] as String,
           title: courseData['title'] as String,
@@ -37,21 +49,13 @@ class HomeRemoteDataSource {
               : 0.0,
           reviewCount: courseData['review_count'] as int? ?? 0,
           enrolledCount: courseData['enrolled_count'] as int? ?? 0,
-          price:
-              (courseData['is_premium'] == false ||
-                  courseData['price'] == null ||
-                  courseData['price'] == '0' ||
-                  courseData['price'] == '0.00')
-              ? null
-              : '₹${courseData['price']}',
+          price: isFree ? null : '₹${courseData['price']}',
           duration: courseData['duration'] as String?,
-          isFree: courseData['is_premium'] == false,
+          isFree: isFree,
           isLive: courseData['is_live'] as bool? ?? false,
           isRecorded: courseData['is_recorded'] as bool? ?? false,
           hasFreeTrial: courseData['has_free_trial'] as bool? ?? false,
-          categories: courseData['category'] != null
-              ? [courseData['category'] as String]
-              : [],
+          category: courseData['category'] as String?,
           createdAt: courseData['created_at'] != null
               ? DateTime.parse(courseData['created_at'] as String)
               : null,
@@ -77,6 +81,16 @@ class HomeRemoteDataSource {
 
       final courses = (response as List).map((enrollment) {
         final courseData = enrollment['courses'] as Map<String, dynamic>;
+        final isPremium = courseData['is_premium'] as bool? ?? false;
+        final price = courseData['price'];
+        final isFree =
+            !isPremium &&
+            (price == null ||
+                price == 0 ||
+                price == '0' ||
+                price == '0.00' ||
+                (price is num && price == 0));
+
         return Course(
           id: courseData['id'] as String,
           title: courseData['title'] as String,
@@ -87,21 +101,13 @@ class HomeRemoteDataSource {
               : 0.0,
           reviewCount: courseData['review_count'] as int? ?? 0,
           enrolledCount: courseData['enrolled_count'] as int? ?? 0,
-          price:
-              (courseData['is_premium'] == false ||
-                  courseData['price'] == null ||
-                  courseData['price'] == '0' ||
-                  courseData['price'] == '0.00')
-              ? null
-              : '₹${courseData['price']}',
+          price: isFree ? null : '₹${courseData['price']}',
           duration: courseData['duration'] as String?,
-          isFree: courseData['is_premium'] == false,
+          isFree: isFree,
           isLive: courseData['is_live'] as bool? ?? false,
           isRecorded: courseData['is_recorded'] as bool? ?? false,
           hasFreeTrial: courseData['has_free_trial'] as bool? ?? false,
-          categories: courseData['category'] != null
-              ? [courseData['category'] as String]
-              : [],
+          category: courseData['category'] as String?,
           createdAt: courseData['created_at'] != null
               ? DateTime.parse(courseData['created_at'] as String)
               : null,
@@ -121,6 +127,7 @@ class HomeRemoteDataSource {
     try {
       print('\n🔍 Fetching course detail for: $courseId');
 
+      // Fetch course data
       final response = await _supabase
           .from('courses')
           .select()
@@ -129,7 +136,77 @@ class HomeRemoteDataSource {
 
       print('✅ Successfully loaded course detail');
 
+      // Fetch modules for this course (separate query - no FK relationship)
+      final modulesResponse = await _supabase
+          .from('modules')
+          .select()
+          .eq('course_id', courseId)
+          .order('order_index', ascending: true);
+
+      print('✅ Found ${modulesResponse.length} modules');
+
+      // Fetch lectures with nested select from modules
+      final lecturesResponse = await _supabase
+          .from('lectures')
+          .select()
+          .eq('course_id', courseId)
+          .order('order_index', ascending: true);
+
+      print('✅ Found ${lecturesResponse.length} lectures');
+
+      // Build curriculum from modules and lectures
+      final List<SectionInfo> curriculum = [];
+
+      for (final module in modulesResponse as List) {
+        final moduleId = module['id'] as String;
+        final moduleTitle = module['title'] as String;
+
+        // Filter lectures for this module
+        final moduleLectures = (lecturesResponse as List)
+            .where((lecture) => lecture['module_id'] == moduleId)
+            .toList();
+
+        // Map lectures to LessonItem
+        final lessons = moduleLectures.map((lecture) {
+          return LessonItem(
+            id: lecture['id'] as String,
+            title: lecture['title'] as String,
+            durationMinutes: lecture['duration_minutes'] as int? ?? 0,
+            description: lecture['description'] as String?,
+            isLocked: false,
+            isCompleted: false,
+          );
+        }).toList();
+
+        // Calculate total duration for the module
+        int totalDuration = 0;
+        for (final lesson in lessons) {
+          totalDuration += lesson.durationMinutes;
+        }
+
+        curriculum.add(
+          SectionInfo(
+            id: moduleId,
+            title: moduleTitle,
+            lessons: lessons,
+            totalDurationMinutes: totalDuration,
+          ),
+        );
+      }
+
+      print('✅ Built curriculum with ${curriculum.length} modules');
+
       // Build basic course info
+      final isPremium = response['is_premium'] as bool? ?? false;
+      final price = response['price'];
+      final isFree =
+          !isPremium &&
+          (price == null ||
+              price == 0 ||
+              price == '0' ||
+              price == '0.00' ||
+              (price is num && price == 0));
+
       final basicCourse = Course(
         id: response['id'] as String,
         title: response['title'] as String,
@@ -140,22 +217,17 @@ class HomeRemoteDataSource {
             : 0.0,
         reviewCount: response['review_count'] as int? ?? 0,
         enrolledCount: response['enrolled_count'] as int? ?? 0,
-        price: response['price'] != null ? '₹${response['price']}' : null,
+        price: isFree ? null : '₹${response['price']}',
         duration: response['duration'] as String?,
-        isFree: response['is_premium'] == false,
+        isFree: isFree,
         isLive: response['is_live'] as bool? ?? false,
         isRecorded: response['is_recorded'] as bool? ?? false,
         hasFreeTrial: response['has_free_trial'] as bool? ?? false,
-        categories: response['category'] != null
-            ? [response['category'] as String]
-            : [],
+        category: response['category'] as String?,
         createdAt: response['created_at'] != null
             ? DateTime.parse(response['created_at'] as String)
             : null,
       );
-
-      // Build curriculum (placeholder - you can fetch modules separately if needed)
-      final List<SectionInfo> curriculum = [];
 
       // Build pricing
       final pricing = PricingOption(

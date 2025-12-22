@@ -16,11 +16,23 @@ class CoursesRemoteDataSource {
       final response = await _supabase
           .from('courses')
           .select()
+          .eq('status', 'published') // Only show published courses
           .order('created_at', ascending: false);
 
       print('✅ Successfully loaded ${response.length} courses from Supabase');
 
       return (response as List).map((courseData) {
+        // A course is free only if NOT premium AND price is null/zero
+        final isPremium = courseData['is_premium'] as bool? ?? false;
+        final price = courseData['price'];
+        final isFree =
+            !isPremium &&
+            (price == null ||
+                price == 0 ||
+                price == '0' ||
+                price == '0.00' ||
+                (price is num && price == 0));
+
         return Course(
           id: courseData['id'] as String,
           title: courseData['title'] as String,
@@ -31,25 +43,13 @@ class CoursesRemoteDataSource {
               : 0.0,
           reviewCount: courseData['review_count'] as int? ?? 0,
           enrolledCount: courseData['enrolled_count'] as int? ?? 0,
-          price:
-              (courseData['is_premium'] == false ||
-                  courseData['price'] == null ||
-                  courseData['price'] == '0' ||
-                  courseData['price'] == '0.00')
-              ? null
-              : '₹${courseData['price']}',
+          price: isFree ? null : '₹${courseData['price']}',
           duration: courseData['duration'] as String?,
-          isFree:
-              courseData['is_premium'] == false ||
-              courseData['price'] == null ||
-              courseData['price'] == '0' ||
-              courseData['price'] == '0.00',
+          isFree: isFree,
           isLive: courseData['is_live'] as bool? ?? false,
           isRecorded: courseData['is_recorded'] as bool? ?? false,
           hasFreeTrial: courseData['has_free_trial'] as bool? ?? false,
-          categories: courseData['category'] != null
-              ? [courseData['category'] as String]
-              : [],
+          category: courseData['category'] as String?,
           createdAt: courseData['created_at'] != null
               ? DateTime.parse(courseData['created_at'] as String)
               : null,
@@ -73,12 +73,23 @@ class CoursesRemoteDataSource {
       final response = await _supabase
           .from('courses')
           .select()
+          .eq('status', 'published') // Only show published courses
           .or('title.ilike.%$query%,instructor.ilike.%$query%')
           .order('created_at', ascending: false);
 
       print('✅ Found ${response.length} matching courses');
 
       return (response as List).map((courseData) {
+        final isPremium = courseData['is_premium'] as bool? ?? false;
+        final price = courseData['price'];
+        final isFree =
+            !isPremium &&
+            (price == null ||
+                price == 0 ||
+                price == '0' ||
+                price == '0.00' ||
+                (price is num && price == 0));
+
         return Course(
           id: courseData['id'] as String,
           title: courseData['title'] as String,
@@ -89,15 +100,13 @@ class CoursesRemoteDataSource {
               : 0.0,
           reviewCount: courseData['review_count'] as int? ?? 0,
           enrolledCount: courseData['enrolled_count'] as int? ?? 0,
-          price: courseData['price'] != null ? '₹${courseData['price']}' : null,
+          price: isFree ? null : '₹${courseData['price']}',
           duration: courseData['duration'] as String?,
-          isFree: courseData['is_premium'] == false,
+          isFree: isFree,
           isLive: courseData['is_live'] as bool? ?? false,
           isRecorded: courseData['is_recorded'] as bool? ?? false,
           hasFreeTrial: courseData['has_free_trial'] as bool? ?? false,
-          categories: courseData['category'] != null
-              ? [courseData['category'] as String]
-              : [],
+          category: courseData['category'] as String?,
           createdAt: courseData['created_at'] != null
               ? DateTime.parse(courseData['created_at'] as String)
               : null,
@@ -121,12 +130,23 @@ class CoursesRemoteDataSource {
       final response = await _supabase
           .from('courses')
           .select()
+          .eq('status', 'published') // Only show published courses
           .ilike('category', category)
           .order('created_at', ascending: false);
 
       print('✅ Found ${response.length} courses in category "$category"');
 
       return (response as List).map((courseData) {
+        final isPremium = courseData['is_premium'] as bool? ?? false;
+        final price = courseData['price'];
+        final isFree =
+            !isPremium &&
+            (price == null ||
+                price == 0 ||
+                price == '0' ||
+                price == '0.00' ||
+                (price is num && price == 0));
+
         return Course(
           id: courseData['id'] as String,
           title: courseData['title'] as String,
@@ -137,15 +157,13 @@ class CoursesRemoteDataSource {
               : 0.0,
           reviewCount: courseData['review_count'] as int? ?? 0,
           enrolledCount: courseData['enrolled_count'] as int? ?? 0,
-          price: courseData['price'] != null ? '₹${courseData['price']}' : null,
+          price: isFree ? null : '₹${courseData['price']}',
           duration: courseData['duration'] as String?,
-          isFree: courseData['is_premium'] == false,
+          isFree: isFree,
           isLive: courseData['is_live'] as bool? ?? false,
           isRecorded: courseData['is_recorded'] as bool? ?? false,
           hasFreeTrial: courseData['has_free_trial'] as bool? ?? false,
-          categories: courseData['category'] != null
-              ? [courseData['category'] as String]
-              : [],
+          category: courseData['category'] as String?,
           createdAt: courseData['created_at'] != null
               ? DateTime.parse(courseData['created_at'] as String)
               : null,

@@ -7,9 +7,7 @@ import '../../../features/onboarding/1_presentation/screens/onboarding_interests
 import '../../../features/onboarding/1_presentation/screens/onboarding_goals_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_experience_screen.dart';
 import '../../../features/onboarding/1_presentation/screens/onboarding_language_screen.dart';
-import '../../../features/auth_legacy_backup/1_presentation/screens/phone_auth_screen.dart';
-import '../../../features/auth_legacy_backup/1_presentation/screens/otp_verification_screen.dart';
-import '../../../features/auth_legacy_backup/1_presentation/screens/registration_screen.dart';
+
 import '../../../features/home/1_presentation/screens/course_detail_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_screen.dart';
 import '../../../features/tests/1_presentation/screens/quiz_results_screen.dart';
@@ -58,30 +56,30 @@ final GoRouter appRouter = GoRouter(
     ),
 
     // Legacy Authentication Flow (DEPRECATED - kept for reference)
-    GoRoute(
-      path: '/auth',
-      name: 'auth',
-      builder: (context, state) => const PhoneAuthScreen(),
-    ),
-    GoRoute(
-      path: '/auth/verify-otp',
-      name: 'verify-otp',
-      builder: (context, state) {
-        final data = state.extra as Map<String, String>;
-        return OTPVerificationScreen(
-          phoneNumber: data['phoneNumber']!,
-          requestId: data['requestId']!,
-        );
-      },
-    ),
-    GoRoute(
-      path: '/auth/register',
-      name: 'register',
-      builder: (context, state) {
-        final phoneNumber = state.extra as String;
-        return RegistrationScreen(phoneNumber: phoneNumber);
-      },
-    ),
+    // GoRoute(
+    //   path: '/auth',
+    //   name: 'auth',
+    //   builder: (context, state) => const PhoneAuthScreen(),
+    // ),
+    // GoRoute(
+    //   path: '/auth/verify-otp',
+    //   name: 'verify-otp',
+    //   builder: (context, state) {
+    //     final data = state.extra as Map<String, String>;₹
+    //     return OTPVerificationScreen(
+    //       phoneNumber: data['phoneNumber']!,
+    //       requestId: data['requestId']!,
+    //     );
+    //   },
+    // ),
+    // GoRoute(
+    //   path: '/auth/register',
+    //   name: 'register',
+    //   builder: (context, state) {
+    //     final phoneNumber = state.extra as String;
+    //     return RegistrationScreen(phoneNumber: phoneNumber);
+    //   },
+    // ),
 
     // Onboarding Personalization Flow
     GoRoute(

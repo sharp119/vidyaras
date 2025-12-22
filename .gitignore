@@ -48,7 +48,7 @@ docs/mockups/
 !*.env.example
 
 # SQL files (migrations should be in supabase/migrations/)
-*.sql
+# *.sql
 !supabase/migrations/*.sql
 
 # Firebase

@@ -257,11 +257,7 @@ class _AllCoursesScreenState extends ConsumerState<AllCoursesScreen> {
                         rating: course.rating,
                         price: course.price,
                         duration: course.duration ?? '12 Hours',
-                        category:
-                            (course.categories != null &&
-                                course.categories!.isNotEmpty)
-                            ? course.categories!.first.toUpperCase()
-                            : 'Music', // Default to MUSIC to match design vibe if missing (title in design is "Classical Hindustani")
+                        category: course.category?.toUpperCase() ?? 'MUSIC',
                         lessonCount: 24,
                         isFree: course.isFree,
                         onTap: () {

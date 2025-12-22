@@ -25,19 +25,30 @@ mixin _$Course {
   String get title => throw _privateConstructorUsedError;
   String get instructor => throw _privateConstructorUsedError;
   String? get thumbnailUrl => throw _privateConstructorUsedError;
+  String? get description => throw _privateConstructorUsedError;
   double get rating => throw _privateConstructorUsedError;
   int get reviewCount => throw _privateConstructorUsedError;
   int get enrolledCount => throw _privateConstructorUsedError;
   String? get price => throw _privateConstructorUsedError;
+  double? get originalPrice => throw _privateConstructorUsedError;
   String? get duration => throw _privateConstructorUsedError;
   bool get isFree => throw _privateConstructorUsedError;
   bool get isLive => throw _privateConstructorUsedError;
   bool get hasFreeTrial => throw _privateConstructorUsedError;
   bool get isRecorded => throw _privateConstructorUsedError;
+  bool get hasCertificate => throw _privateConstructorUsedError;
+  bool get hasQuizzes => throw _privateConstructorUsedError;
+  bool get hasMaterials => throw _privateConstructorUsedError;
+  String? get category => throw _privateConstructorUsedError;
+  String get language => throw _privateConstructorUsedError;
+  String get status =>
+      throw _privateConstructorUsedError; // draft, published, archived
+  int? get accessDays => throw _privateConstructorUsedError;
   double? get progress =>
       throw _privateConstructorUsedError; // 0.0 to 1.0 for enrolled courses
-  List<String>? get categories => throw _privateConstructorUsedError;
+  String? get createdBy => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this Course to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -58,18 +69,28 @@ abstract class $CourseCopyWith<$Res> {
     String title,
     String instructor,
     String? thumbnailUrl,
+    String? description,
     double rating,
     int reviewCount,
     int enrolledCount,
     String? price,
+    double? originalPrice,
     String? duration,
     bool isFree,
     bool isLive,
     bool hasFreeTrial,
     bool isRecorded,
+    bool hasCertificate,
+    bool hasQuizzes,
+    bool hasMaterials,
+    String? category,
+    String language,
+    String status,
+    int? accessDays,
     double? progress,
-    List<String>? categories,
+    String? createdBy,
     DateTime? createdAt,
+    DateTime? updatedAt,
   });
 }
 
@@ -92,18 +113,28 @@ class _$CourseCopyWithImpl<$Res, $Val extends Course>
     Object? title = null,
     Object? instructor = null,
     Object? thumbnailUrl = freezed,
+    Object? description = freezed,
     Object? rating = null,
     Object? reviewCount = null,
     Object? enrolledCount = null,
     Object? price = freezed,
+    Object? originalPrice = freezed,
     Object? duration = freezed,
     Object? isFree = null,
     Object? isLive = null,
     Object? hasFreeTrial = null,
     Object? isRecorded = null,
+    Object? hasCertificate = null,
+    Object? hasQuizzes = null,
+    Object? hasMaterials = null,
+    Object? category = freezed,
+    Object? language = null,
+    Object? status = null,
+    Object? accessDays = freezed,
     Object? progress = freezed,
-    Object? categories = freezed,
+    Object? createdBy = freezed,
     Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -123,6 +154,10 @@ class _$CourseCopyWithImpl<$Res, $Val extends Course>
                 ? _value.thumbnailUrl
                 : thumbnailUrl // ignore: cast_nullable_to_non_nullable
                       as String?,
+            description: freezed == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                      as String?,
             rating: null == rating
                 ? _value.rating
                 : rating // ignore: cast_nullable_to_non_nullable
@@ -139,6 +174,10 @@ class _$CourseCopyWithImpl<$Res, $Val extends Course>
                 ? _value.price
                 : price // ignore: cast_nullable_to_non_nullable
                       as String?,
+            originalPrice: freezed == originalPrice
+                ? _value.originalPrice
+                : originalPrice // ignore: cast_nullable_to_non_nullable
+                      as double?,
             duration: freezed == duration
                 ? _value.duration
                 : duration // ignore: cast_nullable_to_non_nullable
@@ -159,17 +198,49 @@ class _$CourseCopyWithImpl<$Res, $Val extends Course>
                 ? _value.isRecorded
                 : isRecorded // ignore: cast_nullable_to_non_nullable
                       as bool,
+            hasCertificate: null == hasCertificate
+                ? _value.hasCertificate
+                : hasCertificate // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            hasQuizzes: null == hasQuizzes
+                ? _value.hasQuizzes
+                : hasQuizzes // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            hasMaterials: null == hasMaterials
+                ? _value.hasMaterials
+                : hasMaterials // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            category: freezed == category
+                ? _value.category
+                : category // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            language: null == language
+                ? _value.language
+                : language // ignore: cast_nullable_to_non_nullable
+                      as String,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as String,
+            accessDays: freezed == accessDays
+                ? _value.accessDays
+                : accessDays // ignore: cast_nullable_to_non_nullable
+                      as int?,
             progress: freezed == progress
                 ? _value.progress
                 : progress // ignore: cast_nullable_to_non_nullable
                       as double?,
-            categories: freezed == categories
-                ? _value.categories
-                : categories // ignore: cast_nullable_to_non_nullable
-                      as List<String>?,
+            createdBy: freezed == createdBy
+                ? _value.createdBy
+                : createdBy // ignore: cast_nullable_to_non_nullable
+                      as String?,
             createdAt: freezed == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
           )
           as $Val,
@@ -190,18 +261,28 @@ abstract class _$$CourseImplCopyWith<$Res> implements $CourseCopyWith<$Res> {
     String title,
     String instructor,
     String? thumbnailUrl,
+    String? description,
     double rating,
     int reviewCount,
     int enrolledCount,
     String? price,
+    double? originalPrice,
     String? duration,
     bool isFree,
     bool isLive,
     bool hasFreeTrial,
     bool isRecorded,
+    bool hasCertificate,
+    bool hasQuizzes,
+    bool hasMaterials,
+    String? category,
+    String language,
+    String status,
+    int? accessDays,
     double? progress,
-    List<String>? categories,
+    String? createdBy,
     DateTime? createdAt,
+    DateTime? updatedAt,
   });
 }
 
@@ -223,18 +304,28 @@ class __$$CourseImplCopyWithImpl<$Res>
     Object? title = null,
     Object? instructor = null,
     Object? thumbnailUrl = freezed,
+    Object? description = freezed,
     Object? rating = null,
     Object? reviewCount = null,
     Object? enrolledCount = null,
     Object? price = freezed,
+    Object? originalPrice = freezed,
     Object? duration = freezed,
     Object? isFree = null,
     Object? isLive = null,
     Object? hasFreeTrial = null,
     Object? isRecorded = null,
+    Object? hasCertificate = null,
+    Object? hasQuizzes = null,
+    Object? hasMaterials = null,
+    Object? category = freezed,
+    Object? language = null,
+    Object? status = null,
+    Object? accessDays = freezed,
     Object? progress = freezed,
-    Object? categories = freezed,
+    Object? createdBy = freezed,
     Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(
       _$CourseImpl(
@@ -254,6 +345,10 @@ class __$$CourseImplCopyWithImpl<$Res>
             ? _value.thumbnailUrl
             : thumbnailUrl // ignore: cast_nullable_to_non_nullable
                   as String?,
+        description: freezed == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
+                  as String?,
         rating: null == rating
             ? _value.rating
             : rating // ignore: cast_nullable_to_non_nullable
@@ -270,6 +365,10 @@ class __$$CourseImplCopyWithImpl<$Res>
             ? _value.price
             : price // ignore: cast_nullable_to_non_nullable
                   as String?,
+        originalPrice: freezed == originalPrice
+            ? _value.originalPrice
+            : originalPrice // ignore: cast_nullable_to_non_nullable
+                  as double?,
         duration: freezed == duration
             ? _value.duration
             : duration // ignore: cast_nullable_to_non_nullable
@@ -290,17 +389,49 @@ class __$$CourseImplCopyWithImpl<$Res>
             ? _value.isRecorded
             : isRecorded // ignore: cast_nullable_to_non_nullable
                   as bool,
+        hasCertificate: null == hasCertificate
+            ? _value.hasCertificate
+            : hasCertificate // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        hasQuizzes: null == hasQuizzes
+            ? _value.hasQuizzes
+            : hasQuizzes // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        hasMaterials: null == hasMaterials
+            ? _value.hasMaterials
+            : hasMaterials // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        category: freezed == category
+            ? _value.category
+            : category // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        language: null == language
+            ? _value.language
+            : language // ignore: cast_nullable_to_non_nullable
+                  as String,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as String,
+        accessDays: freezed == accessDays
+            ? _value.accessDays
+            : accessDays // ignore: cast_nullable_to_non_nullable
+                  as int?,
         progress: freezed == progress
             ? _value.progress
             : progress // ignore: cast_nullable_to_non_nullable
                   as double?,
-        categories: freezed == categories
-            ? _value._categories
-            : categories // ignore: cast_nullable_to_non_nullable
-                  as List<String>?,
+        createdBy: freezed == createdBy
+            ? _value.createdBy
+            : createdBy // ignore: cast_nullable_to_non_nullable
+                  as String?,
         createdAt: freezed == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
       ),
     );
@@ -315,19 +446,29 @@ class _$CourseImpl implements _Course {
     required this.title,
     required this.instructor,
     this.thumbnailUrl,
+    this.description,
     this.rating = 0.0,
     this.reviewCount = 0,
     this.enrolledCount = 0,
     this.price,
+    this.originalPrice,
     this.duration,
     this.isFree = false,
     this.isLive = false,
     this.hasFreeTrial = false,
     this.isRecorded = false,
+    this.hasCertificate = false,
+    this.hasQuizzes = false,
+    this.hasMaterials = false,
+    this.category,
+    this.language = 'Bilingual (Hindi + English)',
+    this.status = 'published',
+    this.accessDays,
     this.progress,
-    final List<String>? categories,
+    this.createdBy,
     this.createdAt,
-  }) : _categories = categories;
+    this.updatedAt,
+  });
 
   factory _$CourseImpl.fromJson(Map<String, dynamic> json) =>
       _$$CourseImplFromJson(json);
@@ -341,6 +482,8 @@ class _$CourseImpl implements _Course {
   @override
   final String? thumbnailUrl;
   @override
+  final String? description;
+  @override
   @JsonKey()
   final double rating;
   @override
@@ -351,6 +494,8 @@ class _$CourseImpl implements _Course {
   final int enrolledCount;
   @override
   final String? price;
+  @override
+  final double? originalPrice;
   @override
   final String? duration;
   @override
@@ -366,25 +511,38 @@ class _$CourseImpl implements _Course {
   @JsonKey()
   final bool isRecorded;
   @override
+  @JsonKey()
+  final bool hasCertificate;
+  @override
+  @JsonKey()
+  final bool hasQuizzes;
+  @override
+  @JsonKey()
+  final bool hasMaterials;
+  @override
+  final String? category;
+  @override
+  @JsonKey()
+  final String language;
+  @override
+  @JsonKey()
+  final String status;
+  // draft, published, archived
+  @override
+  final int? accessDays;
+  @override
   final double? progress;
   // 0.0 to 1.0 for enrolled courses
-  final List<String>? _categories;
-  // 0.0 to 1.0 for enrolled courses
   @override
-  List<String>? get categories {
-    final value = _categories;
-    if (value == null) return null;
-    if (_categories is EqualUnmodifiableListView) return _categories;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
+  final String? createdBy;
   @override
   final DateTime? createdAt;
+  @override
+  final DateTime? updatedAt;
 
   @override
   String toString() {
-    return 'Course(id: $id, title: $title, instructor: $instructor, thumbnailUrl: $thumbnailUrl, rating: $rating, reviewCount: $reviewCount, enrolledCount: $enrolledCount, price: $price, duration: $duration, isFree: $isFree, isLive: $isLive, hasFreeTrial: $hasFreeTrial, isRecorded: $isRecorded, progress: $progress, categories: $categories, createdAt: $createdAt)';
+    return 'Course(id: $id, title: $title, instructor: $instructor, thumbnailUrl: $thumbnailUrl, description: $description, rating: $rating, reviewCount: $reviewCount, enrolledCount: $enrolledCount, price: $price, originalPrice: $originalPrice, duration: $duration, isFree: $isFree, isLive: $isLive, hasFreeTrial: $hasFreeTrial, isRecorded: $isRecorded, hasCertificate: $hasCertificate, hasQuizzes: $hasQuizzes, hasMaterials: $hasMaterials, category: $category, language: $language, status: $status, accessDays: $accessDays, progress: $progress, createdBy: $createdBy, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -398,12 +556,16 @@ class _$CourseImpl implements _Course {
                 other.instructor == instructor) &&
             (identical(other.thumbnailUrl, thumbnailUrl) ||
                 other.thumbnailUrl == thumbnailUrl) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
             (identical(other.rating, rating) || other.rating == rating) &&
             (identical(other.reviewCount, reviewCount) ||
                 other.reviewCount == reviewCount) &&
             (identical(other.enrolledCount, enrolledCount) ||
                 other.enrolledCount == enrolledCount) &&
             (identical(other.price, price) || other.price == price) &&
+            (identical(other.originalPrice, originalPrice) ||
+                other.originalPrice == originalPrice) &&
             (identical(other.duration, duration) ||
                 other.duration == duration) &&
             (identical(other.isFree, isFree) || other.isFree == isFree) &&
@@ -412,37 +574,60 @@ class _$CourseImpl implements _Course {
                 other.hasFreeTrial == hasFreeTrial) &&
             (identical(other.isRecorded, isRecorded) ||
                 other.isRecorded == isRecorded) &&
+            (identical(other.hasCertificate, hasCertificate) ||
+                other.hasCertificate == hasCertificate) &&
+            (identical(other.hasQuizzes, hasQuizzes) ||
+                other.hasQuizzes == hasQuizzes) &&
+            (identical(other.hasMaterials, hasMaterials) ||
+                other.hasMaterials == hasMaterials) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
+            (identical(other.language, language) ||
+                other.language == language) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.accessDays, accessDays) ||
+                other.accessDays == accessDays) &&
             (identical(other.progress, progress) ||
                 other.progress == progress) &&
-            const DeepCollectionEquality().equals(
-              other._categories,
-              _categories,
-            ) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     title,
     instructor,
     thumbnailUrl,
+    description,
     rating,
     reviewCount,
     enrolledCount,
     price,
+    originalPrice,
     duration,
     isFree,
     isLive,
     hasFreeTrial,
     isRecorded,
+    hasCertificate,
+    hasQuizzes,
+    hasMaterials,
+    category,
+    language,
+    status,
+    accessDays,
     progress,
-    const DeepCollectionEquality().hash(_categories),
+    createdBy,
     createdAt,
-  );
+    updatedAt,
+  ]);
 
   /// Create a copy of Course
   /// with the given fields replaced by the non-null parameter values.
@@ -464,18 +649,28 @@ abstract class _Course implements Course {
     required final String title,
     required final String instructor,
     final String? thumbnailUrl,
+    final String? description,
     final double rating,
     final int reviewCount,
     final int enrolledCount,
     final String? price,
+    final double? originalPrice,
     final String? duration,
     final bool isFree,
     final bool isLive,
     final bool hasFreeTrial,
     final bool isRecorded,
+    final bool hasCertificate,
+    final bool hasQuizzes,
+    final bool hasMaterials,
+    final String? category,
+    final String language,
+    final String status,
+    final int? accessDays,
     final double? progress,
-    final List<String>? categories,
+    final String? createdBy,
     final DateTime? createdAt,
+    final DateTime? updatedAt,
   }) = _$CourseImpl;
 
   factory _Course.fromJson(Map<String, dynamic> json) = _$CourseImpl.fromJson;
@@ -489,6 +684,8 @@ abstract class _Course implements Course {
   @override
   String? get thumbnailUrl;
   @override
+  String? get description;
+  @override
   double get rating;
   @override
   int get reviewCount;
@@ -496,6 +693,8 @@ abstract class _Course implements Course {
   int get enrolledCount;
   @override
   String? get price;
+  @override
+  double? get originalPrice;
   @override
   String? get duration;
   @override
@@ -507,11 +706,27 @@ abstract class _Course implements Course {
   @override
   bool get isRecorded;
   @override
+  bool get hasCertificate;
+  @override
+  bool get hasQuizzes;
+  @override
+  bool get hasMaterials;
+  @override
+  String? get category;
+  @override
+  String get language;
+  @override
+  String get status; // draft, published, archived
+  @override
+  int? get accessDays;
+  @override
   double? get progress; // 0.0 to 1.0 for enrolled courses
   @override
-  List<String>? get categories;
+  String? get createdBy;
   @override
   DateTime? get createdAt;
+  @override
+  DateTime? get updatedAt;
 
   /// Create a copy of Course
   /// with the given fields replaced by the non-null parameter values.
