@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Checkbox with text label
-/// Used for "Remember me", agreements, etc.
+/// Design System: Theme-based styling
 class CheckboxWithLabel extends StatelessWidget {
   const CheckboxWithLabel({
     super.key,
@@ -17,11 +18,13 @@ class CheckboxWithLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return InkWell(
       onTap: () => onChanged(!value),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppRadius.button),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -31,23 +34,18 @@ class CheckboxWithLabel extends StatelessWidget {
               child: Checkbox(
                 value: value,
                 onChanged: onChanged,
-                activeColor: AppColors.primary,
+                activeColor: theme.colorScheme.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
                 ),
-                side: const BorderSide(
-                  color: AppColors.border,
-                  width: 1.5,
-                ),
+                side: const BorderSide(color: AppColors.border, width: 1.5),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.sm),
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
+              style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
               ),
             ),
           ],

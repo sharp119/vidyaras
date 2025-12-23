@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Stats card with icon, value, and label
-/// Displays multiple stat items in a horizontal row with a card container
+/// Design System: 24dp padding, 12dp card radius, theme typography
 class StatsCard extends StatelessWidget {
-  const StatsCard({
-    super.key,
-    required this.stats,
-  });
+  const StatsCard({super.key, required this.stats});
 
   final List<StatCardItem> stats;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.mdLg),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.large),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
@@ -35,12 +33,14 @@ class StatsCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: stats
-            .map((stat) => _StatCardItemWidget(
-                  icon: stat.icon,
-                  value: stat.value,
-                  label: stat.label,
-                  iconColor: stat.iconColor,
-                ))
+            .map(
+              (stat) => _StatCardItemWidget(
+                icon: stat.icon,
+                value: stat.value,
+                label: stat.label,
+                iconColor: stat.iconColor,
+              ),
+            )
             .toList(),
       ),
     );
@@ -77,36 +77,32 @@ class _StatCardItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(AppSpacing.mdSm),
           decoration: BoxDecoration(
             color: iconColor.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            icon,
-            size: 28,
-            color: iconColor,
-          ),
+          child: Icon(icon, size: 28, color: iconColor),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.mdSm),
         Text(
           value.toString(),
-          style: const TextStyle(
-            fontSize: 32,
+          style: theme.textTheme.displayMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: theme.colorScheme.onSurface,
             height: 1,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w500,
           ),
         ),

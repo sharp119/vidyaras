@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Horizontal divider with centered text
-/// Used for "OR CONTINUE WITH" in login/signup
+/// Design System: 12sp helper text, theme styling
 class DividerWithText extends StatelessWidget {
   const DividerWithText({
     super.key,
     required this.text,
     this.color,
     this.thickness = 1,
-    this.spacing = 16,
+    this.spacing = AppSpacing.md,
   });
 
   final String text;
@@ -19,33 +20,26 @@ class DividerWithText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final dividerColor = color ?? AppColors.border;
 
     return Row(
       children: [
         Expanded(
-          child: Divider(
-            color: dividerColor,
-            thickness: thickness,
-          ),
+          child: Divider(color: dividerColor, thickness: thickness),
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: spacing),
           child: Text(
             text,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textTertiary,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
               letterSpacing: 0.5,
             ),
           ),
         ),
         Expanded(
-          child: Divider(
-            color: dividerColor,
-            thickness: thickness,
-          ),
+          child: Divider(color: dividerColor, thickness: thickness),
         ),
       ],
     );

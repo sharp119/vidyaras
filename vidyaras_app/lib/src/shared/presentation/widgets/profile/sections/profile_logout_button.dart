@@ -3,33 +3,35 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../features/auth/2_application/providers/auth_providers.dart';
 import '../../../theme/app_colors.dart';
+import '../../../theme/app_spacing.dart';
 import '../logout_confirmation_dialog.dart';
 
 /// Logout button for profile screen
-/// Shows confirmation dialog before logging out
+/// Design System: Theme typography, proper spacing
 class ProfileLogoutButton extends ConsumerWidget {
   const ProfileLogoutButton({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: OutlinedButton.icon(
         onPressed: () => _handleLogout(context, ref),
         icon: const Icon(Icons.logout, color: AppColors.error),
-        label: const Text(
+        label: Text(
           'Logout',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+          style: theme.textTheme.titleLarge?.copyWith(
             color: AppColors.error,
+            fontWeight: FontWeight.w600,
           ),
         ),
         style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
           side: const BorderSide(color: AppColors.error, width: 2),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.card),
           ),
         ),
       ),
@@ -43,7 +45,7 @@ class ProfileLogoutButton extends ConsumerWidget {
         // Show loading indicator
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Row(
                 children: [
                   SizedBox(
@@ -54,7 +56,7 @@ class ProfileLogoutButton extends ConsumerWidget {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   ),
-                  SizedBox(width: 16),
+                  SizedBox(width: AppSpacing.md),
                   Text('Logging out...'),
                 ],
               ),

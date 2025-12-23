@@ -7,7 +7,7 @@ import '../../../../shared/presentation/components/cards/stats_card.dart';
 import '../../../auth/2_application/providers/auth_providers.dart';
 import '../../2_application/notifiers/home_notifier.dart';
 import '../../../../shared/presentation/widgets/adaptive_header.dart';
-import '../widgets/category_pills.dart';
+import '../widgets/category_icons_grid.dart';
 
 import '../widgets/large_course_card.dart';
 import '../widgets/refer_earn_card.dart';
@@ -119,9 +119,9 @@ class HomeScreenV2 extends ConsumerWidget {
                         child: StatsCard(
                           stats: [
                             StatCardItem(
-                              icon: Icons.play_circle_outline,
+                              icon: Icons.school_outlined,
                               value: data.userProfile.enrolledCount,
-                              label: 'Active',
+                              label: 'Enrolled',
                               iconColor: AppColors.primary,
                             ),
                             StatCardItem(
@@ -131,10 +131,10 @@ class HomeScreenV2 extends ConsumerWidget {
                               iconColor: AppColors.success,
                             ),
                             StatCardItem(
-                              icon: Icons.card_giftcard,
-                              value: data.userProfile.referralPoints,
-                              label: 'Points',
-                              iconColor: AppColors.accent,
+                              icon: Icons.workspace_premium_outlined,
+                              value: data.userProfile.certificatesCount,
+                              label: 'Certificates',
+                              iconColor: AppColors.warning,
                             ),
                           ],
                         ),
@@ -266,54 +266,59 @@ class HomeScreenV2 extends ConsumerWidget {
                   // Spacing after title
                   const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
-                  // Category Pills
+                  // Category Icons Grid
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: CategoryPills(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: CategoryIconsGrid(
                         categories: const [
-                          CategoryItem(
+                          CategoryIconItem(
                             id: 'music',
                             label: 'Music',
                             icon: Icons.music_note,
-                            color: Color(0xFFA855F7),
+                            color: AppColors.music,
                           ),
-                          CategoryItem(
+                          CategoryIconItem(
+                            id: 'dance',
+                            label: 'Dance',
+                            icon: Icons.sports_gymnastics,
+                            color: AppColors.arts,
+                          ),
+                          CategoryIconItem(
                             id: 'wellness',
                             label: 'Wellness',
                             icon: Icons.spa,
-                            color: Color(0xFF10B981),
+                            color: AppColors.wellness,
                           ),
-                          CategoryItem(
+                          CategoryIconItem(
                             id: 'yoga',
                             label: 'Yoga',
                             icon: Icons.self_improvement,
-                            color: Color(0xFF8B5CF6),
-                          ),
-                          CategoryItem(
-                            id: 'arts',
-                            label: 'Arts',
-                            icon: Icons.palette,
-                            color: Color(0xFFEC4899),
+                            color: AppColors.yoga,
                           ),
                         ],
                         onCategoryTap: (categoryId) {
-                          // Navigate to all courses with category filter
                           context.push('/courses?category=$categoryId');
                         },
                       ),
                     ),
                   ),
 
-                  // Vertical list of recommended courses (show first 3-4)
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
+                  // Featured Courses - Horizontal Carousel
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 280,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: data.recommendedCourses.length > 6
+                            ? 6
+                            : data.recommendedCourses.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 16),
+                        itemBuilder: (context, index) {
                           final course = data.recommendedCourses[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
+                          return SizedBox(
+                            width: 240,
                             child: LargeCourseCard(
                               title: course.title,
                               instructor: course.instructor,
@@ -333,13 +338,10 @@ class HomeScreenV2 extends ConsumerWidget {
                             ),
                           );
                         },
-                        childCount: data.recommendedCourses.length > 4
-                            ? 4
-                            : data.recommendedCourses.length,
                       ),
                     ),
                   ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
                 ],
 
                 // Free Courses Section

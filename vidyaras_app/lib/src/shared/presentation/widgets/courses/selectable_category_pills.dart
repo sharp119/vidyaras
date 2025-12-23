@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../features/home/1_presentation/widgets/category_pills.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Horizontal scrolling category pills with selection support
+/// Design System: pill radius, theme-based styling
 class SelectableCategoryPills extends StatelessWidget {
   const SelectableCategoryPills({
     super.key,
@@ -18,12 +19,12 @@ class SelectableCategoryPills extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 48,
+      height: AppButtonSize.height,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         itemCount: categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.mdSm),
         itemBuilder: (context, index) {
           final category = categories[index];
           final isSelected = category.id == selectedCategoryId;
@@ -59,35 +60,36 @@ class SelectableCategoryPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(AppRadius.pill),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.mdSm,
+        ),
         decoration: BoxDecoration(
-          color: isSelected
-              ? color
-              : color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(24),
-          border: isSelected
-              ? Border.all(color: color, width: 2)
-              : null,
+          color: isSelected ? color : color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+          border: isSelected ? Border.all(color: color, width: 2) : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,
-              size: 20,
-              color: isSelected ? AppColors.textOnPrimary : color,
+              size: AppIconSize.small,
+              color: isSelected ? theme.colorScheme.onPrimary : color,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.sm),
             Text(
               label,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? AppColors.textOnPrimary : color,
+                color: isSelected ? theme.colorScheme.onPrimary : color,
               ),
             ),
           ],

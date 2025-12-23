@@ -1,40 +1,40 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Back button with icon and "Back" text
-/// Used for navigation back to previous screen
+/// Design System: Theme-based styling
 class AppBackButton extends StatelessWidget {
-  const AppBackButton({
-    super.key,
-    this.onPressed,
-    this.label = 'Back',
-  });
+  const AppBackButton({super.key, this.onPressed, this.label = 'Back'});
 
   final VoidCallback? onPressed;
   final String label;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return InkWell(
       onTap: onPressed ?? () => Navigator.of(context).maybePop(),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppRadius.button),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.xs,
+          vertical: AppSpacing.sm,
+        ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.arrow_back,
-              color: AppColors.textSecondary,
-              size: 20,
+              color: theme.colorScheme.onSurfaceVariant,
+              size: AppIconSize.small,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.sm),
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 16,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
                 letterSpacing: 0.1,
               ),
             ),

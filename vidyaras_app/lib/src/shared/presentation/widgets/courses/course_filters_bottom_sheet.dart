@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../components/buttons/primary_button.dart';
 import '../../components/buttons/app_text_button.dart';
 
@@ -45,6 +46,7 @@ class CourseFilters {
 }
 
 /// Bottom sheet for course filtering
+/// Design System: 24dp radius, theme typography
 class CourseFiltersBottomSheet extends StatefulWidget {
   const CourseFiltersBottomSheet({
     super.key,
@@ -56,7 +58,8 @@ class CourseFiltersBottomSheet extends StatefulWidget {
   final ValueChanged<CourseFilters> onApply;
 
   @override
-  State<CourseFiltersBottomSheet> createState() => _CourseFiltersBottomSheetState();
+  State<CourseFiltersBottomSheet> createState() =>
+      _CourseFiltersBottomSheetState();
 }
 
 class _CourseFiltersBottomSheetState extends State<CourseFiltersBottomSheet> {
@@ -100,11 +103,15 @@ class _CourseFiltersBottomSheetState extends State<CourseFiltersBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
+      padding: const EdgeInsets.all(AppSpacing.mdLg),
+      decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadius.large + 8),
+        ),
       ),
       child: SafeArea(
         child: SingleChildScrollView(
@@ -115,52 +122,34 @@ class _CourseFiltersBottomSheetState extends State<CourseFiltersBottomSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Filter Courses',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: theme.textTheme.headlineMedium, // H2: 20sp
                   ),
-                  AppTextButton(
-                    label: 'Reset',
-                    onPressed: _reset,
-                  ),
+                  AppTextButton(label: 'Reset', onPressed: _reset),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.mdLg),
 
               // Price Filter
-              const Text(
+              Text(
                 'Price',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: theme.textTheme.titleLarge, // 16sp
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.mdSm),
               _FilterChip(
                 label: 'Free Only',
                 isSelected: showFreeOnly,
                 onTap: () => setState(() => showFreeOnly = !showFreeOnly),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.mdLg),
 
               // Course Type Filter
-              const Text(
-                'Course Type',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
+              Text('Course Type', style: theme.textTheme.titleLarge),
+              const SizedBox(height: AppSpacing.mdSm),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
                 children: [
                   _FilterChip(
                     label: 'Live Sessions',
@@ -180,21 +169,14 @@ class _CourseFiltersBottomSheetState extends State<CourseFiltersBottomSheet> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.mdLg),
 
               // Rating Filter
-              const Text(
-                'Minimum Rating',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
+              Text('Minimum Rating', style: theme.textTheme.titleLarge),
+              const SizedBox(height: AppSpacing.mdSm),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
                 children: [
                   _FilterChip(
                     label: '4.5+ ⭐',
@@ -212,21 +194,14 @@ class _CourseFiltersBottomSheetState extends State<CourseFiltersBottomSheet> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.mdLg),
 
               // Sort By
-              const Text(
-                'Sort By',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
+              Text('Sort By', style: theme.textTheme.titleLarge),
+              const SizedBox(height: AppSpacing.mdSm),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
                 children: [
                   _FilterChip(
                     label: 'Most Popular',
@@ -251,13 +226,10 @@ class _CourseFiltersBottomSheetState extends State<CourseFiltersBottomSheet> {
                   ),
                 ],
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.lg),
 
               // Apply Button
-              PrimaryButton(
-                label: 'Apply Filters',
-                onPressed: _apply,
-              ),
+              PrimaryButton(label: 'Apply Filters', onPressed: _apply),
             ],
           ),
         ),
@@ -279,25 +251,33 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(AppRadius.pill),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm + 2,
+        ),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : AppColors.surfaceLight,
-          borderRadius: BorderRadius.circular(20),
+          color: isSelected
+              ? theme.colorScheme.primary.withValues(alpha: 0.1)
+              : AppColors.surfaceLight,
+          borderRadius: BorderRadius.circular(AppRadius.pill),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected ? theme.colorScheme.primary : AppColors.border,
             width: isSelected ? 2 : 1,
           ),
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 14,
+          style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+            color: isSelected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurfaceVariant,
           ),
         ),
       ),

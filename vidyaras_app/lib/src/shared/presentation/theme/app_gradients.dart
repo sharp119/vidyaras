@@ -6,19 +6,15 @@ import 'app_colors.dart';
 class AppGradients {
   AppGradients._();
 
-  /// Primary gradient (Blue to Purple)
-  /// Used for: Primary buttons, CTAs, interactive elements
+  /// Primary gradient (Orange) - Used for headers, primary CTAs
+  /// Design System: #FF5722 → #FF8A65
   static const LinearGradient primary = LinearGradient(
-    colors: [
-      AppColors.gradientStart,
-      AppColors.gradientMiddle,
-      AppColors.gradientEnd,
-    ],
+    colors: [AppColors.primary, AppColors.primaryLight],
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
   );
 
-  /// Orange gradient
+  /// Orange gradient (alias for primary)
   /// Used for: Headers, accent elements, Continue button
   static const LinearGradient orange = LinearGradient(
     colors: [AppColors.orangeGradientStart, AppColors.orangeGradientEnd],
@@ -26,30 +22,53 @@ class AppGradients {
     end: Alignment.centerRight,
   );
 
-  /// Purple gradient for feature icons
+  /// Category-specific gradients
+  static const LinearGradient music = LinearGradient(
+    colors: [Color(0xFF2196F3), Color(0xFF64B5F6)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient wellness = LinearGradient(
+    colors: [Color(0xFF4CAF50), Color(0xFF81C784)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient yoga = LinearGradient(
+    colors: [Color(0xFFFF5722), Color(0xFFFF8A65)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient arts = LinearGradient(
+    colors: [Color(0xFFE91E63), Color(0xFFF06292)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  /// Legacy gradients (kept for compatibility)
   static const LinearGradient purple = LinearGradient(
     colors: [Color(0xFF9C4DFF), Color(0xFF7B68EE)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  /// Orange feature icon gradient
   static const LinearGradient orangeFeature = LinearGradient(
-    colors: [Color(0xFFF97316), Color(0xFFFB923C)],
+    colors: [Color(0xFFFF5722), Color(0xFFFF8A65)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  /// Blue feature icon gradient
   static const LinearGradient blueFeature = LinearGradient(
-    colors: [Color(0xFF4F87FF), Color(0xFF6366F1)],
+    colors: [Color(0xFF2196F3), Color(0xFF64B5F6)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  /// Referral card gradient (Purple to Pink)
+  /// Referral card gradient (Orange tints)
   static const LinearGradient referral = LinearGradient(
-    colors: [Color(0xFF9333EA), Color(0xFFC084FC)],
+    colors: [Color(0xFFFF5722), Color(0xFFFF8A65)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -79,7 +98,7 @@ class AppGradients {
   /// Helper method to create a rounded rectangle gradient container
   static BoxDecoration roundedGradient(
     Gradient gradient, {
-    double borderRadius = 16,
+    double borderRadius = 12,
   }) {
     return BoxDecoration(
       gradient: gradient,

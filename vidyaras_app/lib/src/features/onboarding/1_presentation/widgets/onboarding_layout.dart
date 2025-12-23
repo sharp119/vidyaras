@@ -3,9 +3,10 @@ import '../../../../shared/presentation/components/buttons/primary_button.dart';
 import '../../../../shared/presentation/components/buttons/secondary_button.dart';
 import '../../../../shared/presentation/components/progress/step_indicator.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
+import '../../../../shared/presentation/theme/app_spacing.dart';
 
 /// Common layout for onboarding screens
-/// Provides consistent structure with header, step indicator, and navigation buttons
+/// Design System: Theme-based typography, proper spacing
 class OnboardingLayout extends StatelessWidget {
   const OnboardingLayout({
     super.key,
@@ -36,6 +37,8 @@ class OnboardingLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -43,15 +46,16 @@ class OnboardingLayout extends StatelessWidget {
           children: [
             // Header with app name and language toggle
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.mdLg,
+                vertical: AppSpacing.md,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'VidyaRas',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                    style: theme.textTheme.headlineLarge?.copyWith(
                       color: AppColors.accent,
                     ),
                   ),
@@ -62,10 +66,8 @@ class OnboardingLayout extends StatelessWidget {
                       },
                       child: Text(
                         'हिंदी',
-                        style: TextStyle(
-                          fontSize: 14,
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
                         ),
                       ),
                     ),
@@ -75,43 +77,43 @@ class OnboardingLayout extends StatelessWidget {
 
             // Step Indicator
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.mdLg),
               child: StepIndicator(
                 currentStep: currentStep,
                 totalSteps: totalSteps,
               ),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.lg),
 
             // Content area
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.mdLg,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Title
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.sm),
 
                     // Subtitle
                     Text(
                       subtitle,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.textSecondary,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppSpacing.lg),
 
                     // Custom content
                     ...children,
@@ -122,7 +124,7 @@ class OnboardingLayout extends StatelessWidget {
 
             // Bottom navigation buttons
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.mdLg),
               child: Row(
                 children: [
                   // Back button (show if not first step)
@@ -134,7 +136,7 @@ class OnboardingLayout extends StatelessWidget {
                         fullWidth: true,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: AppSpacing.md),
                   ],
 
                   // Continue/Complete button

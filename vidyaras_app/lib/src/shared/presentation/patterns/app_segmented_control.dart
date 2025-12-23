@@ -3,21 +3,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 
 /// App Segmented Control - Consistent tab/segment control across screens
-///
-/// Provides a modern segmented control similar to iOS/Material3 style.
-/// Used for switching between views within the same screen (e.g., Explore / My Tests).
-///
-/// Usage:
-/// ```dart
-/// AppSegmentedControl(
-///   segments: [
-///     SegmentItem(icon: Icons.explore, label: 'Explore'),
-///     SegmentItem(icon: Icons.book, label: 'My Tests'),
-///   ],
-///   selectedIndex: _selectedIndex,
-///   onChanged: (index) => setState(() => _selectedIndex = index),
-/// )
-/// ```
+/// Design System: Theme-based styling, proper spacing
 class AppSegmentedControl extends StatelessWidget {
   const AppSegmentedControl({
     super.key,
@@ -28,30 +14,23 @@ class AppSegmentedControl extends StatelessWidget {
     this.selectedColor,
   });
 
-  /// List of segment items
   final List<SegmentItem> segments;
-
-  /// Currently selected index
   final int selectedIndex;
-
-  /// Callback when selection changes
   final ValueChanged<int> onChanged;
-
-  /// Background color of the container
   final Color? backgroundColor;
-
-  /// Background color of selected segment
   final Color? selectedColor;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       height: 44,
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       padding: const EdgeInsets.all(AppSpacing.xxs),
       decoration: BoxDecoration(
         color: backgroundColor ?? AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(AppSpacing.sm),
+        borderRadius: BorderRadius.circular(AppRadius.medium),
       ),
       child: Row(
         children: List.generate(segments.length, (index) {
@@ -68,7 +47,7 @@ class AppSegmentedControl extends StatelessWidget {
                   color: isSelected
                       ? (selectedColor ?? AppColors.surface)
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(AppSpacing.xs),
+                  borderRadius: BorderRadius.circular(AppRadius.button),
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
@@ -89,8 +68,8 @@ class AppSegmentedControl extends StatelessWidget {
                           segment.icon,
                           size: 18,
                           color: isSelected
-                              ? AppColors.textPrimary
-                              : AppColors.textSecondary,
+                              ? theme.colorScheme.onSurface
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(width: 6),
                       ],
@@ -98,11 +77,12 @@ class AppSegmentedControl extends StatelessWidget {
                         segment.label,
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight:
-                              isSelected ? FontWeight.w600 : FontWeight.w500,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
                           color: isSelected
-                              ? AppColors.textPrimary
-                              : AppColors.textSecondary,
+                              ? theme.colorScheme.onSurface
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -119,10 +99,7 @@ class AppSegmentedControl extends StatelessWidget {
 
 /// Segment item data
 class SegmentItem {
-  const SegmentItem({
-    required this.label,
-    this.icon,
-  });
+  const SegmentItem({required this.label, this.icon});
 
   final String label;
   final IconData? icon;
@@ -207,4 +184,3 @@ class _SegmentedControlDelegate extends SliverPersistentHeaderDelegate {
         segments != oldDelegate.segments;
   }
 }
-

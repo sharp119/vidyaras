@@ -3,10 +3,11 @@ import 'package:go_router/go_router.dart';
 import '../../../../features/home/3_domain/models/course.dart';
 import '../../../../features/home/1_presentation/widgets/course_list_card.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import 'empty_courses_widget.dart';
 
 /// My Courses tab content
-/// Shows enrolled courses grouped by progress status
+/// Design System: Theme typography, proper spacing
 class MyCoursesTabContent extends StatelessWidget {
   const MyCoursesTabContent({
     super.key,
@@ -41,7 +42,7 @@ class MyCoursesTabContent extends StatelessWidget {
         .toList();
 
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         // In Progress Section
         if (inProgressCourses.isNotEmpty) ...[
@@ -51,19 +52,21 @@ class MyCoursesTabContent extends StatelessWidget {
             count: inProgressCourses.length,
             iconColor: AppColors.primary,
           ),
-          const SizedBox(height: 16),
-          ...inProgressCourses.map((course) => Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: CourseListCard(
-                  title: course.title,
-                  instructor: course.instructor,
-                  thumbnailUrl: course.thumbnailUrl,
-                  rating: course.rating,
-                  price: course.price,
-                  onTap: () => context.push('/course/${course.id}'),
-                ),
-              )),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
+          ...inProgressCourses.map(
+            (course) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: CourseListCard(
+                title: course.title,
+                instructor: course.instructor,
+                thumbnailUrl: course.thumbnailUrl,
+                rating: course.rating,
+                price: course.price,
+                onTap: () => context.push('/course/${course.id}'),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
         ],
 
         // Not Started Section
@@ -74,19 +77,21 @@ class MyCoursesTabContent extends StatelessWidget {
             count: notStartedCourses.length,
             iconColor: AppColors.accent,
           ),
-          const SizedBox(height: 16),
-          ...notStartedCourses.map((course) => Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: CourseListCard(
-                  title: course.title,
-                  instructor: course.instructor,
-                  thumbnailUrl: course.thumbnailUrl,
-                  rating: course.rating,
-                  price: course.price,
-                  onTap: () => context.push('/course/${course.id}'),
-                ),
-              )),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
+          ...notStartedCourses.map(
+            (course) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: CourseListCard(
+                title: course.title,
+                instructor: course.instructor,
+                thumbnailUrl: course.thumbnailUrl,
+                rating: course.rating,
+                price: course.price,
+                onTap: () => context.push('/course/${course.id}'),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
         ],
 
         // Completed Section
@@ -97,18 +102,20 @@ class MyCoursesTabContent extends StatelessWidget {
             count: completedCourses.length,
             iconColor: AppColors.success,
           ),
-          const SizedBox(height: 16),
-          ...completedCourses.map((course) => Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: CourseListCard(
-                  title: course.title,
-                  instructor: course.instructor,
-                  thumbnailUrl: course.thumbnailUrl,
-                  rating: course.rating,
-                  price: course.price,
-                  onTap: () => context.push('/course/${course.id}'),
-                ),
-              )),
+          const SizedBox(height: AppSpacing.md),
+          ...completedCourses.map(
+            (course) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: CourseListCard(
+                title: course.title,
+                instructor: course.instructor,
+                thumbnailUrl: course.thumbnailUrl,
+                rating: course.rating,
+                price: course.price,
+                onTap: () => context.push('/course/${course.id}'),
+              ),
+            ),
+          ),
         ],
       ],
     );
@@ -130,42 +137,34 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
             color: iconColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppRadius.button),
           ),
-          child: Icon(
-            icon,
-            size: 20,
-            color: iconColor,
-          ),
+          child: Icon(icon, size: AppIconSize.small, color: iconColor),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.mdSm),
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: theme.textTheme.headlineSmall, // 18sp
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSpacing.sm),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 2),
           decoration: BoxDecoration(
             color: AppColors.surfaceLight,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.card),
           ),
           child: Text(
             count.toString(),
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
         ),

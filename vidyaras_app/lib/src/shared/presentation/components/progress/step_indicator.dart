@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import 'progress_bar.dart';
 
 /// Step indicator with progress bar
-/// Used for onboarding multi-step forms
+/// Design System: Theme-based typography
 class StepIndicator extends StatelessWidget {
   const StepIndicator({
     super.key,
@@ -18,6 +18,7 @@ class StepIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final progress = currentStep / totalSteps;
     final percentage = (progress * 100).toInt();
 
@@ -30,27 +31,21 @@ class StepIndicator extends StatelessWidget {
             children: [
               Text(
                 'Step $currentStep of $totalSteps',
-                style: const TextStyle(
-                  fontSize: 14,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
                 ),
               ),
               Text(
                 '$percentage%',
-                style: const TextStyle(
-                  fontSize: 14,
+                style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
                 ),
               ),
             ],
           ),
-        const SizedBox(height: 8),
-        ProgressBar(
-          progress: progress,
-          height: 8,
-        ),
+        const SizedBox(height: AppSpacing.sm),
+        ProgressBar(progress: progress, height: 8),
       ],
     );
   }

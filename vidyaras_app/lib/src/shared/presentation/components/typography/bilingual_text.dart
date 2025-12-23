@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Bilingual text component displaying English and Hindi text together
-/// Used throughout the app for accessibility in both languages
+/// Design System: Theme-based typography
 class BilingualText extends StatelessWidget {
   const BilingualText({
     super.key,
@@ -10,7 +10,7 @@ class BilingualText extends StatelessWidget {
     required this.hindi,
     this.englishStyle,
     this.hindiStyle,
-    this.spacing = 8,
+    this.spacing = AppSpacing.sm,
     this.alignment = CrossAxisAlignment.center,
   });
 
@@ -23,17 +23,14 @@ class BilingualText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: alignment,
       children: [
         Text(
           english,
-          style: englishStyle ??
-              const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+          style: englishStyle ?? theme.textTheme.headlineLarge, // H1: 24sp
           textAlign: alignment == CrossAxisAlignment.center
               ? TextAlign.center
               : TextAlign.left,
@@ -41,12 +38,11 @@ class BilingualText extends StatelessWidget {
         SizedBox(height: spacing),
         Text(
           hindi,
-          style: hindiStyle ??
-              const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
-              ),
+          style:
+              hindiStyle ??
+              theme.textTheme.headlineSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ), // 18sp
           textAlign: alignment == CrossAxisAlignment.center
               ? TextAlign.center
               : TextAlign.left,
@@ -73,13 +69,15 @@ class InlineBilingualText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Text(
       '$english$divider$hindi',
-      style: style ??
-          const TextStyle(
-            fontSize: 14,
+      style:
+          style ??
+          theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
     );
   }

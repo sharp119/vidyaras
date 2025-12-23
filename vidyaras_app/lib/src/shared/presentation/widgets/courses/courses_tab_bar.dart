@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_gradients.dart';
 
 /// Tab bar for courses screen
-/// Switches between My Courses and All Courses tabs
+/// Design System: Theme-based styling, primary gradient for selected
 class CoursesTabBar extends StatelessWidget {
   const CoursesTabBar({
     super.key,
@@ -17,10 +18,10 @@ class CoursesTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(AppSpacing.xs),
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.card),
       ),
       child: Row(
         children: [
@@ -31,7 +32,7 @@ class CoursesTabBar extends StatelessWidget {
               onTap: () => onTabChanged(0),
             ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: _TabButton(
               text: 'All Courses',
@@ -58,15 +59,17 @@ class _TabButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppRadius.button),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.mdSm),
         decoration: BoxDecoration(
           gradient: isSelected ? AppGradients.primary : null,
           color: isSelected ? null : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.button),
         ),
         child: Text(
           text,
@@ -75,8 +78,8 @@ class _TabButton extends StatelessWidget {
             fontSize: 15,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
             color: isSelected
-                ? AppColors.textOnPrimary
-                : AppColors.textSecondary,
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.onSurfaceVariant,
           ),
         ),
       ),

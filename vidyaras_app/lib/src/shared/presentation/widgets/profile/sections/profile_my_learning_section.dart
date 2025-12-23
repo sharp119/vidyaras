@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../theme/app_colors.dart';
+import '../../../theme/app_spacing.dart';
 import '../profile_list_tile.dart';
 import '../profile_section_header.dart';
 
 /// My Learning section for profile screen
-/// Shows enrolled courses and certificates
+/// Design System: Theme typography, proper spacing
 class ProfileMyLearningSection extends StatelessWidget {
   const ProfileMyLearningSection({
     super.key,
@@ -30,10 +31,10 @@ class ProfileMyLearningSection extends StatelessWidget {
           icon: Icons.school_outlined,
         ),
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20),
+          margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.card),
             border: Border.all(color: AppColors.border),
           ),
           child: Column(
@@ -41,17 +42,21 @@ class ProfileMyLearningSection extends StatelessWidget {
               ProfileListTile(
                 icon: Icons.play_circle_outline,
                 title: 'Continue Learning',
-                subtitle: '$enrolledCount course${enrolledCount != 1 ? 's' : ''} in progress',
+                subtitle:
+                    '$enrolledCount course${enrolledCount != 1 ? 's' : ''} in progress',
                 iconColor: AppColors.primary,
-                onTap: onContinueLearningTap ?? () {
-                  // Navigate to Main Shell with Courses tab (index 1)
-                  context.go('/main', extra: 1);
-                },
+                onTap:
+                    onContinueLearningTap ??
+                    () {
+                      // Navigate to Main Shell with Courses tab (index 1)
+                      context.go('/main', extra: 1);
+                    },
               ),
               ProfileListTile(
                 icon: Icons.emoji_events_outlined,
                 title: 'Certificates',
-                subtitle: '$certificatesCount earned certificate${certificatesCount != 1 ? 's' : ''}',
+                subtitle:
+                    '$certificatesCount earned certificate${certificatesCount != 1 ? 's' : ''}',
                 iconColor: AppColors.accent,
                 showDivider: false,
                 onTap: onCertificatesTap,

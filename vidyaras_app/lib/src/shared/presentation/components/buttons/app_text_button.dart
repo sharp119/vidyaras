@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Text button with no background or border
-/// Used for "Skip", "Forgot Password", "View All", etc.
+/// Design System: Orange or gray text, used for Skip, Forgot Password, View All
 class AppTextButton extends StatelessWidget {
   const AppTextButton({
     super.key,
@@ -11,7 +11,7 @@ class AppTextButton extends StatelessWidget {
     this.icon,
     this.color,
     this.fontSize = 14,
-    this.fontWeight = FontWeight.w500,
+    this.fontWeight = FontWeight.w600,
   });
 
   final VoidCallback? onPressed;
@@ -23,19 +23,8 @@ class AppTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determine color priority:
-    // 1. Explicit color passed to widget
-    // 2. Disabled state -> disabled color from theme
-    // 3. Default -> primary color from theme (or secondary text if implied by legacy)
-    
-    // Legacy mapping: previously defaulted to textSecondary/Tertiary. 
-    // Standard TextButton defaults to Primary. 
-    // If we want to maintain the "grey link" look, we might need to be specific.
-    // However, usually "AppTextButton" implies an action, so primary is often correct.
-    // If the usage was for "Back", "Cancel" (often grey), we can rely on the color arg or theme overrides.
-    // Let's defer to Theme defaults but allow color override.
-
-    final effectiveColor = color ?? Theme.of(context).colorScheme.primary;
+    final theme = Theme.of(context);
+    final effectiveColor = color ?? theme.colorScheme.primary;
 
     return TextButton(
       onPressed: onPressed,
@@ -45,17 +34,21 @@ class AppTextButton extends StatelessWidget {
           fontSize: fontSize,
           fontWeight: fontWeight,
           letterSpacing: 0.1,
-          fontFamily: 'Inter',
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xs,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.button),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: fontSize + 2),
-            const SizedBox(width: 4),
+            Icon(icon, size: AppIconSize.small),
+            const SizedBox(width: AppSpacing.xs),
           ],
           Text(label),
         ],

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Selectable option card with icon and label
-/// Used in onboarding for interest selection
+/// Design System: 16dp radius, theme-based styling
 class SelectableOptionCard extends StatelessWidget {
   const SelectableOptionCard({
     super.key,
@@ -21,59 +22,63 @@ class SelectableOptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadius.large),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md + 2, // ~18dp
+        ),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.08)
+              ? theme.colorScheme.primary.withOpacity(0.08)
               : AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.large),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected ? theme.colorScheme.primary : AppColors.border,
             width: isSelected ? 2 : 1.5,
           ),
         ),
         child: Row(
           children: [
             if (emoji != null)
-              Text(
-                emoji!,
-                style: const TextStyle(fontSize: 32),
-              )
+              Text(emoji!, style: theme.textTheme.displayMedium)
             else if (icon != null)
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(AppSpacing.sm + 2), // ~10dp
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppColors.primary.withOpacity(0.1)
+                      ? theme.colorScheme.primary.withOpacity(0.1)
                       : AppColors.surfaceLight,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.card),
                 ),
                 child: Icon(
                   icon,
-                  size: 24,
-                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                  size: AppIconSize.standard,
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface,
                 ),
               ),
-            const SizedBox(width: 16),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(
                 label,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface,
                 ),
               ),
             ),
             if (isSelected)
-              const Icon(
+              Icon(
                 Icons.check_circle,
-                color: AppColors.primary,
-                size: 24,
+                color: theme.colorScheme.primary,
+                size: AppIconSize.standard,
               ),
           ],
         ),

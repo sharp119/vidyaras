@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Stats row component displaying multiple stat items
-/// Used for showing Enrolled, Completed, Certificates counts
+/// Design System: Theme-based typography
 class StatsRow extends StatelessWidget {
-  const StatsRow({
-    super.key,
-    required this.stats,
-  });
+  const StatsRow({super.key, required this.stats});
 
   final List<StatItem> stats;
 
@@ -16,34 +13,28 @@ class StatsRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: stats
-          .map((stat) => _StatItemWidget(
-                value: stat.value,
-                label: stat.label,
-                color: stat.color,
-              ))
+          .map(
+            (stat) => _StatItemWidget(
+              value: stat.value,
+              label: stat.label,
+              color: stat.color,
+            ),
+          )
           .toList(),
     );
   }
 }
 
 class StatItem {
-  const StatItem({
-    required this.value,
-    required this.label,
-    this.color,
-  });
+  const StatItem({required this.value, required this.label, this.color});
 
-  final dynamic value; // Can be int, String, or double
+  final dynamic value;
   final String label;
   final Color? color;
 }
 
 class _StatItemWidget extends StatelessWidget {
-  const _StatItemWidget({
-    required this.value,
-    required this.label,
-    this.color,
-  });
+  const _StatItemWidget({required this.value, required this.label, this.color});
 
   final dynamic value;
   final String label;
@@ -51,6 +42,8 @@ class _StatItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       children: [
         Text(
@@ -58,15 +51,14 @@ class _StatItemWidget extends StatelessWidget {
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: color ?? AppColors.textPrimary,
+            color: color ?? theme.colorScheme.onSurface,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
       ],

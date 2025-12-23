@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Unified header component for screens with gradient background
-/// Matches the style of the Test Series screen for consistency
-/// Supports title, subtitle, optional action button, and custom gradients
+/// Design System: H1 (24sp) title, orange gradient
 class UnifiedHeader extends StatelessWidget {
   const UnifiedHeader({
     super.key,
@@ -17,45 +17,31 @@ class UnifiedHeader extends StatelessWidget {
     this.height = 200,
   });
 
-  /// Main title text
   final String title;
-
-  /// Optional subtitle text
   final String? subtitle;
-
-  /// Optional action icon (e.g., Icons.assessment_outlined)
   final IconData? actionIcon;
-
-  /// Optional callback when action icon is tapped
   final VoidCallback? onActionTap;
-
-  /// Optional route to navigate to when action icon is tapped
-  /// If both onActionTap and actionRoute are provided, onActionTap takes precedence
   final String? actionRoute;
-
-  /// Optional gradient. Defaults to orange gradient
   final Gradient? gradient;
-
-  /// Header height. Defaults to 200
   final double height;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       height: height,
       decoration: BoxDecoration(
-        gradient: gradient ??
+        gradient:
+            gradient ??
             LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                AppColors.primary,
-                AppColors.primary.withOpacity(0.8),
-              ],
+              colors: [AppColors.primary, AppColors.primaryLight],
             ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,18 +53,16 @@ class UnifiedHeader extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 32,
+                    style: theme.textTheme.displayMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
                   if (subtitle != null) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.sm),
                     Text(
                       subtitle!,
-                      style: TextStyle(
-                        fontSize: 16,
+                      style: theme.textTheme.titleLarge?.copyWith(
                         color: Colors.white.withOpacity(0.9),
                       ),
                     ),
@@ -96,18 +80,14 @@ class UnifiedHeader extends StatelessWidget {
                       context.push(actionRoute!);
                     }
                   },
-                  borderRadius: BorderRadius.circular(50),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
                   child: Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      actionIcon!,
-                      size: 32,
-                      color: Colors.white,
-                    ),
+                    child: Icon(actionIcon!, size: 32, color: Colors.white),
                   ),
                 ),
               ),
@@ -117,4 +97,3 @@ class UnifiedHeader extends StatelessWidget {
     );
   }
 }
-

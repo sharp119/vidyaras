@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../buttons/app_text_button.dart';
 
 /// Section header with title and optional action link
-/// Used for "My Courses - View All", etc.
+/// Design System: H2 (20sp) title, theme-based styling
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
     super.key,
@@ -22,25 +23,22 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
-      padding: padding ?? const EdgeInsets.symmetric(vertical: 16),
+      padding: padding ?? const EdgeInsets.symmetric(vertical: AppSpacing.md),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             title,
-            style: titleStyle ??
-                const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+            style: titleStyle ?? theme.textTheme.headlineMedium, // H2: 20sp
           ),
           if (actionLabel != null && onActionTap != null)
             AppTextButton(
               onPressed: onActionTap,
               label: actionLabel!,
-              color: AppColors.primary,
+              color: theme.colorScheme.primary,
               fontWeight: FontWeight.w600,
             ),
         ],

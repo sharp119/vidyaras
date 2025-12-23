@@ -23,6 +23,7 @@ SectionInfo _$SectionInfoFromJson(Map<String, dynamic> json) {
 mixin _$SectionInfo {
   String get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
+  String? get hindiTitle => throw _privateConstructorUsedError;
   int get totalDurationMinutes => throw _privateConstructorUsedError;
   int get lectureCount => throw _privateConstructorUsedError;
   int get completedCount => throw _privateConstructorUsedError;
@@ -47,6 +48,7 @@ abstract class $SectionInfoCopyWith<$Res> {
   $Res call({
     String id,
     String title,
+    String? hindiTitle,
     int totalDurationMinutes,
     int lectureCount,
     int completedCount,
@@ -70,6 +72,7 @@ class _$SectionInfoCopyWithImpl<$Res, $Val extends SectionInfo>
   $Res call({
     Object? id = null,
     Object? title = null,
+    Object? hindiTitle = freezed,
     Object? totalDurationMinutes = null,
     Object? lectureCount = null,
     Object? completedCount = null,
@@ -84,6 +87,10 @@ class _$SectionInfoCopyWithImpl<$Res, $Val extends SectionInfo>
                 ? _value.title
                 : title // ignore: cast_nullable_to_non_nullable
                       as String,
+            hindiTitle: freezed == hindiTitle
+                ? _value.hindiTitle
+                : hindiTitle // ignore: cast_nullable_to_non_nullable
+                      as String?,
             totalDurationMinutes: null == totalDurationMinutes
                 ? _value.totalDurationMinutes
                 : totalDurationMinutes // ignore: cast_nullable_to_non_nullable
@@ -114,6 +121,7 @@ abstract class _$$SectionInfoImplCopyWith<$Res>
   $Res call({
     String id,
     String title,
+    String? hindiTitle,
     int totalDurationMinutes,
     int lectureCount,
     int completedCount,
@@ -136,6 +144,7 @@ class __$$SectionInfoImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? title = null,
+    Object? hindiTitle = freezed,
     Object? totalDurationMinutes = null,
     Object? lectureCount = null,
     Object? completedCount = null,
@@ -150,6 +159,10 @@ class __$$SectionInfoImplCopyWithImpl<$Res>
             ? _value.title
             : title // ignore: cast_nullable_to_non_nullable
                   as String,
+        hindiTitle: freezed == hindiTitle
+            ? _value.hindiTitle
+            : hindiTitle // ignore: cast_nullable_to_non_nullable
+                  as String?,
         totalDurationMinutes: null == totalDurationMinutes
             ? _value.totalDurationMinutes
             : totalDurationMinutes // ignore: cast_nullable_to_non_nullable
@@ -173,6 +186,7 @@ class _$SectionInfoImpl implements _SectionInfo {
   const _$SectionInfoImpl({
     required this.id,
     required this.title,
+    this.hindiTitle,
     this.totalDurationMinutes = 0,
     this.lectureCount = 0,
     this.completedCount = 0,
@@ -186,6 +200,8 @@ class _$SectionInfoImpl implements _SectionInfo {
   @override
   final String title;
   @override
+  final String? hindiTitle;
+  @override
   @JsonKey()
   final int totalDurationMinutes;
   @override
@@ -197,7 +213,7 @@ class _$SectionInfoImpl implements _SectionInfo {
 
   @override
   String toString() {
-    return 'SectionInfo(id: $id, title: $title, totalDurationMinutes: $totalDurationMinutes, lectureCount: $lectureCount, completedCount: $completedCount)';
+    return 'SectionInfo(id: $id, title: $title, hindiTitle: $hindiTitle, totalDurationMinutes: $totalDurationMinutes, lectureCount: $lectureCount, completedCount: $completedCount)';
   }
 
   @override
@@ -207,6 +223,8 @@ class _$SectionInfoImpl implements _SectionInfo {
             other is _$SectionInfoImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
+            (identical(other.hindiTitle, hindiTitle) ||
+                other.hindiTitle == hindiTitle) &&
             (identical(other.totalDurationMinutes, totalDurationMinutes) ||
                 other.totalDurationMinutes == totalDurationMinutes) &&
             (identical(other.lectureCount, lectureCount) ||
@@ -221,6 +239,7 @@ class _$SectionInfoImpl implements _SectionInfo {
     runtimeType,
     id,
     title,
+    hindiTitle,
     totalDurationMinutes,
     lectureCount,
     completedCount,
@@ -244,6 +263,7 @@ abstract class _SectionInfo implements SectionInfo {
   const factory _SectionInfo({
     required final String id,
     required final String title,
+    final String? hindiTitle,
     final int totalDurationMinutes,
     final int lectureCount,
     final int completedCount,
@@ -256,6 +276,8 @@ abstract class _SectionInfo implements SectionInfo {
   String get id;
   @override
   String get title;
+  @override
+  String? get hindiTitle;
   @override
   int get totalDurationMinutes;
   @override

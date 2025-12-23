@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
 
 /// Star rating display with number
-/// Used for course ratings
+/// Design System: Theme-based typography
 class StarRating extends StatelessWidget {
   const StarRating({
     super.key,
@@ -19,6 +18,8 @@ class StarRating extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -31,11 +32,12 @@ class StarRating extends StatelessWidget {
           SizedBox(width: size * 0.25),
           Text(
             rating.toStringAsFixed(1),
-            style: numberStyle ??
+            style:
+                numberStyle ??
                 TextStyle(
                   fontSize: size * 0.875,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: theme.colorScheme.onSurface,
                 ),
           ),
         ],

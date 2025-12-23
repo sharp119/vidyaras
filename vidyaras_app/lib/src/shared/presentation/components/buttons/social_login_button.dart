@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Social login button with icon and text
-/// Used for Google, Facebook, Apple sign-in
+/// Design System: 48dp height, 8dp radius
 class SocialLoginButton extends StatelessWidget {
   const SocialLoginButton({
     super.key,
@@ -14,43 +15,36 @@ class SocialLoginButton extends StatelessWidget {
 
   final VoidCallback? onPressed;
   final String label;
-  final Widget icon; // Can be an Icon, Image, or SvgPicture
+  final Widget icon;
   final double iconSize;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
-      height: 56,
+      height: AppButtonSize.height,
       decoration: BoxDecoration(
-        border: Border.all(
-          color: AppColors.border,
-          width: 1.5,
-        ),
-        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border, width: 1.5),
+        borderRadius: BorderRadius.circular(AppRadius.button),
         color: AppColors.surface,
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.button),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                  width: iconSize,
-                  height: iconSize,
-                  child: icon,
-                ),
-                const SizedBox(width: 12),
+                SizedBox(width: iconSize, height: iconSize, child: icon),
+                const SizedBox(width: AppSpacing.mdSm),
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
                     letterSpacing: 0.2,
                   ),
                 ),

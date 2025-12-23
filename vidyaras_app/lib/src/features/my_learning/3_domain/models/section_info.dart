@@ -10,6 +10,7 @@ class SectionInfo with _$SectionInfo {
   const factory SectionInfo({
     required String id,
     required String title,
+    String? hindiTitle,
     @Default(0) int totalDurationMinutes,
     @Default(0) int lectureCount,
     @Default(0) int completedCount,

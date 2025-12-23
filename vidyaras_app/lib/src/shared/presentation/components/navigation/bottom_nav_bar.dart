@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Bottom navigation bar with icons and labels
-/// Used for main app navigation (Home, Courses, Community, Tests, Profile)
+/// Design System: Active #FF5722, Inactive #757575, Background White
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({
     super.key,
@@ -21,11 +22,9 @@ class BottomNavBar extends StatelessWidget {
     final isSmallScreen = screenWidth < 360;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(
-          top: BorderSide(color: AppColors.border, width: 1),
-        ),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        border: Border(top: BorderSide(color: AppColors.mediumGray, width: 1)),
       ),
       child: SafeArea(
         child: SizedBox(
@@ -51,10 +50,7 @@ class BottomNavBar extends StatelessWidget {
 }
 
 class BottomNavItem {
-  const BottomNavItem({
-    required this.icon,
-    required this.label,
-  });
+  const BottomNavItem({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
@@ -77,11 +73,11 @@ class _BottomNavItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.card),
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: isSmallScreen ? 4 : 8,
-          vertical: 8,
+          horizontal: isSmallScreen ? AppSpacing.xs : AppSpacing.sm,
+          vertical: AppSpacing.sm,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -89,17 +85,17 @@ class _BottomNavItemWidget extends StatelessWidget {
           children: [
             Icon(
               item.icon,
-              size: isSmallScreen ? 22 : 24,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              size: isSmallScreen ? 22 : AppIconSize.standard,
+              color: isSelected ? AppColors.primary : AppColors.helperText,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
             Flexible(
               child: Text(
                 item.label,
                 style: TextStyle(
                   fontSize: isSmallScreen ? 10 : 12,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                  color: isSelected ? AppColors.primary : AppColors.helperText,
                 ),
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,

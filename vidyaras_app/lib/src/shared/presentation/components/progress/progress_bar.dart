@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Linear progress bar with optional percentage display
-/// Used for course progress, onboarding step progress
+/// Design System: Track #E0E0E0, Fill #FF5722
 class ProgressBar extends StatelessWidget {
   const ProgressBar({
     super.key,
@@ -23,6 +24,7 @@ class ProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final percentage = (progress * 100).toInt();
 
     return Column(
@@ -42,13 +44,13 @@ class ProgressBar extends StatelessWidget {
           ),
         ),
         if (showPercentage) ...[
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           Text(
             '$percentage%',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: theme.colorScheme.primary,
             ),
           ),
         ],
@@ -72,6 +74,7 @@ class LabeledProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final percentage = (progress * 100).toInt();
 
     return Column(
@@ -82,27 +85,24 @@ class LabeledProgressBar extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             Text(
               '$percentage%',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: theme.colorScheme.primary,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        ProgressBar(
-          progress: progress,
-          height: height,
-        ),
+        const SizedBox(height: AppSpacing.sm),
+        ProgressBar(progress: progress, height: height),
       ],
     );
   }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Password input field with visibility toggle
-/// Used for password, confirm password fields
+/// Design System: 8dp radius, theme typography
 class PasswordInputField extends StatefulWidget {
   const PasswordInputField({
     super.key,
@@ -36,26 +37,23 @@ class _PasswordInputFieldState extends State<PasswordInputField> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.label,
-          style: const TextStyle(
-            fontSize: 14,
+          style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.border,
-              width: 1.5,
-            ),
+            borderRadius: BorderRadius.circular(AppRadius.input),
+            border: Border.all(color: AppColors.border, width: 1.5),
           ),
           child: TextFormField(
             controller: widget.controller,
@@ -63,32 +61,29 @@ class _PasswordInputFieldState extends State<PasswordInputField> {
             validator: widget.validator,
             onChanged: widget.onChanged,
             enabled: widget.enabled,
-            style: const TextStyle(
-              fontSize: 16,
-              color: AppColors.textPrimary,
-            ),
+            style: theme.textTheme.titleLarge, // 16sp
             decoration: InputDecoration(
               hintText: widget.hintText,
-              hintStyle: const TextStyle(
-                color: AppColors.textTertiary,
+              hintStyle: theme.textTheme.titleLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
               ),
-              prefixIcon: const Icon(
+              prefixIcon: Icon(
                 Icons.lock_outline,
-                color: AppColors.textSecondary,
-                size: 20,
+                color: theme.colorScheme.onSurfaceVariant,
+                size: AppIconSize.small,
               ),
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscureText ? Icons.visibility_off : Icons.visibility,
-                  color: AppColors.textSecondary,
-                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                  size: AppIconSize.small,
                 ),
                 onPressed: _toggleVisibility,
               ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.md,
               ),
             ),
           ),

@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import '../../../../shared/presentation/components/layout/feature_icon_container.dart';
 import '../../../../shared/presentation/components/typography/bilingual_text.dart';
-import '../../../../shared/presentation/theme/app_colors.dart';
+import '../../../../shared/presentation/theme/app_spacing.dart';
 import '../models/intro_content.dart';
 
 /// Individual intro/onboarding page widget
-/// Displays a single intro screen with icon, title, and description
+/// Design System: Theme-based typography, proper spacing
 class IntroPage extends StatelessWidget {
-  const IntroPage({
-    super.key,
-    required this.content,
-  });
+  const IntroPage({super.key, required this.content});
 
   final IntroContent content;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.mdLg),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -37,39 +36,39 @@ class IntroPage extends StatelessWidget {
           BilingualText(
             english: content.titleEnglish,
             hindi: content.titleHindi,
-            englishStyle: const TextStyle(
+            englishStyle: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: theme.colorScheme.onSurface,
             ),
-            hindiStyle: const TextStyle(
+            hindiStyle: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-            spacing: 12,
+            spacing: AppSpacing.mdSm,
             alignment: CrossAxisAlignment.center,
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.mdLg),
 
           // Bilingual description
           BilingualText(
             english: content.descriptionEnglish,
             hindi: content.descriptionHindi,
-            englishStyle: const TextStyle(
+            englishStyle: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              color: AppColors.textSecondary,
+              color: theme.colorScheme.onSurfaceVariant,
               height: 1.5,
             ),
-            hindiStyle: const TextStyle(
+            hindiStyle: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: AppColors.textTertiary,
+              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
               height: 1.5,
             ),
-            spacing: 8,
+            spacing: AppSpacing.sm,
             alignment: CrossAxisAlignment.center,
           ),
 

@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_colors.dart';
 import '../theme/app_gradients.dart';
+import '../theme/app_spacing.dart';
 
 /// Flexible header widget with optional title, subtitle, search, and actions
-///
-/// Accepts Text widgets for title and subtitle so you can control styling.
-/// Use title for the main heading (like "VidyaRas" or "Practice and track your progress")
-/// Use subtitle for secondary text (like "Welcome back,")
+/// Design System: Theme-based styling, proper spacing
 class AdaptiveHeader extends StatelessWidget {
   const AdaptiveHeader({
     super.key,
@@ -23,40 +20,21 @@ class AdaptiveHeader extends StatelessWidget {
     this.searchPlaceholder,
   });
 
-  /// Title widget (e.g., Text with custom styling)
-  /// Displayed at the top of the header
   final Widget? title;
-
-  /// Subtitle widget (e.g., Text with custom styling)
-  /// Displayed below the title
   final Widget? subtitle;
-
-  /// Whether to show notification icon
   final bool showNotification;
-
-  /// Callback for notification tap
   final VoidCallback? onNotificationTap;
-
-  /// Optional action widgets (like menu icon)
   final List<Widget>? actions;
-
-  /// Optional gradient background
   final Gradient? gradient;
-
-  /// Optional solid background color (used if gradient is null)
   final Color? backgroundColor;
-
-  /// Whether to show search bar
   final bool showSearch;
-
-  /// Callback for search tap
   final VoidCallback? onSearchTap;
-
-  /// Search bar placeholder text
   final String? searchPlaceholder;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       decoration: BoxDecoration(
         gradient: gradient ?? AppGradients.primary,
@@ -65,7 +43,12 @@ class AdaptiveHeader extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 52),
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.sm,
+            AppSpacing.lg,
+            52,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -96,35 +79,37 @@ class AdaptiveHeader extends StatelessWidget {
               ),
 
               // Subtitle (if provided)
-              if (subtitle != null) ...[const SizedBox(height: 32), subtitle!],
+              if (subtitle != null) ...[
+                const SizedBox(height: AppSpacing.lg + AppSpacing.mdSm),
+                subtitle!,
+              ],
 
               // Search bar
               if (showSearch) ...[
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.mdLg),
                 GestureDetector(
                   onTap: onSearchTap,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.md - 2,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.95),
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.white.withValues(alpha: 0.95),
+                      borderRadius: BorderRadius.circular(AppRadius.card),
                     ),
                     child: Row(
                       children: [
                         Icon(
                           Icons.search,
-                          color: AppColors.textSecondary,
-                          size: 24,
+                          color: theme.colorScheme.onSurfaceVariant,
+                          size: AppIconSize.standard,
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: AppSpacing.mdSm),
                         Text(
                           searchPlaceholder ?? 'Search...',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.textSecondary,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],

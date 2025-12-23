@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../components/buttons/primary_button.dart';
 
 /// Empty state widget for courses screen
-/// Shows when no courses are found or user has no enrolled courses
+/// Design System: Theme typography, 48dp icon, proper spacing
 class EmptyCoursesWidget extends StatelessWidget {
   const EmptyCoursesWidget({
     super.key,
@@ -22,42 +22,36 @@ class EmptyCoursesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
               size: 80,
-              color: AppColors.textTertiary,
+              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.mdLg),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: theme.textTheme.headlineMedium, // H2: 20sp
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               message,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),
             if (actionText != null && onActionPressed != null) ...[
-              const SizedBox(height: 32),
-              PrimaryButton(
-                label: actionText!,
-                onPressed: onActionPressed!,
-              ),
+              const SizedBox(height: AppSpacing.lg),
+              PrimaryButton(label: actionText!, onPressed: onActionPressed!),
             ],
           ],
         ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Secondary button with outlined style
-/// Used for alternative actions like "I Already Have an Account"
+/// Design System: 48dp height, 8dp radius, orange border on white background
 class SecondaryButton extends StatelessWidget {
   const SecondaryButton({
     super.key,
@@ -21,22 +21,24 @@ class SecondaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDisabled = onPressed == null;
+
     return SizedBox(
       width: fullWidth ? double.infinity : null,
-      height: 56,
+      height: AppButtonSize.height,
       child: OutlinedButton(
         onPressed: isLoading ? null : onPressed,
         style: OutlinedButton.styleFrom(
           side: BorderSide(
-            color: onPressed == null
-                ? Theme.of(context).colorScheme.outlineVariant
-                : Theme.of(context).colorScheme.outline,
-            width: 1.5,
+            color: isDisabled
+                ? theme.colorScheme.outlineVariant
+                : theme.colorScheme.primary,
+            width: 1,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.button),
           ),
-          // Background color is handled by theme (surface) or transparent
         ),
         child: isLoading
             ? SizedBox(
@@ -45,7 +47,7 @@ class SecondaryButton extends StatelessWidget {
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Theme.of(context).colorScheme.primary,
+                    theme.colorScheme.primary,
                   ),
                 ),
               )
@@ -56,22 +58,22 @@ class SecondaryButton extends StatelessWidget {
                   if (icon != null) ...[
                     Icon(
                       icon,
-                      size: 20,
-                      color: onPressed == null
-                          ? Theme.of(context).disabledColor
-                          : Theme.of(context).colorScheme.primary,
+                      size: AppIconSize.small,
+                      color: isDisabled
+                          ? theme.disabledColor
+                          : theme.colorScheme.primary,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.sm),
                   ],
                   Flexible(
                     child: Text(
                       label,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: onPressed == null
-                                ? Theme.of(context).disabledColor
-                                : Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: isDisabled
+                            ? theme.disabledColor
+                            : theme.colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),

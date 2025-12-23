@@ -6,11 +6,12 @@ import '../../../../shared/presentation/components/buttons/secondary_button.dart
 import '../../../../shared/presentation/components/progress/carousel_dots.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
 import '../../../../shared/presentation/theme/app_gradients.dart';
+import '../../../../shared/presentation/theme/app_spacing.dart';
 import '../models/intro_content.dart';
 import '../widgets/intro_page.dart';
 
 /// Main intro/onboarding screen with PageView
-/// Displays 4 intro pages with navigation controls
+/// Design System: Theme-based typography, proper spacing
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
 
@@ -88,22 +89,20 @@ class _IntroScreenState extends State<IntroScreen> {
   }
 
   void _skipIntro() {
-    // Skip intro and go to authentication
     context.go('/login');
   }
 
   void _getStarted() {
-    // Navigate to authentication flow
     context.go('/login');
   }
 
   void _goToLogin() {
-    // Navigate to authentication screen (unified phone-based auth)
     context.go('/login');
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final bool isLastPage = _currentPage == _introPages.length - 1;
 
     return Scaffold(
@@ -117,10 +116,7 @@ class _IntroScreenState extends State<IntroScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white,
-                    Color(0xFFFAFAFA), // AppColors.background
-                  ],
+                  colors: [Colors.white, Color(0xFFFAFAFA)],
                 ),
               ),
             ),
@@ -131,9 +127,9 @@ class _IntroScreenState extends State<IntroScreen> {
               children: [
                 // Top bar with Skip button (hidden on last page)
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 16,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.mdLg,
+                    vertical: AppSpacing.md,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -146,7 +142,7 @@ class _IntroScreenState extends State<IntroScreen> {
                           child: AppTextButton(
                             onPressed: _skipIntro,
                             label: 'Skip',
-                            color: AppColors.textSecondary,
+                            color: theme.colorScheme.onSurfaceVariant,
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
@@ -170,7 +166,7 @@ class _IntroScreenState extends State<IntroScreen> {
 
                 // Carousel dots indicator
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  padding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
                   child: CarouselDots(
                     totalDots: _introPages.length,
                     currentIndex: _currentPage,
@@ -183,7 +179,12 @@ class _IntroScreenState extends State<IntroScreen> {
 
                 // Bottom buttons
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 48),
+                  padding: EdgeInsets.fromLTRB(
+                    AppSpacing.mdLg,
+                    0,
+                    AppSpacing.mdLg,
+                    48,
+                  ),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     transitionBuilder:
@@ -197,14 +198,12 @@ class _IntroScreenState extends State<IntroScreen> {
                         ? Column(
                             key: const ValueKey('last_page_buttons'),
                             children: [
-                              // Get Started button
                               PrimaryButton(
                                 onPressed: _getStarted,
                                 label: 'Get Started',
                                 fullWidth: true,
                               ),
-                              const SizedBox(height: 16),
-                              // I Already Have an Account button
+                              const SizedBox(height: AppSpacing.md),
                               SecondaryButton(
                                 onPressed: _goToLogin,
                                 label: 'I Already Have an Account',

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Icon-only button
-/// Used for settings, close, menu icons, etc.
+/// Design System: Theme-based styling
 class AppIconButton extends StatelessWidget {
   const AppIconButton({
     super.key,
     required this.icon,
     required this.onPressed,
-    this.size = 24,
+    this.size = AppIconSize.standard,
     this.color,
     this.backgroundColor,
-    this.padding = 8,
+    this.padding = AppSpacing.sm,
   });
 
   final IconData icon;
@@ -23,21 +23,24 @@ class AppIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Material(
       color: backgroundColor ?? Colors.transparent,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppRadius.button),
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.button),
         child: Padding(
           padding: EdgeInsets.all(padding),
           child: Icon(
             icon,
             size: size,
-            color: color ??
+            color:
+                color ??
                 (onPressed == null
-                    ? AppColors.textTertiary
-                    : AppColors.textPrimary),
+                    ? theme.colorScheme.onSurfaceVariant.withOpacity(0.5)
+                    : theme.colorScheme.onSurface),
           ),
         ),
       ),

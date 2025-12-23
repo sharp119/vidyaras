@@ -1,38 +1,39 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Section header for profile screen
-/// Used to group settings/options
+/// Design System: Theme typography, proper spacing
 class ProfileSectionHeader extends StatelessWidget {
-  const ProfileSectionHeader({
-    super.key,
-    required this.title,
-    this.icon,
-  });
+  const ProfileSectionHeader({super.key, required this.title, this.icon});
 
   final String title;
   final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.mdLg,
+        AppSpacing.lg,
+        AppSpacing.mdSm,
+      ),
       child: Row(
         children: [
           if (icon != null) ...[
             Icon(
               icon,
-              size: 20,
-              color: AppColors.textSecondary,
+              size: AppIconSize.small,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.sm),
           ],
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 16,
+            style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
               letterSpacing: 0.5,
             ),
           ),

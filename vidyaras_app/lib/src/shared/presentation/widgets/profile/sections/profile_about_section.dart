@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../theme/app_colors.dart';
+import '../../../theme/app_spacing.dart';
 import '../profile_list_tile.dart';
 import '../profile_section_header.dart';
 import '../../../../constants/app_constants.dart';
 import '../../../../utils/url_launcher_helper.dart';
 
 /// About section for profile screen
-/// Contains app info, contact, privacy policy, and rating
+/// Design System: Theme typography, proper spacing
 class ProfileAboutSection extends StatelessWidget {
   const ProfileAboutSection({
     super.key,
@@ -27,15 +28,12 @@ class ProfileAboutSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const ProfileSectionHeader(
-          title: 'About',
-          icon: Icons.info_outlined,
-        ),
+        const ProfileSectionHeader(title: 'About', icon: Icons.info_outlined),
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20),
+          margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.card),
             border: Border.all(color: AppColors.border),
           ),
           child: Column(
@@ -57,24 +55,25 @@ class ProfileAboutSection extends StatelessWidget {
               ProfileListTile(
                 icon: Icons.policy_outlined,
                 title: 'Privacy Policy',
-                iconColor: AppColors.textSecondary,
-                onTap: onPrivacyPolicyTap ??
+                onTap:
+                    onPrivacyPolicyTap ??
                     () => UrlLauncherHelper.launchWebUrl(
-                          AppConstants.privacyPolicyUrl,
-                          context: context,
-                        ),
+                      AppConstants.privacyPolicyUrl,
+                      context: context,
+                    ),
               ),
               ProfileListTile(
                 icon: Icons.star_outlined,
                 title: 'Rate on Play Store',
                 iconColor: AppColors.accent,
                 showDivider: false,
-                onTap: onRateAppTap ??
+                onTap:
+                    onRateAppTap ??
                     () => UrlLauncherHelper.launchAppStore(
-                          playStoreUrl: AppConstants.playStoreUrl,
-                          appStoreUrl: AppConstants.appStoreUrl,
-                          context: context,
-                        ),
+                      playStoreUrl: AppConstants.playStoreUrl,
+                      appStoreUrl: AppConstants.appStoreUrl,
+                      context: context,
+                    ),
               ),
             ],
           ),
@@ -84,35 +83,33 @@ class ProfileAboutSection extends StatelessWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
+    final theme = Theme.of(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.large),
         ),
         title: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(AppSpacing.mdSm),
               decoration: BoxDecoration(
                 color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.school,
-                size: 48,
+                size: AppIconSize.large,
                 color: AppColors.primary,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Text(
               AppConstants.appName,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: theme.textTheme.headlineLarge, // H1: 24sp
             ),
           ],
         ),
@@ -121,23 +118,20 @@ class ProfileAboutSection extends StatelessWidget {
           children: [
             Text(
               'Version ${AppConstants.appVersion}',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Text(
               AppConstants.appDescription,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.mdLg),
             // Social Media Links
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -149,21 +143,21 @@ class ProfileAboutSection extends StatelessWidget {
                   AppConstants.companyWebsite,
                   isIcon: true,
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.md),
                 _buildSocialIcon(
                   context,
                   FontAwesomeIcons.facebook,
                   'Facebook',
                   AppConstants.facebookUrl,
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.md),
                 _buildSocialIcon(
                   context,
                   FontAwesomeIcons.instagram,
                   'Instagram',
                   AppConstants.instagramUrl,
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.md),
                 _buildSocialIcon(
                   context,
                   FontAwesomeIcons.youtube,
@@ -172,12 +166,11 @@ class ProfileAboutSection extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Text(
               AppConstants.copyrightText,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textTertiary,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
               ),
             ),
           ],
@@ -201,62 +194,49 @@ class ProfileAboutSection extends StatelessWidget {
   }) {
     return InkWell(
       onTap: () => UrlLauncherHelper.launchWebUrl(url, context: context),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppRadius.button),
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(AppSpacing.sm),
         decoration: BoxDecoration(
           color: AppColors.surfaceLight,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.button),
         ),
         child: isIcon
-            ? Icon(
-                icon,
-                size: 20,
-                color: AppColors.primary,
-              )
-            : FaIcon(
-                icon,
-                size: 20,
-                color: AppColors.primary,
-              ),
+            ? Icon(icon, size: AppIconSize.small, color: AppColors.primary)
+            : FaIcon(icon, size: AppIconSize.small, color: AppColors.primary),
       ),
     );
   }
 
   void _showContactOptions(BuildContext context) {
+    final theme = Theme.of(context);
+
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
       ),
       builder: (context) => Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Center(
+            Center(
               child: Text(
                 'Contact Us',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: theme.textTheme.headlineMedium, // H2: 20sp
               ),
             ),
-            const SizedBox(height: 8),
-            const Center(
+            const SizedBox(height: AppSpacing.sm),
+            Center(
               child: Text(
                 'Choose how you\'d like to reach us',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: theme.textTheme.bodyMedium,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.mdLg),
             _buildContactOption(
               context,
               icon: Icons.email_outlined,
@@ -271,7 +251,7 @@ class ProfileAboutSection extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.mdSm),
             _buildContactOption(
               context,
               icon: Icons.phone_outlined,
@@ -285,7 +265,7 @@ class ProfileAboutSection extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.mdSm),
             _buildContactOption(
               context,
               icon: Icons.chat_outlined,
@@ -299,7 +279,7 @@ class ProfileAboutSection extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.mdSm),
             _buildContactOption(
               context,
               icon: Icons.language_outlined,
@@ -313,7 +293,7 @@ class ProfileAboutSection extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.lg),
           ],
         ),
       ),
@@ -327,58 +307,55 @@ class ProfileAboutSection extends StatelessWidget {
     required String subtitle,
     required VoidCallback onTap,
   }) {
+    final theme = Theme.of(context);
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.card),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
           color: AppColors.surfaceLight,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.card),
           border: Border.all(color: AppColors.border),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(AppSpacing.sm + 2),
               decoration: BoxDecoration(
                 color: AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppSpacing.sm + 2),
               ),
               child: Icon(
                 icon,
-                size: 24,
+                size: AppIconSize.standard,
                 color: AppColors.primary,
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: theme.textTheme.titleLarge, // 16sp
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios,
-              size: 16,
-              color: AppColors.textTertiary,
+              size: AppIconSize.small,
+              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
             ),
           ],
         ),

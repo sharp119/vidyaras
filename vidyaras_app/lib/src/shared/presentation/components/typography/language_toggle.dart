@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Language toggle button for switching between Hindi and English
-/// Used in onboarding and settings
+/// Design System: Theme-based typography, pill radius
 class LanguageToggle extends StatelessWidget {
   const LanguageToggle({
     super.key,
@@ -15,36 +16,35 @@ class LanguageToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final isHindi = currentLanguage == 'hi';
 
     return GestureDetector(
       onTap: () => onLanguageChanged(isHindi ? 'en' : 'hi'),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.mdSm,
+          vertical: AppSpacing.xs + 2,
+        ),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: AppColors.border,
-            width: 1,
-          ),
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+          border: Border.all(color: AppColors.border, width: 1),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               isHindi ? 'हिंदी' : 'English',
-              style: const TextStyle(
-                fontSize: 14,
+              style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(width: 4),
-            const Icon(
+            const SizedBox(width: AppSpacing.xs),
+            Icon(
               Icons.language,
               size: 16,
-              color: AppColors.textSecondary,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ],
         ),
@@ -66,19 +66,18 @@ class SimpleLanguageToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final isHindi = currentLanguage == 'hi';
 
     return InkWell(
       onTap: () => onLanguageChanged(isHindi ? 'en' : 'hi'),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppRadius.button),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(AppSpacing.sm),
         child: Text(
           isHindi ? 'हिंदी' : 'English',
-          style: const TextStyle(
-            fontSize: 16,
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
           ),
         ),
       ),

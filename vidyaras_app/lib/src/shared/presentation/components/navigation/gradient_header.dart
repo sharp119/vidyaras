@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_gradients.dart';
+import '../../theme/app_spacing.dart';
 import '../buttons/app_icon_button.dart';
 
-/// Gradient header with title and optional action button
-/// Used for profile screen header
+/// Orange Gradient Header (Primary)
+/// Design System: Gradient #FF5722 → #FF8A65, White text
 class GradientHeader extends StatelessWidget {
   const GradientHeader({
     super.key,
@@ -24,10 +25,11 @@ class GradientHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        gradient: gradient ?? AppGradients.orange,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.md,
       ),
+      decoration: BoxDecoration(gradient: gradient ?? AppGradients.primary),
       child: SafeArea(
         bottom: false,
         child: Row(
@@ -40,18 +42,18 @@ class GradientHeader extends StatelessWidget {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 28,
+                      fontSize: 24, // H1 from design system
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textOnPrimary,
+                      color: AppColors.white,
                     ),
                   ),
                   if (subtitle != null) ...[
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       subtitle!,
                       style: const TextStyle(
                         fontSize: 14,
-                        color: AppColors.textOnPrimary,
+                        color: AppColors.white,
                       ),
                     ),
                   ],
@@ -62,8 +64,8 @@ class GradientHeader extends StatelessWidget {
               AppIconButton(
                 icon: actionIcon!,
                 onPressed: onActionTap,
-                size: 24,
-                color: AppColors.textOnPrimary,
+                size: AppIconSize.standard,
+                color: AppColors.white,
               ),
           ],
         ),

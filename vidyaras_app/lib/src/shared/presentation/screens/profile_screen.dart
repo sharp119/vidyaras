@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../features/home/2_application/notifiers/home_notifier.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
 import '../components/cards/profile_card.dart';
 import '../components/cards/referral_card.dart';
 import '../widgets/profile/sections/profile_my_learning_section.dart';
@@ -12,25 +13,21 @@ import '../widgets/profile/sections/profile_about_section.dart';
 import '../widgets/profile/sections/profile_logout_button.dart';
 
 /// Profile screen
-/// Shows user profile, stats, settings, and account management
-/// Refactored for better organization with extracted components
+/// Design System: Theme-based typography, proper spacing
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final homeState = ref.watch(homeNotifierProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Profile',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: theme.textTheme.headlineLarge, // H1: 24sp
         ),
         backgroundColor: AppColors.surface,
         elevation: 0,
@@ -47,11 +44,13 @@ class ProfileScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.lg),
 
                 // Profile Header Card
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
                   child: ProfileCard(
                     name: userProfile.name,
                     email: userProfile.email ?? 'No email provided',
@@ -64,11 +63,13 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.lg),
 
                 // Referral Card
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
                   child: ReferralCard(
                     points: userProfile.referralPoints,
                     onInviteTap: () =>
@@ -91,12 +92,12 @@ class ProfileScreen extends ConsumerWidget {
                 // About Section
                 const ProfileAboutSection(),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: AppSpacing.lg),
 
                 // Logout Button
                 const ProfileLogoutButton(),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: AppSpacing.xl),
               ],
             ),
           );
@@ -106,33 +107,30 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildErrorState(BuildContext context, WidgetRef ref, String message) {
+    final theme = Theme.of(context);
+
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.error_outline, size: 64, color: AppColors.error),
-            const SizedBox(height: 24),
-            const Text(
+            const SizedBox(height: AppSpacing.mdLg),
+            Text(
               'Unable to load profile',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: theme.textTheme.headlineMedium,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               message,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.mdLg),
             ElevatedButton(
               onPressed: () {
                 ref.read(homeNotifierProvider.notifier).loadHomeData();
@@ -167,7 +165,9 @@ Download the app and start your learning journey today!
         content: Text('$feature - Coming Soon!'),
         backgroundColor: AppColors.primary,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.button),
+        ),
       ),
     );
   }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Search bar for courses screen
-/// Allows users to search courses by title or instructor
+/// Design System: 8dp radius, theme-based styling
 class CourseSearchBar extends StatelessWidget {
   const CourseSearchBar({
     super.key,
@@ -19,46 +20,46 @@ class CourseSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.input),
         border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.search,
-            size: 20,
-            color: AppColors.textSecondary,
+            size: AppIconSize.small,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.mdSm),
           Expanded(
             child: TextField(
               controller: controller,
               onChanged: onChanged,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textPrimary,
-              ),
+              style: theme.textTheme.titleLarge, // 16sp
               decoration: InputDecoration(
                 hintText: hintText,
-                hintStyle: const TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textTertiary,
+                hintStyle: theme.textTheme.titleLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
                 ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: AppSpacing.md,
+                ),
               ),
             ),
           ),
           if (controller.text.isNotEmpty)
             IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.clear,
-                size: 20,
-                color: AppColors.textSecondary,
+                size: AppIconSize.small,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
               onPressed: () {
                 controller.clear();
@@ -66,17 +67,13 @@ class CourseSearchBar extends StatelessWidget {
               },
             ),
           if (onFilterTap != null) ...[
-            const SizedBox(width: 8),
-            Container(
-              height: 32,
-              width: 1,
-              color: AppColors.border,
-            ),
+            const SizedBox(width: AppSpacing.sm),
+            Container(height: 32, width: 1, color: AppColors.border),
             IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.tune,
-                size: 20,
-                color: AppColors.primary,
+                size: AppIconSize.small,
+                color: theme.colorScheme.primary,
               ),
               onPressed: onFilterTap,
             ),

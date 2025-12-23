@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 
 /// Reusable list tile for profile settings/options
-/// Used in Settings, About, and My Learning sections
+/// Design System: Theme typography, proper spacing
 class ProfileListTile extends StatelessWidget {
   const ProfileListTile({
     super.key,
@@ -27,27 +28,33 @@ class ProfileListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final effectiveIconColor = iconColor ?? theme.colorScheme.primary;
+
     return Column(
       children: [
         InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.md,
+            ),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
-                    color: (iconColor ?? AppColors.primary).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    color: effectiveIconColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.button),
                   ),
                   child: Icon(
                     icon,
-                    size: 24,
-                    color: iconColor ?? AppColors.primary,
+                    size: AppIconSize.standard,
+                    color: effectiveIconColor,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,25 +63,20 @@ class ProfileListTile extends StatelessWidget {
                         children: [
                           Text(
                             title,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.textPrimary,
-                            ),
+                            style: theme.textTheme.titleLarge, // 16sp
                           ),
                           if (badge != null) ...[
-                            const SizedBox(width: 8),
+                            const SizedBox(width: AppSpacing.sm),
                             badge!,
                           ],
                         ],
                       ),
                       if (subtitle != null) ...[
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xs),
                         Text(
                           subtitle!,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -82,17 +84,19 @@ class ProfileListTile extends StatelessWidget {
                   ),
                 ),
                 trailing ??
-                    const Icon(
+                    Icon(
                       Icons.chevron_right,
-                      size: 24,
-                      color: AppColors.textTertiary,
+                      size: AppIconSize.standard,
+                      color: theme.colorScheme.onSurfaceVariant.withOpacity(
+                        0.5,
+                      ),
                     ),
               ],
             ),
           ),
         ),
         if (showDivider)
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(left: 72),
             child: Divider(height: 1, color: AppColors.border),
           ),

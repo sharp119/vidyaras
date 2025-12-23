@@ -1,14 +1,18 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import '../../2_application/providers/home_providers.dart';
 import '../../3_domain/models/course_detail.dart';
+import '../../3_domain/models/section_info.dart';
 import '../../3_domain/models/enrollment_message_data.dart';
 import '../widgets/curriculum_section_card.dart';
 import '../widgets/batch_info_card.dart';
 import '../widgets/enrollment_options_bottom_sheet.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
+import '../../../../shared/presentation/theme/app_spacing.dart';
+import 'enrolled_course_screen.dart';
 import '../../../auth/2_application/providers/auth_providers.dart';
 import '../../../auth/3_domain/models/app_user.dart' as domain;
 
@@ -23,16 +27,26 @@ class CourseDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<CourseDetailScreen> createState() => _CourseDetailScreenState();
 }
 
-class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
+class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
+    with SingleTickerProviderStateMixin {
   bool _selectedFullPayment = false; // Default to EMI
+  late TabController _tabController;
+  int _selectedTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        setState(() => _selectedTabIndex = _tabController.index);
+      }
+    });
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -45,20 +59,33 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
         top: false,
         bottom: false,
         child: courseDetailAsync.when(
-          data: (courseDetail) => Stack(
-            children: [
-              // Scrollable content
-              _buildContent(context, courseDetail),
+          data: (courseDetail) {
+            // Check if user is enrolled
+            // TODO: strict check, using expiry date or explicit flag
+            final isEnrolled = courseDetail.accessExpiryDate != null;
 
-              // Fixed bottom pricing section
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: _buildFixedBottomSection(courseDetail),
-              ),
-            ],
-          ),
+            // FOR DEMO/TESTING: Uncomment to force view if needed, but logic should hold
+            // final isEnrolled = true;
+
+            if (isEnrolled) {
+              return EnrolledCourseScreen(courseDetail: courseDetail);
+            }
+
+            return Stack(
+              children: [
+                // Scrollable content
+                _buildContent(context, courseDetail),
+
+                // Fixed bottom pricing section
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: _buildFixedBottomSection(courseDetail),
+                ),
+              ],
+            );
+          },
           loading: () => _buildLoading(),
           error: (error, stack) => _buildError(error),
         ),
@@ -88,33 +115,13 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
                 _buildCourseInfoSection(courseDetail),
                 const SizedBox(height: 24),
 
-                // Description
-                _buildDescriptionSection(courseDetail),
+                // Tab Bar - About / Syllabus / Reviews
+                _buildTabBar(),
+                const SizedBox(height: 16),
+
+                // Tab Content
+                _buildTabContent(courseDetail),
                 const SizedBox(height: 24),
-
-                // What You'll Learn Section
-                if (courseDetail.whatYouLearn.isNotEmpty) ...[
-                  _buildWhatYouLearnSection(courseDetail),
-                  const SizedBox(height: 24),
-                ],
-
-                // Course Includes Section
-                if (courseDetail.courseIncludes.isNotEmpty) ...[
-                  _buildCourseIncludesSection(courseDetail),
-                  const SizedBox(height: 24),
-                ],
-
-                // Prerequisites Section
-                if (courseDetail.prerequisites.isNotEmpty) ...[
-                  _buildPrerequisitesSection(courseDetail),
-                  const SizedBox(height: 24),
-                ],
-
-                // Syllabus/Curriculum Section
-                if (courseDetail.curriculum.isNotEmpty) ...[
-                  _buildTabsSection(courseDetail),
-                  const SizedBox(height: 24),
-                ],
 
                 const Divider(height: 1, color: AppColors.border),
                 const SizedBox(height: 24),
@@ -122,12 +129,6 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
                 // Live Batch Info (only for live courses)
                 if (courseDetail.liveBatch != null) ...[
                   BatchInfoCard(batchInfo: courseDetail.liveBatch!),
-                  const SizedBox(height: 24),
-                ],
-
-                // Reviews Section (only if reviews exist)
-                if (courseDetail.reviews.isNotEmpty) ...[
-                  _buildReviewsSection(courseDetail),
                   const SizedBox(height: 24),
                 ],
 
@@ -141,12 +142,212 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
     );
   }
 
+  Widget _buildTabBar() {
+    return Container(
+      height: 44,
+      decoration: BoxDecoration(
+        color: AppColors.lightGray,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+      ),
+      child: TabBar(
+        controller: _tabController,
+        indicator: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+        ),
+        indicatorSize: TabBarIndicatorSize.tab,
+        dividerColor: Colors.transparent,
+        labelColor: Colors.white,
+        unselectedLabelColor: AppColors.darkGray,
+        labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        unselectedLabelStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        tabs: const [
+          Tab(text: 'About'),
+          Tab(text: 'Syllabus'),
+          Tab(text: 'Reviews'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabContent(CourseDetail courseDetail) {
+    switch (_selectedTabIndex) {
+      case 0:
+        return _buildAboutTab(courseDetail);
+      case 1:
+        return _buildSyllabusTab(courseDetail);
+      case 2:
+        return _buildReviewsTab(courseDetail);
+      default:
+        return _buildAboutTab(courseDetail);
+    }
+  }
+
+  Widget _buildAboutTab(CourseDetail courseDetail) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Description
+        _buildDescriptionSection(courseDetail),
+        const SizedBox(height: 24),
+
+        // What You'll Learn Section
+        if (courseDetail.whatYouLearn.isNotEmpty) ...[
+          _buildWhatYouLearnSection(courseDetail),
+          const SizedBox(height: 24),
+        ],
+
+        // Course Includes Section
+        if (courseDetail.courseIncludes.isNotEmpty) ...[
+          _buildCourseIncludesSection(courseDetail),
+          const SizedBox(height: 24),
+        ],
+
+        // Prerequisites Section
+        if (courseDetail.prerequisites.isNotEmpty) ...[
+          _buildPrerequisitesSection(courseDetail),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildSyllabusTab(CourseDetail courseDetail) {
+    if (courseDetail.curriculum.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: Text('No curriculum available'),
+        ),
+      );
+    }
+
+    // TODO: Replace with actual enrollment check
+    // For now, check if accessExpiryDate exists (indicates enrollment)
+    final bool isEnrolled = courseDetail.accessExpiryDate != null;
+    final int maxFreeItems = 1; // Only show Module 1 for non-enrolled users
+    final curriculum = courseDetail.curriculum;
+    final bool hasLockedItems = !isEnrolled && curriculum.length > maxFreeItems;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Show unlocked items
+        ...curriculum
+            .asMap()
+            .entries
+            .take(isEnrolled ? curriculum.length : maxFreeItems)
+            .map((entry) {
+              final index = entry.key;
+              final section = entry.value;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: CurriculumSectionCard(
+                  section: section,
+                  sectionNumber: index,
+                ),
+              );
+            }),
+        // Show locked items (blurred) for non-enrolled users
+        if (hasLockedItems) ...[
+          ...curriculum.asMap().entries.skip(maxFreeItems).map((entry) {
+            final index = entry.key;
+            final section = entry.value;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _buildLockedSectionCard(section, index),
+            );
+          }),
+          const SizedBox(height: 16),
+          // Enroll prompt
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
+              border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.lock_outline, color: AppColors.primary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Enroll to unlock all ${curriculum.length - maxFreeItems} remaining lessons',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildLockedSectionCard(SectionInfo section, int index) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.medium),
+      child: Stack(
+        children: [
+          // Blurred content
+          ImageFiltered(
+            imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+            child: Opacity(
+              opacity: 0.5,
+              child: CurriculumSectionCard(
+                section: section,
+                sectionNumber: index,
+              ),
+            ),
+          ),
+          // Lock overlay
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(AppRadius.medium),
+              ),
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkGray.withOpacity(0.8),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.lock, color: Colors.white, size: 20),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewsTab(CourseDetail courseDetail) {
+    if (courseDetail.reviews.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: Text('No reviews yet'),
+        ),
+      );
+    }
+    return _buildReviewsSection(courseDetail);
+  }
+
   Widget _buildHeroHeader(CourseDetail courseDetail) {
     return SliverAppBar(
       expandedHeight: 220,
       pinned: true,
       stretch: true,
-      backgroundColor: AppColors.primary, // Orange when collapsed
+      backgroundColor: Colors.white, // Secondary Header style
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       leading: Padding(
@@ -177,6 +378,29 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
               )
             else
               Container(color: AppColors.surfaceLight),
+            // Play button overlay
+            Center(
+              child: Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.play_arrow_rounded,
+                  color: Colors.white,
+                  size: 36,
+                ),
+              ),
+            ),
           ],
         ),
         stretchModes: const [StretchMode.zoomBackground],
@@ -400,33 +624,6 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
             height: 1.6,
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildTabsSection(CourseDetail courseDetail) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Syllabus',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 16),
-        ...courseDetail.curriculum.asMap().entries.map((entry) {
-          final index = entry.key;
-          final section = entry.value;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: CurriculumSectionCard(
-              section: section,
-              sectionNumber: index,
-            ),
-          );
-        }),
       ],
     );
   }
@@ -758,7 +955,7 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
           // Enroll button
           SizedBox(
             width: double.infinity,
-            height: 57,
+            height: AppButtonSize.height,
             child: ElevatedButton(
               onPressed: () => _showEnrollmentOptions(courseDetail),
               style: ElevatedButton.styleFrom(

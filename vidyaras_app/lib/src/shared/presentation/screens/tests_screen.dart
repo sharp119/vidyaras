@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
 import '../components/cards/stats_card.dart';
 import '../widgets/adaptive_header.dart';
 import '../../../features/tests/2_application/notifiers/test_notifier.dart';
@@ -11,12 +12,14 @@ import '../../../features/tests/1_presentation/widgets/locked_tab_placeholder.da
 import '../../../features/tests/3_domain/models/test_data.dart';
 
 /// Tests screen showing tests, stats, and performance
+/// Design System: Theme-based typography, proper spacing
 class TestsScreen extends ConsumerWidget {
   const TestsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final testState = ref.watch(testNotifierProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -28,13 +31,15 @@ class TestsScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               Text(
                 message,
-                style: const TextStyle(color: AppColors.textSecondary),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               ElevatedButton(
                 onPressed: () =>
                     ref.read(testNotifierProvider.notifier).loadTestData(),
@@ -48,8 +53,8 @@ class TestsScreen extends ConsumerWidget {
           final offset = screenHeight * 0.13;
 
           final tabBar = TabBar(
-            labelColor: AppColors.textPrimary,
-            unselectedLabelColor: AppColors.textSecondary,
+            labelColor: theme.colorScheme.onSurface,
+            unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
             indicator: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10.0),
@@ -101,7 +106,7 @@ class TestsScreen extends ConsumerWidget {
             length: 2,
             child: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                SliverToBoxAdapter(child: _buildHeader(data, offset, context)),
+                SliverToBoxAdapter(child: _buildHeader(context, data, offset)),
                 SliverToBoxAdapter(child: SizedBox(height: 50 + offset)),
                 SliverPersistentHeader(
                   pinned: true,
@@ -125,7 +130,7 @@ class TestsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(TestData data, double offset, BuildContext context) {
+  Widget _buildHeader(BuildContext context, TestData data, double offset) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -161,8 +166,8 @@ class TestsScreen extends ConsumerWidget {
           ),
         ),
         Positioned(
-          left: 20,
-          right: 20,
+          left: AppSpacing.lg,
+          right: AppSpacing.lg,
           bottom: -25 - offset,
           child: StatsCard(
             stats: [
@@ -192,6 +197,7 @@ class TestsScreen extends ConsumerWidget {
   }
 
   Widget _buildExploreTab(BuildContext context, WidgetRef ref, TestData data) {
+    final theme = Theme.of(context);
     final notifier = ref.read(testNotifierProvider.notifier);
     final hasTests = data.availableTests.isNotEmpty;
 
@@ -204,31 +210,31 @@ class TestsScreen extends ConsumerWidget {
         children: [
           if (hasTests)
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.mdLg,
+                AppSpacing.lg,
+                AppSpacing.md,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Available Tests',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: theme.textTheme.headlineMedium,
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.mdSm,
+                      vertical: AppSpacing.xs + 2,
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.error.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.card),
                     ),
                     child: Text(
                       '${data.availableTests.length} new',
-                      style: const TextStyle(
-                        fontSize: 13,
+                      style: theme.textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppColors.error,
                       ),
@@ -240,11 +246,15 @@ class TestsScreen extends ConsumerWidget {
           if (hasTests)
             ...data.availableTests.map((test) {
               return Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                ),
                 child: AvailableTestCard(
                   title: test.title,
-                  description:
-                      test.titleHindi, // Maps to description in the card
+                  description: test.titleHindi,
                   category: test.category,
                   difficulty: test.difficulty,
                   questionCount: test.questionCount,
@@ -260,52 +270,47 @@ class TestsScreen extends ConsumerWidget {
             }),
           if (!hasTests)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               child: SizedBox(
                 height: 220,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.sentiment_satisfied_alt,
                       size: 48,
-                      color: AppColors.textSecondary,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.mdSm),
                     Text(
                       'No available tests yet',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.textSecondary,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.lg),
         ],
       ),
     );
   }
 
   Widget _buildHistoryTab(BuildContext context, WidgetRef ref, TestData data) {
-    // TODO: Replace this with actual enrollment check when enrollment system is implemented
-    // For now, all users are considered NOT enrolled
+    final theme = Theme.of(context);
     const bool hasEnrollment = false;
 
-    // If user is not enrolled, show locked placeholder
     if (!hasEnrollment) {
       return LockedTabPlaceholder(
         availableTests: data.availableTests,
         onExplorePressed: () {
-          // Navigate to Courses screen (MainShell index 1)
           context.go('/main', extra: 1);
         },
       );
     }
 
-    // Below code will execute when enrollment system is implemented
     final notifier = ref.read(testNotifierProvider.notifier);
     final hasCompletedTests = data.completedTests.isNotEmpty;
 
@@ -317,20 +322,20 @@ class TestsScreen extends ConsumerWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           if (hasCompletedTests)
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 24, 20, 16),
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.mdLg,
+                AppSpacing.lg,
+                AppSpacing.md,
+              ),
               child: Text(
                 'Completed Tests',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: theme.textTheme.headlineMedium,
               ),
             ),
           if (hasCompletedTests)
             ...data.completedTests.map((test) {
-              // 1. Create the QuizResult object from your existing 'test' data
               final int score =
                   int.tryParse(test.bestScore?.replaceAll('%', '') ?? '0') ?? 0;
               final quizResult = QuizResult(
@@ -341,16 +346,19 @@ class TestsScreen extends ConsumerWidget {
                 score: score,
                 totalQuestions: test.questionCount,
                 correctAnswers: ((score / 100) * test.questionCount).round(),
-                icon: '🏆', // Placeholder icon
-                timeSpent:
-                    test.durationMinutes, // Using allotted time as placeholder
-                completedAt: DateTime.now(), // Placeholder date
-                passed: score >= 60, // Assuming 60% is a pass
+                icon: '🏆',
+                timeSpent: test.durationMinutes,
+                completedAt: DateTime.now(),
+                passed: score >= 60,
               );
 
-              // 2. Invoke the new card with the 'result' object and callbacks
               return Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                ),
                 child: CompletedTestCard(
                   result: quizResult,
                   onViewDetails: test.attemptCount > 1
@@ -372,30 +380,29 @@ class TestsScreen extends ConsumerWidget {
             }),
           if (!hasCompletedTests)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               child: SizedBox(
                 height: 220,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.history,
                       size: 48,
-                      color: AppColors.textSecondary,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.mdSm),
                     Text(
                       'No completed tests yet',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.textSecondary,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.lg),
         ],
       ),
     );
@@ -426,12 +433,15 @@ class _TestsTabBarDelegate extends SliverPersistentHeaderDelegate {
       child: Container(
         height: 44,
         constraints: const BoxConstraints(maxWidth: 448),
-        margin: const EdgeInsets.symmetric(horizontal: 20.0),
+        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         decoration: BoxDecoration(
-          color: const Color(0xFFF3F4F6), // shadcn grey-100
-          borderRadius: BorderRadius.circular(12.0),
+          color: const Color(0xFFF3F4F6),
+          borderRadius: BorderRadius.circular(AppRadius.card),
         ),
-        child: Padding(padding: const EdgeInsets.all(4.0), child: tabBar),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xs),
+          child: tabBar,
+        ),
       ),
     );
   }
