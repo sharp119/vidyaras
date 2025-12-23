@@ -9,7 +9,6 @@ Thumbs.db
 
 # Preview and mockup directories
 preview/
-docs/mockups/
 
 # Video files
 *.mp4
@@ -53,4 +52,5 @@ docs/mockups/
 
 # Firebase
 firebase-debug.log
-.firebase/
+
+
