@@ -11,6 +11,7 @@ _$SectionInfoImpl _$$SectionInfoImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       title: json['title'] as String,
       hindiTitle: json['hindiTitle'] as String?,
+      orderIndex: (json['orderIndex'] as num?)?.toInt() ?? 0,
       totalDurationMinutes:
           (json['totalDurationMinutes'] as num?)?.toInt() ?? 0,
       lectureCount: (json['lectureCount'] as num?)?.toInt() ?? 0,
@@ -22,6 +23,7 @@ Map<String, dynamic> _$$SectionInfoImplToJson(_$SectionInfoImpl instance) =>
       'id': instance.id,
       'title': instance.title,
       'hindiTitle': instance.hindiTitle,
+      'orderIndex': instance.orderIndex,
       'totalDurationMinutes': instance.totalDurationMinutes,
       'lectureCount': instance.lectureCount,
       'completedCount': instance.completedCount,

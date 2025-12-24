@@ -567,10 +567,13 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
           .order('order_index');
 
       return response
+          .asMap()
+          .entries
           .map(
-            (data) => SectionInfo(
-              id: data['id'] as String,
-              title: data['title'] as String,
+            (entry) => SectionInfo(
+              id: entry.value['id'] as String,
+              title: entry.value['title'] as String,
+              orderIndex: entry.value['order_index'] as int? ?? entry.key,
               totalDurationMinutes: 0, // Calculated later
               lectureCount: 0, // Calculated later
               completedCount: 0, // Calculated later

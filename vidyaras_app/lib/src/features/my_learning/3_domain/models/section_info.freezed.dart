@@ -24,6 +24,7 @@ mixin _$SectionInfo {
   String get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String? get hindiTitle => throw _privateConstructorUsedError;
+  int get orderIndex => throw _privateConstructorUsedError;
   int get totalDurationMinutes => throw _privateConstructorUsedError;
   int get lectureCount => throw _privateConstructorUsedError;
   int get completedCount => throw _privateConstructorUsedError;
@@ -49,6 +50,7 @@ abstract class $SectionInfoCopyWith<$Res> {
     String id,
     String title,
     String? hindiTitle,
+    int orderIndex,
     int totalDurationMinutes,
     int lectureCount,
     int completedCount,
@@ -73,6 +75,7 @@ class _$SectionInfoCopyWithImpl<$Res, $Val extends SectionInfo>
     Object? id = null,
     Object? title = null,
     Object? hindiTitle = freezed,
+    Object? orderIndex = null,
     Object? totalDurationMinutes = null,
     Object? lectureCount = null,
     Object? completedCount = null,
@@ -91,6 +94,10 @@ class _$SectionInfoCopyWithImpl<$Res, $Val extends SectionInfo>
                 ? _value.hindiTitle
                 : hindiTitle // ignore: cast_nullable_to_non_nullable
                       as String?,
+            orderIndex: null == orderIndex
+                ? _value.orderIndex
+                : orderIndex // ignore: cast_nullable_to_non_nullable
+                      as int,
             totalDurationMinutes: null == totalDurationMinutes
                 ? _value.totalDurationMinutes
                 : totalDurationMinutes // ignore: cast_nullable_to_non_nullable
@@ -122,6 +129,7 @@ abstract class _$$SectionInfoImplCopyWith<$Res>
     String id,
     String title,
     String? hindiTitle,
+    int orderIndex,
     int totalDurationMinutes,
     int lectureCount,
     int completedCount,
@@ -145,6 +153,7 @@ class __$$SectionInfoImplCopyWithImpl<$Res>
     Object? id = null,
     Object? title = null,
     Object? hindiTitle = freezed,
+    Object? orderIndex = null,
     Object? totalDurationMinutes = null,
     Object? lectureCount = null,
     Object? completedCount = null,
@@ -163,6 +172,10 @@ class __$$SectionInfoImplCopyWithImpl<$Res>
             ? _value.hindiTitle
             : hindiTitle // ignore: cast_nullable_to_non_nullable
                   as String?,
+        orderIndex: null == orderIndex
+            ? _value.orderIndex
+            : orderIndex // ignore: cast_nullable_to_non_nullable
+                  as int,
         totalDurationMinutes: null == totalDurationMinutes
             ? _value.totalDurationMinutes
             : totalDurationMinutes // ignore: cast_nullable_to_non_nullable
@@ -187,6 +200,7 @@ class _$SectionInfoImpl implements _SectionInfo {
     required this.id,
     required this.title,
     this.hindiTitle,
+    this.orderIndex = 0,
     this.totalDurationMinutes = 0,
     this.lectureCount = 0,
     this.completedCount = 0,
@@ -203,6 +217,9 @@ class _$SectionInfoImpl implements _SectionInfo {
   final String? hindiTitle;
   @override
   @JsonKey()
+  final int orderIndex;
+  @override
+  @JsonKey()
   final int totalDurationMinutes;
   @override
   @JsonKey()
@@ -213,7 +230,7 @@ class _$SectionInfoImpl implements _SectionInfo {
 
   @override
   String toString() {
-    return 'SectionInfo(id: $id, title: $title, hindiTitle: $hindiTitle, totalDurationMinutes: $totalDurationMinutes, lectureCount: $lectureCount, completedCount: $completedCount)';
+    return 'SectionInfo(id: $id, title: $title, hindiTitle: $hindiTitle, orderIndex: $orderIndex, totalDurationMinutes: $totalDurationMinutes, lectureCount: $lectureCount, completedCount: $completedCount)';
   }
 
   @override
@@ -225,6 +242,8 @@ class _$SectionInfoImpl implements _SectionInfo {
             (identical(other.title, title) || other.title == title) &&
             (identical(other.hindiTitle, hindiTitle) ||
                 other.hindiTitle == hindiTitle) &&
+            (identical(other.orderIndex, orderIndex) ||
+                other.orderIndex == orderIndex) &&
             (identical(other.totalDurationMinutes, totalDurationMinutes) ||
                 other.totalDurationMinutes == totalDurationMinutes) &&
             (identical(other.lectureCount, lectureCount) ||
@@ -240,6 +259,7 @@ class _$SectionInfoImpl implements _SectionInfo {
     id,
     title,
     hindiTitle,
+    orderIndex,
     totalDurationMinutes,
     lectureCount,
     completedCount,
@@ -264,6 +284,7 @@ abstract class _SectionInfo implements SectionInfo {
     required final String id,
     required final String title,
     final String? hindiTitle,
+    final int orderIndex,
     final int totalDurationMinutes,
     final int lectureCount,
     final int completedCount,
@@ -278,6 +299,8 @@ abstract class _SectionInfo implements SectionInfo {
   String get title;
   @override
   String? get hindiTitle;
+  @override
+  int get orderIndex;
   @override
   int get totalDurationMinutes;
   @override
