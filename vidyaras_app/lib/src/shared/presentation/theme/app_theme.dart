@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 import 'app_spacing.dart';
 
@@ -22,7 +23,7 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colorScheme.surface,
-      fontFamily: 'Roboto', // Design system recommends Roboto/Noto Sans
+      fontFamily: GoogleFonts.outfit().fontFamily, // Modern geometric sans
       // Typography based on design system
       textTheme: TextTheme(
         // Display styles
@@ -127,7 +128,7 @@ class AppTheme {
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: colorScheme.onSurface,
-          fontFamily: 'Roboto',
+          fontFamily: GoogleFonts.outfit().fontFamily,
         ),
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
@@ -187,10 +188,10 @@ class AppTheme {
           padding: const EdgeInsets.symmetric(
             horizontal: AppButtonSize.horizontalPadding,
           ),
-          textStyle: const TextStyle(
+          textStyle: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Roboto',
+            fontFamily: GoogleFonts.outfit().fontFamily,
           ),
         ),
       ),
@@ -206,10 +207,10 @@ class AppTheme {
           padding: const EdgeInsets.symmetric(
             horizontal: AppButtonSize.horizontalPadding,
           ),
-          textStyle: const TextStyle(
+          textStyle: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Roboto',
+            fontFamily: GoogleFonts.outfit().fontFamily,
           ),
         ),
       ),
@@ -225,10 +226,10 @@ class AppTheme {
           padding: const EdgeInsets.symmetric(
             horizontal: AppButtonSize.horizontalPadding,
           ),
-          textStyle: const TextStyle(
+          textStyle: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Roboto',
+            fontFamily: GoogleFonts.outfit().fontFamily,
           ),
         ),
       ),

@@ -161,66 +161,82 @@ class LargeCourseCard extends StatelessWidget {
                     const SizedBox(height: 10),
 
                     // Rating, students, duration
-                    Row(
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        if (rating != null) ...[
-                          const Icon(
-                            Icons.star,
-                            size: 18,
-                            color: Color(0xFFFBBF24),
+                        if (rating != null)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                size: 16, // Smaller icon
+                                color: Color(0xFFFBBF24),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                rating!.toStringAsFixed(1),
+                                style: const TextStyle(
+                                  fontSize: 13, // Smaller text
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              if (reviewCount != null) ...[
+                                const SizedBox(width: 2),
+                                Text(
+                                  '($reviewCount)',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            rating!.toStringAsFixed(1),
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          if (reviewCount != null) ...[
-                            const SizedBox(width: 2),
-                            Text(
-                              '($reviewCount)',
-                              style: const TextStyle(
-                                fontSize: 14,
+
+                        // Hide student count on very small cards if needed, but Wrap handles it
+                        if (studentCount != null)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.people_outline,
+                                size: 16,
                                 color: AppColors.textSecondary,
                               ),
-                            ),
-                          ],
-                          const SizedBox(width: 16),
-                        ],
-                        if (studentCount != null) ...[
-                          const Icon(
-                            Icons.people_outline,
-                            size: 18,
-                            color: AppColors.textSecondary,
+                              const SizedBox(width: 4),
+                              Text(
+                                studentCount.toString(),
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            studentCount.toString(),
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondary,
-                            ),
+
+                        if (duration != null)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.schedule,
+                                size: 16,
+                                color: AppColors.textSecondary,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                duration!,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 16),
-                        ],
-                        if (duration != null) ...[
-                          const Icon(
-                            Icons.schedule,
-                            size: 18,
-                            color: AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            duration!,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
                       ],
                     ),
 

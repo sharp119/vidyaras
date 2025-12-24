@@ -19,6 +19,7 @@ dependencies:
   flutter_svg: ^2.0.0
   cached_network_image: ^3.3.0
   fl_chart: ^0.68.0
+  google_fonts: ^6.2.1
 
   # State Management
   flutter_riverpod: ^2.5.0

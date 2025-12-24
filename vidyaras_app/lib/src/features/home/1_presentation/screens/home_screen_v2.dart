@@ -12,6 +12,8 @@ import '../widgets/category_icons_grid.dart';
 import '../widgets/large_course_card.dart';
 import '../widgets/refer_earn_card.dart';
 import '../widgets/compact_course_resume_card.dart';
+import '../widgets/welcome_hero.dart';
+import '../widgets/section_header.dart';
 import '../../../my_learning/2_application/providers/my_learning_providers.dart';
 
 /// Home screen V2 - Exact UI match with screenshots
@@ -57,7 +59,7 @@ class HomeScreenV2 extends ConsumerWidget {
                 ref.read(homeNotifierProvider.notifier).refreshHomeData(),
             child: CustomScrollView(
               slivers: [
-                // Header with Stats Card overlay
+                // Header with Stats Card or Welcome Hero overlay
                 SliverToBoxAdapter(
                   child: Stack(
                     clipBehavior: Clip.none,
@@ -111,42 +113,115 @@ class HomeScreenV2 extends ConsumerWidget {
                         },
                         searchPlaceholder: 'Search courses, teachers...',
                       ),
-                      // Stats Card positioned to overlap header bottom
+
+                      // Overlay Content (Stats or Welcome)
                       Positioned(
-                        left: 20,
-                        right: 20,
-                        bottom: -25 - offset,
-                        child: StatsCard(
-                          stats: [
-                            StatCardItem(
-                              icon: Icons.school_outlined,
-                              value: data.userProfile.enrolledCount,
-                              label: 'Enrolled',
-                              iconColor: AppColors.primary,
-                            ),
-                            StatCardItem(
-                              icon: Icons.emoji_events_outlined,
-                              value: data.userProfile.completedCount,
-                              label: 'Completed',
-                              iconColor: AppColors.success,
-                            ),
-                            StatCardItem(
-                              icon: Icons.workspace_premium_outlined,
-                              value: data.userProfile.certificatesCount,
-                              label: 'Certificates',
-                              iconColor: AppColors.warning,
-                            ),
-                          ],
+                        left: 0,
+                        right: 0,
+                        bottom: -25 - offset, // Keep the same overlap
+                        child: Builder(
+                          builder: (context) {
+                            // LOGIC: Show Welcome Hero if user has 0 enrolled courses
+                            // This treats them as a "New User"
+                            final isNewUser =
+                                data.userProfile.enrolledCount == 0;
+
+                            if (isNewUser) {
+                              return WelcomeHero(
+                                userName:
+                                    currentUserAsync.value?.name
+                                        ?.split(' ')
+                                        .first ??
+                                    'Friend',
+                                onExploreTap: () => context.push('/courses'),
+                              );
+                            }
+
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: StatsCard(
+                                stats: [
+                                  StatCardItem(
+                                    icon: Icons.school_outlined,
+                                    value: data.userProfile.enrolledCount,
+                                    label: 'Enrolled',
+                                    iconColor: AppColors.primary,
+                                  ),
+                                  StatCardItem(
+                                    icon: Icons
+                                        .local_fire_department_outlined, // Changed to Streak/Progress
+                                    value: 0, // TODO: Add streak to backend
+                                    label: 'Day Streak',
+                                    iconColor: AppColors.error,
+                                  ),
+                                  StatCardItem(
+                                    icon: Icons.workspace_premium_outlined,
+                                    value: data.userProfile.certificatesCount,
+                                    label: 'Certificates',
+                                    iconColor: AppColors.warning,
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
                   ),
                 ),
 
-                // Spacing to account for the overlapping stats card
-                SliverToBoxAdapter(child: SizedBox(height: 50 + offset)),
+                // Spacing to account for the overlapping card (Higher for welcome card)
+                SliverToBoxAdapter(
+                  child: Builder(
+                    builder: (context) {
+                      final isNewUser = data.userProfile.enrolledCount == 0;
+                      // Welcome card is taller than stats card
+                      return SizedBox(height: (isNewUser ? 70 : 50) + offset);
+                    },
+                  ),
+                ),
 
-                // Continue Learning Section - Show only most recently accessed course
+                // Category Icons Grid (Moved UP for new users to encourage discovery)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 32),
+                    child: CategoryIconsGrid(
+                      categories: const [
+                        CategoryIconItem(
+                          id: 'music',
+                          label: 'Music',
+                          icon: Icons.music_note,
+                          color: AppColors.music,
+                        ),
+                        CategoryIconItem(
+                          id: 'dance',
+                          label: 'Dance',
+                          icon: Icons.sports_gymnastics,
+                          color: AppColors.arts,
+                        ),
+                        CategoryIconItem(
+                          id: 'wellness',
+                          label: 'Wellness',
+                          icon: Icons.spa,
+                          color: AppColors.wellness,
+                        ),
+                        CategoryIconItem(
+                          id: 'yoga',
+                          label: 'Yoga',
+                          icon: Icons.self_improvement,
+                          color: AppColors.yoga,
+                        ),
+                      ],
+                      onCategoryTap: (categoryId) {
+                        context.push('/courses?category=$categoryId');
+                      },
+                    ),
+                  ),
+                ),
+
+                // Continue Learning Section (Only if they have courses)
                 SliverToBoxAdapter(
                   child: Consumer(
                     builder: (context, ref, _) {
@@ -178,21 +253,19 @@ class HomeScreenV2 extends ConsumerWidget {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Section header
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: Text(
-                                  'Continue Learning',
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
-                                  ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                child: SectionHeader(
+                                  title: 'Continue Learning',
+                                  showViewAll: true,
+                                  onViewAllTap: () =>
+                                      context.push('/my-learning'),
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 16),
 
-                              // Compact course resume card
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 20,
@@ -209,7 +282,7 @@ class HomeScreenV2 extends ConsumerWidget {
                                   },
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 32),
                             ],
                           );
                         },
@@ -220,94 +293,26 @@ class HomeScreenV2 extends ConsumerWidget {
                   ),
                 ),
 
-                // Recommended For You Section
+                // Featured / Recommended Section
                 if (data.recommendedCourses.isNotEmpty) ...[
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          const Text(
-                            'Discovery',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          const Spacer(),
-                          InkWell(
-                            onTap: () => context.push('/courses'),
-                            borderRadius: BorderRadius.circular(8),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Text(
-                                'View All',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: SectionHeader(
+                        title: 'Featured Courses',
+                        subtitle: 'Handpicked for your interests',
+                        showViewAll: true,
+                        onViewAllTap: () => context.push('/courses'),
                       ),
                     ),
                   ),
 
-                  // Spacing after title
                   const SliverToBoxAdapter(child: SizedBox(height: 16)),
-
-                  // Category Icons Grid
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      child: CategoryIconsGrid(
-                        categories: const [
-                          CategoryIconItem(
-                            id: 'music',
-                            label: 'Music',
-                            icon: Icons.music_note,
-                            color: AppColors.music,
-                          ),
-                          CategoryIconItem(
-                            id: 'dance',
-                            label: 'Dance',
-                            icon: Icons.sports_gymnastics,
-                            color: AppColors.arts,
-                          ),
-                          CategoryIconItem(
-                            id: 'wellness',
-                            label: 'Wellness',
-                            icon: Icons.spa,
-                            color: AppColors.wellness,
-                          ),
-                          CategoryIconItem(
-                            id: 'yoga',
-                            label: 'Yoga',
-                            icon: Icons.self_improvement,
-                            color: AppColors.yoga,
-                          ),
-                        ],
-                        onCategoryTap: (categoryId) {
-                          context.push('/courses?category=$categoryId');
-                        },
-                      ),
-                    ),
-                  ),
 
                   // Featured Courses - Horizontal Carousel
                   SliverToBoxAdapter(
                     child: SizedBox(
-                      height: 280,
+                      height: 310, // Increased from 260 to prevent overflow
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -317,8 +322,10 @@ class HomeScreenV2 extends ConsumerWidget {
                         separatorBuilder: (_, __) => const SizedBox(width: 16),
                         itemBuilder: (context, index) {
                           final course = data.recommendedCourses[index];
+                          // Use a smaller width for better density
                           return SizedBox(
-                            width: 240,
+                            width:
+                                220, // Slightly wider to help horizontal text
                             child: LargeCourseCard(
                               title: course.title,
                               instructor: course.instructor,
@@ -328,9 +335,7 @@ class HomeScreenV2 extends ConsumerWidget {
                               studentCount: course.enrolledCount,
                               duration: course.duration,
                               price: course.price,
-                              emiPrice: course.price != null
-                                  ? '₹1666/mo'
-                                  : null,
+                              // Hide EMI on small cards to reduce clutter
                               hasFreeTrial: course.hasFreeTrial,
                               isLive: course.isLive,
                               isRecorded: course.isRecorded,
@@ -341,7 +346,7 @@ class HomeScreenV2 extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 32)),
                 ],
 
                 // Free Courses Section
@@ -349,56 +354,18 @@ class HomeScreenV2 extends ConsumerWidget {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                'Free Courses',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Start learning today',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.success.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: const Text(
-                              'Free',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.success,
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: SectionHeader(
+                        title: 'Free Courses',
+                        subtitle: 'Start learning without any cost',
+                        showViewAll: true,
+                        onViewAllTap: () => context.push('/courses?price=free'),
                       ),
                     ),
                   ),
                   const SliverToBoxAdapter(child: SizedBox(height: 16)),
                   SliverToBoxAdapter(
                     child: SizedBox(
-                      height: 380,
+                      height: 310, // Increased from 260
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -407,7 +374,7 @@ class HomeScreenV2 extends ConsumerWidget {
                         itemBuilder: (context, index) {
                           final course = data.freeCourses[index];
                           return SizedBox(
-                            width: 320,
+                            width: 220, // Slightly wider
                             child: LargeCourseCard(
                               title: course.title,
                               instructor: course.instructor,
@@ -437,7 +404,7 @@ class HomeScreenV2 extends ConsumerWidget {
                 ),
 
                 // Bottom spacing for nav bar
-                const SliverToBoxAdapter(child: SizedBox(height: 32)),
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
             ),
           );

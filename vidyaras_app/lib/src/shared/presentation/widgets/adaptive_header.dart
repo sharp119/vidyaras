@@ -41,11 +41,13 @@ class AdaptiveHeader extends StatelessWidget {
         color: backgroundColor,
       ),
       child: SafeArea(
+        top: false, // Allow content to flow behind status bar
         bottom: false,
         child: Padding(
           padding: EdgeInsets.fromLTRB(
             AppSpacing.lg,
-            AppSpacing.sm,
+            MediaQuery.of(context).padding.top +
+                AppSpacing.sm, // Add status bar height manually
             AppSpacing.lg,
             52,
           ),

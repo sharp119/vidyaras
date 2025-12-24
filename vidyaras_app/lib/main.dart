@@ -6,7 +6,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'; // Import Supabase
 import 'src/shared/presentation/theme/app_theme.dart';
 import 'src/shared/presentation/routing/app_router.dart';
-import 'src/shared/presentation/theme/app_colors.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,12 +34,17 @@ Future<void> main() async {
   });
 
   // Configure system UI overlay (status bar and navigation bar)
+  // Enable Edge-to-Edge for immersive experience
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+  // Configure transparent system UI to allow content to draw behind bars
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: AppColors.primary,
+      statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
-      statusBarBrightness: Brightness.dark,
-      systemNavigationBarColor: AppColors.background,
+      statusBarBrightness: Brightness.dark, // For iOS
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
