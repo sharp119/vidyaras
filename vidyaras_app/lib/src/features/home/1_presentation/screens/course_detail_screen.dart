@@ -741,11 +741,13 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen>
                     color: AppColors.primary,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    item,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w500,
+                  Flexible(
+                    child: Text(
+                      item,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],

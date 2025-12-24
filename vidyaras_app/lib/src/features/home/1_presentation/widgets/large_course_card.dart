@@ -130,143 +130,145 @@ class LargeCourseCard extends StatelessWidget {
               ],
             ),
 
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                      height: 1.3,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                        height: 1.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 8),
+                    const SizedBox(height: 6),
 
-                  // Instructor
-                  Text(
-                    instructor,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
+                    // Instructor
+                    Text(
+                      instructor,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 10),
 
-                  // Rating, students, duration
-                  Row(
-                    children: [
-                      if (rating != null) ...[
-                        const Icon(
-                          Icons.star,
-                          size: 18,
-                          color: Color(0xFFFBBF24),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          rating!.toStringAsFixed(1),
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                    // Rating, students, duration
+                    Row(
+                      children: [
+                        if (rating != null) ...[
+                          const Icon(
+                            Icons.star,
+                            size: 18,
+                            color: Color(0xFFFBBF24),
                           ),
-                        ),
-                        if (reviewCount != null) ...[
-                          const SizedBox(width: 2),
+                          const SizedBox(width: 4),
                           Text(
-                            '($reviewCount)',
+                            rating!.toStringAsFixed(1),
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          if (reviewCount != null) ...[
+                            const SizedBox(width: 2),
+                            Text(
+                              '($reviewCount)',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                          const SizedBox(width: 16),
+                        ],
+                        if (studentCount != null) ...[
+                          const Icon(
+                            Icons.people_outline,
+                            size: 18,
+                            color: AppColors.textSecondary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            studentCount.toString(),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                        ],
+                        if (duration != null) ...[
+                          const Icon(
+                            Icons.schedule,
+                            size: 18,
+                            color: AppColors.textSecondary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            duration!,
                             style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textSecondary,
                             ),
                           ),
                         ],
-                        const SizedBox(width: 16),
                       ],
-                      if (studentCount != null) ...[
-                        const Icon(
-                          Icons.people_outline,
-                          size: 18,
-                          color: AppColors.textSecondary,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          studentCount.toString(),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                      ],
-                      if (duration != null) ...[
-                        const Icon(
-                          Icons.schedule,
-                          size: 18,
-                          color: AppColors.textSecondary,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          duration!,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
+                    ),
 
-                  // Price
-                  if (price != null && !isFree) ...[
-                    const SizedBox(height: 16),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          price!,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                            height: 1,
-                          ),
-                        ),
-                        if (emiPrice != null) ...[
-                          const SizedBox(width: 12),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Text(
-                              'or $emiPrice',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
-                              ),
+                    // Price
+                    if (price != null && !isFree) ...[
+                      const Spacer(),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            price!,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                              height: 1,
                             ),
                           ),
+                          if (emiPrice != null) ...[
+                            const SizedBox(width: 12),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 2),
+                              child: Text(
+                                'or $emiPrice',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
-                    ),
-                  ],
-                  if (isFree) ...[
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Free',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.success,
-                        height: 1,
                       ),
-                    ),
+                    ],
+                    if (isFree) ...[
+                      const Spacer(),
+                      const Text(
+                        'Free',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.success,
+                          height: 1,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ],
