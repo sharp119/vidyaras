@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
-import '../../../../shared/presentation/theme/app_gradients.dart';
 
 class WelcomeHero extends ConsumerWidget {
   const WelcomeHero({

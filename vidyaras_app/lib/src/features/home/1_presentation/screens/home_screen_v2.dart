@@ -61,124 +61,130 @@ class HomeScreenV2 extends ConsumerWidget {
               slivers: [
                 // Header with Stats Card or Welcome Hero overlay
                 SliverToBoxAdapter(
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      // Orange Header
-                      AdaptiveHeader(
-                        title: const Text(
-                          'VidyaRas',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            height: 1.2,
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Welcome back,',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              currentUserAsync.when(
-                                data: (user) => user?.name ?? 'Guest',
-                                loading: () => 'Loading...',
-                                error: (_, __) => 'Guest',
-                              ),
-                              style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                height: 1.2,
-                              ),
-                            ),
-                          ],
-                        ),
-                        showNotification: true,
-                        onNotificationTap: () {
-                          // TODO: Open notifications
-                        },
-                        gradient: AppGradients.orange,
-                        showSearch: true,
-                        onSearchTap: () {
-                          // TODO: Navigate to search
-                        },
-                        searchPlaceholder: 'Search courses, teachers...',
-                      ),
-
-                      // Overlay Content (Stats or Welcome)
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: -25 - offset, // Keep the same overlap
-                        child: Builder(
-                          builder: (context) {
-                            // LOGIC: Show Welcome Hero if user has 0 enrolled courses
-                            // This treats them as a "New User"
-                            final isNewUser =
-                                data.userProfile.enrolledCount == 0;
-
-                            if (isNewUser) {
-                              return WelcomeHero(
-                                userName:
-                                    currentUserAsync.value?.name
-                                        ?.split(' ')
-                                        .first ??
-                                    'Friend',
-                                onExploreTap: () => context.push('/courses'),
-                              );
-                            }
-
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              child: StatsCard(
-                                stats: [
-                                  StatCardItem(
-                                    icon: Icons.school_outlined,
-                                    value: data.userProfile.enrolledCount,
-                                    label: 'Enrolled',
-                                    iconColor: AppColors.primary,
-                                  ),
-                                  StatCardItem(
-                                    icon: Icons
-                                        .local_fire_department_outlined, // Changed to Streak/Progress
-                                    value: 0, // TODO: Add streak to backend
-                                    label: 'Day Streak',
-                                    iconColor: AppColors.error,
-                                  ),
-                                  StatCardItem(
-                                    icon: Icons.workspace_premium_outlined,
-                                    value: data.userProfile.certificatesCount,
-                                    label: 'Certificates',
-                                    iconColor: AppColors.warning,
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Spacing to account for the overlapping card (Higher for welcome card)
-                SliverToBoxAdapter(
                   child: Builder(
                     builder: (context) {
                       final isNewUser = data.userProfile.enrolledCount == 0;
-                      // Welcome card is taller than stats card
-                      return SizedBox(height: (isNewUser ? 70 : 50) + offset);
+                      // Bottom padding/spacer calculation from previous version
+                      final bottomSpacerHeight = (isNewUser ? 70 : 50) + offset;
+                      // The amount the card "hangs" below the header bottom
+                      final cardHangAmount = 25 + offset;
+                      // The visuals gap below the card before next section
+                      final gapBelowCard = bottomSpacerHeight - cardHangAmount;
+
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          // Base Layer: Header + Invisible Spacer to expand bounds
+                          Column(
+                            children: [
+                              AdaptiveHeader(
+                                title: const Text(
+                                  'VidyaRas',
+                                  style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    height: 1.2,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Welcome back,',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      currentUserAsync.when(
+                                        data: (user) => user?.name ?? 'Guest',
+                                        loading: () => 'Loading...',
+                                        error: (_, __) => 'Guest',
+                                      ),
+                                      style: const TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        height: 1.2,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                showNotification: true,
+                                onNotificationTap: () {
+                                  // TODO: Open notifications
+                                },
+                                gradient: AppGradients.orange,
+                                showSearch: true,
+                                onSearchTap: () {
+                                  // TODO: Navigate to search
+                                },
+                                searchPlaceholder:
+                                    'Search courses, teachers...',
+                              ),
+                              // This spacer expands the Stack's height so the Positioned
+                              // card below is actually *inside* the hit-test bounds.
+                              SizedBox(height: bottomSpacerHeight),
+                            ],
+                          ),
+
+                          // Overlay Content (Stats or Welcome)
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            // Align bottom to the gap.
+                            // Start of Gap = Bottom of Stack - Gap.
+                            // So we position the card's bottom at 'gapBelowCard' from the bottom of stack.
+                            bottom: gapBelowCard,
+                            child: isNewUser
+                                ? WelcomeHero(
+                                    userName:
+                                        currentUserAsync.value?.name
+                                            ?.split(' ')
+                                            .first ??
+                                        'Friend',
+                                    onExploreTap: () =>
+                                        context.push('/courses'),
+                                  )
+                                : Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                    ),
+                                    child: StatsCard(
+                                      stats: [
+                                        StatCardItem(
+                                          icon: Icons.school_outlined,
+                                          value: data.userProfile.enrolledCount,
+                                          label: 'Enrolled',
+                                          iconColor: AppColors.primary,
+                                        ),
+                                        StatCardItem(
+                                          icon: Icons
+                                              .local_fire_department_outlined,
+                                          value:
+                                              0, // TODO: Add streak to backend
+                                          label: 'Day Streak',
+                                          iconColor: AppColors.error,
+                                        ),
+                                        StatCardItem(
+                                          icon:
+                                              Icons.workspace_premium_outlined,
+                                          value: data
+                                              .userProfile
+                                              .certificatesCount,
+                                          label: 'Certificates',
+                                          iconColor: AppColors.warning,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                          ),
+                        ],
+                      );
                     },
                   ),
                 ),
