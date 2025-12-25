@@ -19,6 +19,7 @@ class UniversalMediaHeader extends StatefulWidget {
     this.nextLiveDate,
     this.onPlayPressed,
     this.onJoinPressed,
+    this.onVideoEnded,
     this.isPlaying = false,
   });
 
@@ -39,6 +40,9 @@ class UniversalMediaHeader extends StatefulWidget {
 
   /// Callback when join button is pressed (for live content)
   final VoidCallback? onJoinPressed;
+
+  /// Callback when video playback ends (for auto-advance)
+  final VoidCallback? onVideoEnded;
 
   /// Whether video is currently playing (for future video player integration)
   final bool isPlaying;
@@ -87,6 +91,8 @@ class _UniversalMediaHeaderState extends State<UniversalMediaHeader> {
               enableCaption: false,
             ),
           );
+          // Add listener for video end detection
+          _youtubeController!.addListener(_onPlayerStateChange);
         });
       } else {
         setState(() {
@@ -96,7 +102,15 @@ class _UniversalMediaHeaderState extends State<UniversalMediaHeader> {
     }
   }
 
+  void _onPlayerStateChange() {
+    if (_youtubeController != null &&
+        _youtubeController!.value.playerState == PlayerState.ended) {
+      widget.onVideoEnded?.call();
+    }
+  }
+
   void _disposeController() {
+    _youtubeController?.removeListener(_onPlayerStateChange);
     _youtubeController?.dispose();
     _youtubeController = null;
   }
@@ -169,13 +183,19 @@ class _UniversalMediaHeaderState extends State<UniversalMediaHeader> {
         gradient: widget.isLive ? AppGradients.purple : AppGradients.primary,
       ),
       child: Center(
-        child: Icon(
-          widget.isLive
-              ? Icons.live_tv_rounded
-              : Icons.play_circle_outline_rounded,
-          size: 64,
-          color: Colors.white.withValues(alpha: 0.3),
-        ),
+        child: widget.isLive
+            ? Icon(
+                Icons.live_tv_rounded,
+                size: 64,
+                color: Colors.white.withValues(alpha: 0.8),
+              )
+            : (widget.videoUrl != null && widget.videoUrl!.isNotEmpty)
+            ? Icon(
+                Icons.play_circle_outline_rounded,
+                size: 64,
+                color: Colors.white.withValues(alpha: 0.8),
+              )
+            : const SizedBox.shrink(),
       ),
     );
   }
@@ -210,6 +230,10 @@ class _UniversalMediaHeaderState extends State<UniversalMediaHeader> {
   }
 
   Widget _buildRecordedOverlay() {
+    if (widget.videoUrl == null || widget.videoUrl!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Center(
       child: GestureDetector(
         onTap: widget.onPlayPressed,

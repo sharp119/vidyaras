@@ -13,12 +13,16 @@ class CurriculumTabView extends StatelessWidget {
   const CurriculumTabView({
     super.key,
     required this.course,
+    this.activeLectureId,
     this.onLessonTap,
     this.onMaterialTap,
   });
 
   /// The enrolled course containing sections and lectures
   final EnrolledCourse course;
+
+  /// ID of the currently active/playing lecture (for highlighting)
+  final String? activeLectureId;
 
   /// Callback when a lesson is tapped
   final void Function(Lecture, LessonContent?)? onLessonTap;
@@ -156,6 +160,7 @@ class CurriculumTabView extends StatelessWidget {
         ...lectures.map((lecture) {
           return _LessonContainer(
             lecture: lecture,
+            isActive: lecture.id == activeLectureId,
             onContentTap: (content) => onLessonTap?.call(lecture, content),
           );
         }),
@@ -240,9 +245,14 @@ class _MaterialChip extends StatelessWidget {
 
 /// Lesson container widget - expandable to show lesson details/resources
 class _LessonContainer extends StatefulWidget {
-  const _LessonContainer({required this.lecture, this.onContentTap});
+  const _LessonContainer({
+    required this.lecture,
+    this.isActive = false,
+    this.onContentTap,
+  });
 
   final Lecture lecture;
+  final bool isActive;
   final void Function(LessonContent?)? onContentTap;
 
   @override
@@ -257,94 +267,104 @@ class _LessonContainerState extends State<_LessonContainer> {
     final lecture = widget.lecture;
     final isLocked = lecture.isLocked;
     final isCompleted = lecture.isCompleted;
+    final isActive = widget.isActive;
 
     return Column(
       children: [
-        InkWell(
-          onTap: isLocked
-              ? null
-              : () {
-                  setState(() => _isExpanded = !_isExpanded);
-                },
-          child: Opacity(
-            opacity: isLocked ? 0.5 : 1.0,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.sm,
-              ),
-              child: Row(
-                children: [
-                  // Icon
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: _getIconBackgroundColor(isCompleted, isLocked),
-                      shape: BoxShape.circle,
+        // Active lesson highlight
+        Container(
+          decoration: BoxDecoration(
+            color: isActive
+                ? AppColors.primary.withValues(alpha: 0.08)
+                : Colors.transparent,
+            border: isActive
+                ? Border(left: BorderSide(color: AppColors.primary, width: 3))
+                : null,
+          ),
+          child: InkWell(
+            onTap: isLocked
+                ? null
+                : () {
+                    setState(() => _isExpanded = !_isExpanded);
+                  },
+            child: Opacity(
+              opacity: isLocked ? 0.5 : 1.0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                child: Row(
+                  children: [
+                    // Icon
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: _getIconBackgroundColor(isCompleted, isLocked),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        _getIcon(lecture.type, isCompleted, isLocked),
+                        size: 20,
+                        color: _getIconColor(isCompleted, isLocked),
+                      ),
                     ),
-                    child: Icon(
-                      _getIcon(lecture.type, isCompleted, isLocked),
-                      size: 20,
-                      color: _getIconColor(isCompleted, isLocked),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
+                    const SizedBox(width: AppSpacing.sm),
 
-                  // Content
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          lecture.title,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: isLocked
-                                ? AppColors.textSecondary
-                                : AppColors.textPrimary,
+                    // Content
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            lecture.title,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: isLocked
+                                  ? AppColors.textSecondary
+                                  : AppColors.textPrimary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          _buildSubtitle(lecture),
+                          const SizedBox(height: 2),
+                          Text(
+                            _buildSubtitle(lecture),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Duration & Expand
+                    if (lecture.durationMinutes != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Text(
+                          '${lecture.durationMinutes}m',
                           style: TextStyle(
                             fontSize: 12,
                             color: AppColors.textSecondary,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-
-                  // Duration & Expand
-                  if (lecture.durationMinutes != null)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Text(
-                        '${lecture.durationMinutes}m',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
                       ),
-                    ),
-                  if (!isLocked)
-                    Icon(
-                      _isExpanded ? Icons.expand_less : Icons.expand_more,
-                      color: AppColors.textSecondary,
-                      size: 20,
-                    ),
-                ],
+                    if (!isLocked)
+                      Icon(
+                        _isExpanded ? Icons.expand_less : Icons.expand_more,
+                        color: AppColors.textSecondary,
+                        size: 20,
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-
-        // Expanded content - Play button and resources
+        ), // Expanded content - Play button and resources
         if (_isExpanded && !isLocked)
           Container(
             padding: const EdgeInsets.fromLTRB(
