@@ -147,7 +147,7 @@ class HomeRemoteDataSource {
 
       // Fetch lectures with nested select from modules
       final lecturesResponse = await _supabase
-          .from('lectures')
+          .from('lessons')
           .select()
           .eq('course_id', courseId)
           .order('order_index', ascending: true);

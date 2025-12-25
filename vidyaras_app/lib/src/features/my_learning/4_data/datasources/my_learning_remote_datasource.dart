@@ -5,6 +5,7 @@ import '../../3_domain/models/live_class.dart';
 import '../../3_domain/models/course_material.dart';
 import '../../3_domain/models/lecture_completion.dart';
 import '../../3_domain/models/section_info.dart';
+import '../../3_domain/models/lesson_content.dart';
 
 /// Remote data source for My Learning feature
 /// Handles all Supabase database operations
@@ -263,8 +264,8 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
   }) async {
     try {
       final response = await _supabase
-          .from('lectures')
-          .select()
+          .from('lessons')
+          .select('*, lesson_contents(*)')
           .eq('course_id', courseId)
           .order('order_index');
 
@@ -286,6 +287,33 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
             ? DateTime.parse(completionResponse['completed_at'] as String)
             : null;
         final watchedSeconds = completionResponse?['watched_seconds'] as int?;
+
+        // Parse lesson contents
+        final contentsData =
+            (lectureData['lesson_contents'] as List<dynamic>?) ?? [];
+        final contents =
+            contentsData
+                .map(
+                  (data) => LessonContent(
+                    id: data['id'] as String,
+                    lessonId: data['lesson_id'] as String,
+                    type: data['type'] as String,
+                    title: data['title'] as String,
+                    url: data['url'] as String?,
+                    duration: data['duration'] as int?,
+                    orderIndex: data['order_index'] as int?,
+                    createdAt: data['created_at'] != null
+                        ? DateTime.parse(data['created_at'] as String)
+                        : null,
+                    updatedAt: data['updated_at'] != null
+                        ? DateTime.parse(data['updated_at'] as String)
+                        : null,
+                  ),
+                )
+                .toList()
+              ..sort(
+                (a, b) => (a.orderIndex ?? 0).compareTo(b.orderIndex ?? 0),
+              );
 
         // Check if lecture is locked due to quiz requirement
         bool isLocked = false;
@@ -317,6 +345,7 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
             createdAt: lectureData['created_at'] != null
                 ? DateTime.parse(lectureData['created_at'] as String)
                 : null,
+            contents: contents,
           ),
         );
       }
@@ -494,7 +523,7 @@ class MyLearningRemoteDataSourceImpl implements MyLearningRemoteDataSource {
     try {
       // Get total lectures for the course
       final totalLecturesResponse = await _supabase
-          .from('lectures')
+          .from('lessons')
           .select('id, duration_minutes')
           .eq('course_id', courseId);
 

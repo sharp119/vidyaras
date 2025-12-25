@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'lesson_content.dart';
+
 part 'lecture.freezed.dart';
 part 'lecture.g.dart';
 
@@ -23,6 +25,7 @@ class Lecture with _$Lecture {
     int? watchedSeconds,
     DateTime? createdAt,
     DateTime? updatedAt,
+    @Default([]) List<LessonContent> contents,
   }) = _Lecture;
 
   factory Lecture.fromJson(Map<String, dynamic> json) =>

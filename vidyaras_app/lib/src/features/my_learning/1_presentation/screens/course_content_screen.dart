@@ -25,6 +25,10 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  // State to track currently playing video
+  String? _currentVideoUrl;
+  bool _isPlaying = false;
+
   @override
   void initState() {
     super.initState();
@@ -98,8 +102,11 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
                   thumbnailUrl: course.thumbnailUrl,
                   isLive: course.isLive,
                   nextLiveDate: course.nextLiveClass?.scheduledAt,
+                  // Pass the current video URL to the header
+                  videoUrl: _currentVideoUrl,
+                  isPlaying: _isPlaying,
                   onPlayPressed: () {
-                    // Navigate to video player or start playing
+                    // Start playing the first available lecture if none is selected
                     _onPlayPressed(course);
                   },
                   onJoinPressed: () {
@@ -156,13 +163,42 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
             // Tab 1: Curriculum
             CurriculumTabView(
               course: course,
-              onLessonTap: (lecture) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Playing: ${lecture.title}'),
-                    duration: const Duration(seconds: 1),
-                  ),
-                );
+              onLessonTap: (lecture, content) {
+                // Handle specific content tap
+                if (content != null) {
+                  if (content.type == 'video' &&
+                      content.url != null &&
+                      content.url!.isNotEmpty) {
+                    setState(() {
+                      _currentVideoUrl = content.url;
+                      _isPlaying = true;
+                    });
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Opening ${content.type}: ${content.title}',
+                        ),
+                        duration: const Duration(seconds: 1),
+                      ),
+                    );
+                  }
+                }
+                // Legacy fallback
+                else if (lecture.videoUrl != null &&
+                    lecture.videoUrl!.isNotEmpty) {
+                  setState(() {
+                    _currentVideoUrl = lecture.videoUrl;
+                    _isPlaying = true;
+                  });
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('No video available for this lesson'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                }
               },
               onMaterialTap: (material) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -327,12 +363,27 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
   }
 
   void _onPlayPressed(EnrolledCourse course) {
+    // If we're already playing, do nothing or toggle pause (opt.)
+    if (_isPlaying) return;
+
     final nextLecture = course.nextLecture;
-    if (nextLecture != null) {
+    if (nextLecture != null && nextLecture.videoUrl != null) {
+      setState(() {
+        _currentVideoUrl = nextLecture.videoUrl;
+        _isPlaying = true;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Playing: ${nextLecture.title}'),
+          content: Text('Resuming: ${nextLecture.title}'),
           duration: const Duration(seconds: 1),
+        ),
+      );
+    } else {
+      // Fallback for demo if no next lecture found
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No next lecture available'),
+          duration: Duration(seconds: 1),
         ),
       );
     }
@@ -379,7 +430,7 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
               ),
               const SizedBox(height: 16),
               const Text(
-                'Failed to load course',
+                'Failed toload course',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),

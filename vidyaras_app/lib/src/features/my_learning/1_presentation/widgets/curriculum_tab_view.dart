@@ -5,6 +5,7 @@ import '../../3_domain/models/enrolled_course.dart';
 import '../../3_domain/models/section_info.dart';
 import '../../3_domain/models/lecture.dart';
 import '../../3_domain/models/course_material.dart';
+import '../../3_domain/models/lesson_content.dart';
 
 /// Tab view widget displaying the course curriculum (modules and lessons).
 /// Used within the CourseContentScreen's TabBarView.
@@ -20,7 +21,7 @@ class CurriculumTabView extends StatelessWidget {
   final EnrolledCourse course;
 
   /// Callback when a lesson is tapped
-  final void Function(Lecture)? onLessonTap;
+  final void Function(Lecture, LessonContent?)? onLessonTap;
 
   /// Callback when a material is tapped
   final void Function(CourseMaterial)? onMaterialTap;
@@ -100,18 +101,15 @@ class CurriculumTabView extends StatelessWidget {
     if (section != null) {
       final title = section.title;
       // Check if title already starts with "Module X" pattern
-      final moduleRegex = RegExp(
-        r'^\s*Module\s*\d+\s*[-:]?\s*',
-        caseSensitive: false,
-      );
+      final moduleRegex = RegExp(r'^\s*Module\s*\d+', caseSensitive: false);
       if (moduleRegex.hasMatch(title)) {
-        // Title already has module prefix, use as-is but clean it up
-        formattedTitle = title.replaceFirst(
-          moduleRegex,
-          'Module ${moduleIndex + 1}: ',
-        );
+        // Title already has module prefix, strip it out to just show the name
+        formattedTitle = title.replaceAll(moduleRegex, '').trim();
+        // Remove leading colons or dashes if they were separators
+        formattedTitle = formattedTitle.replaceAll(RegExp(r'^[:\-\s]+'), '');
       } else {
-        formattedTitle = 'Module ${moduleIndex + 1}: $title';
+        // Just show the raw title without prepending "Module X"
+        formattedTitle = title;
       }
     } else {
       formattedTitle = 'Course Content';
@@ -158,7 +156,7 @@ class CurriculumTabView extends StatelessWidget {
         ...lectures.map((lecture) {
           return _LessonContainer(
             lecture: lecture,
-            onTap: () => onLessonTap?.call(lecture),
+            onContentTap: (content) => onLessonTap?.call(lecture, content),
           );
         }),
       ],
@@ -242,10 +240,10 @@ class _MaterialChip extends StatelessWidget {
 
 /// Lesson container widget - expandable to show lesson details/resources
 class _LessonContainer extends StatefulWidget {
-  const _LessonContainer({required this.lecture, this.onTap});
+  const _LessonContainer({required this.lecture, this.onContentTap});
 
   final Lecture lecture;
-  final VoidCallback? onTap;
+  final void Function(LessonContent?)? onContentTap;
 
   @override
   State<_LessonContainer> createState() => _LessonContainerState();
@@ -355,31 +353,15 @@ class _LessonContainerState extends State<_LessonContainer> {
               AppSpacing.md,
               AppSpacing.md,
             ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(width: 48), // Align with content
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: widget.onTap,
-                    icon: Icon(
-                      lecture.type == 'live'
-                          ? Icons.videocam_rounded
-                          : Icons.play_arrow_rounded,
-                      size: 18,
-                    ),
-                    label: Text(
-                      lecture.type == 'live' ? 'Join Session' : 'Play Video',
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ),
+                if (lecture.contents.isNotEmpty)
+                  ...lecture.contents.map(
+                    (content) => _buildContentItem(content),
+                  )
+                else
+                  _buildLegacyPlayButton(lecture),
               ],
             ),
           ),
@@ -395,23 +377,121 @@ class _LessonContainerState extends State<_LessonContainer> {
     );
   }
 
-  String _buildSubtitle(Lecture lecture) {
-    final parts = <String>[];
-    switch (lecture.type) {
+  Widget _buildContentItem(LessonContent content) {
+    IconData icon;
+    switch (content.type) {
       case 'video':
-        parts.add('Video');
+        icon = Icons.play_circle_fill_rounded;
         break;
-      case 'live':
-        parts.add('Live Session');
+      case 'pdf':
+        icon = Icons.picture_as_pdf_rounded;
         break;
-      case 'reading':
-        parts.add('Reading');
-        break;
-      case 'practice':
-        parts.add('Practice');
+      case 'link':
+        icon = Icons.link_rounded;
         break;
       default:
-        parts.add('Content');
+        icon = Icons.article_rounded;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 48, bottom: 8),
+      child: InkWell(
+        onTap: () => widget.onContentTap?.call(content),
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            border: Border.all(color: AppColors.border),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: 20, color: AppColors.primary),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      content.title,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    if (content.duration != null && content.type == 'video')
+                      Text(
+                        '${content.duration} mins',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 14,
+                color: AppColors.textSecondary,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLegacyPlayButton(Lecture lecture) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 48),
+      child: ElevatedButton.icon(
+        onPressed: () => widget.onContentTap?.call(null),
+        icon: Icon(
+          lecture.type == 'live'
+              ? Icons.videocam_rounded
+              : Icons.play_arrow_rounded,
+          size: 18,
+        ),
+        label: Text(lecture.type == 'live' ? 'Join Session' : 'Play Video'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      ),
+    );
+  }
+
+  String _buildSubtitle(Lecture lecture) {
+    final parts = <String>[];
+    if (lecture.contents.isNotEmpty) {
+      if (lecture.contents.length == 1) {
+        final type = lecture.contents.first.type;
+        parts.add(type[0].toUpperCase() + type.substring(1));
+      } else {
+        parts.add('${lecture.contents.length} items');
+      }
+    } else {
+      switch (lecture.type) {
+        case 'video':
+          parts.add('Video');
+          break;
+        case 'live':
+          parts.add('Live Session');
+          break;
+        case 'reading':
+          parts.add('Reading');
+          break;
+        case 'practice':
+          parts.add('Practice');
+          break;
+        default:
+          parts.add('Content');
+      }
     }
     if (lecture.isCompleted) {
       parts.add('Completed');

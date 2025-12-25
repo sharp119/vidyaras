@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_gradients.dart';
 
@@ -8,7 +9,8 @@ import '../../theme/app_gradients.dart';
 /// 1. Recorded Course: Thumbnail + Play button overlay
 /// 2. Live Course (Upcoming): Thumbnail + Countdown overlay
 /// 3. Live Course (Active): "Join Now" button state
-class UniversalMediaHeader extends StatelessWidget {
+/// 4. YouTube Playback: Automatically plays YouTube videos inline
+class UniversalMediaHeader extends StatefulWidget {
   const UniversalMediaHeader({
     super.key,
     this.thumbnailUrl,
@@ -42,29 +44,114 @@ class UniversalMediaHeader extends StatelessWidget {
   final bool isPlaying;
 
   @override
+  State<UniversalMediaHeader> createState() => _UniversalMediaHeaderState();
+}
+
+class _UniversalMediaHeaderState extends State<UniversalMediaHeader> {
+  YoutubePlayerController? _youtubeController;
+  bool _isYouTubeVideo = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkVideoSource();
+  }
+
+  @override
+  void didUpdateWidget(UniversalMediaHeader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.videoUrl != oldWidget.videoUrl) {
+      _disposeController();
+      _checkVideoSource();
+    }
+  }
+
+  void _checkVideoSource() {
+    if (widget.videoUrl != null && widget.videoUrl!.isNotEmpty) {
+      // Simple heuristic for YouTube links using the helper from the package or regex
+      final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl!);
+
+      if (videoId != null) {
+        setState(() {
+          _isYouTubeVideo = true;
+          _youtubeController = YoutubePlayerController(
+            initialVideoId: videoId,
+            flags: const YoutubePlayerFlags(
+              autoPlay: false,
+              mute: false,
+              hideControls: false,
+              disableDragSeek: false,
+              loop: false,
+              isLive: false,
+              forceHD: false,
+              enableCaption: false,
+            ),
+          );
+        });
+      } else {
+        setState(() {
+          _isYouTubeVideo = false;
+        });
+      }
+    }
+  }
+
+  void _disposeController() {
+    _youtubeController?.dispose();
+    _youtubeController = null;
+  }
+
+  @override
+  void dispose() {
+    _disposeController();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 16 / 9,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Background: Thumbnail or Gradient
+          // Background: YouTube Player, Thumbnail, or Gradient
           _buildBackground(),
 
-          // Gradient overlay for better text visibility
-          _buildGradientOverlay(),
+          // Overlays ONLY if not playing YouTube video
+          if (!(_isYouTubeVideo && widget.isPlaying)) ...[
+            // Gradient overlay for better text visibility
+            _buildGradientOverlay(),
 
-          // Content overlay based on state
-          _buildContentOverlay(),
+            // Content overlay based on state
+            _buildContentOverlay(),
+          ],
         ],
       ),
     );
   }
 
   Widget _buildBackground() {
-    if (thumbnailUrl != null && thumbnailUrl!.isNotEmpty) {
+    // If it's a YouTube video and we are in "playing" mode (handled by parent or local toggle if we wanted)
+    // Note: The parent passes `isPlaying`. If true, we show the player.
+    if (_isYouTubeVideo && widget.isPlaying && _youtubeController != null) {
+      return YoutubePlayer(
+        controller: _youtubeController!,
+        showVideoProgressIndicator: true,
+        progressIndicatorColor: AppColors.primary,
+        progressColors: const ProgressBarColors(
+          playedColor: AppColors.primary,
+          handleColor: AppColors.primary,
+        ),
+        onReady: () {
+          // You can add logic here to start playing immediately if needed
+          _youtubeController!.play();
+        },
+      );
+    }
+
+    if (widget.thumbnailUrl != null && widget.thumbnailUrl!.isNotEmpty) {
       return CachedNetworkImage(
-        imageUrl: thumbnailUrl!,
+        imageUrl: widget.thumbnailUrl!,
         fit: BoxFit.cover,
         placeholder: (context, url) => Container(
           color: AppColors.primary.withValues(alpha: 0.1),
@@ -79,11 +166,13 @@ class UniversalMediaHeader extends StatelessWidget {
   Widget _buildPlaceholderBackground() {
     return Container(
       decoration: BoxDecoration(
-        gradient: isLive ? AppGradients.purple : AppGradients.primary,
+        gradient: widget.isLive ? AppGradients.purple : AppGradients.primary,
       ),
       child: Center(
         child: Icon(
-          isLive ? Icons.live_tv_rounded : Icons.play_circle_outline_rounded,
+          widget.isLive
+              ? Icons.live_tv_rounded
+              : Icons.play_circle_outline_rounded,
           size: 64,
           color: Colors.white.withValues(alpha: 0.3),
         ),
@@ -109,12 +198,11 @@ class UniversalMediaHeader extends StatelessWidget {
   }
 
   Widget _buildContentOverlay() {
-    if (isPlaying) {
-      // Video player would go here in future
-      return const SizedBox.shrink();
-    }
+    // If external video (not YouTube) is playing, we might hide overlay too,
+    // but typically non-youtube implementation would be customized here.
+    // For now, only YouTube playback effectively "removes" the overlay via the parent `isPlaying` flag.
 
-    if (isLive) {
+    if (widget.isLive) {
       return _buildLiveOverlay();
     }
 
@@ -124,7 +212,7 @@ class UniversalMediaHeader extends StatelessWidget {
   Widget _buildRecordedOverlay() {
     return Center(
       child: GestureDetector(
-        onTap: onPlayPressed,
+        onTap: widget.onPlayPressed,
         child: Container(
           width: 72,
           height: 72,
@@ -194,7 +282,7 @@ class UniversalMediaHeader extends StatelessWidget {
           // Countdown or Join button
           if (isLiveNow)
             GestureDetector(
-              onTap: onJoinPressed,
+              onTap: widget.onJoinPressed,
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
@@ -221,7 +309,7 @@ class UniversalMediaHeader extends StatelessWidget {
                 ),
               ),
             )
-          else if (nextLiveDate != null)
+          else if (widget.nextLiveDate != null)
             Text(
               _formatCountdown(),
               style: TextStyle(
@@ -236,17 +324,17 @@ class UniversalMediaHeader extends StatelessWidget {
   }
 
   bool _isLiveNow() {
-    if (nextLiveDate == null) return false;
+    if (widget.nextLiveDate == null) return false;
     final now = DateTime.now();
-    final diff = nextLiveDate!.difference(now);
+    final diff = widget.nextLiveDate!.difference(now);
     // Consider "live now" if within 15 minutes of start time
     return diff.inMinutes <= 15 && diff.inMinutes >= -60;
   }
 
   String _formatCountdown() {
-    if (nextLiveDate == null) return '';
+    if (widget.nextLiveDate == null) return '';
     final now = DateTime.now();
-    final diff = nextLiveDate!.difference(now);
+    final diff = widget.nextLiveDate!.difference(now);
 
     if (diff.isNegative) return 'Starting soon...';
 

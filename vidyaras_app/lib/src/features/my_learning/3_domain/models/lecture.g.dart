@@ -30,6 +30,11 @@ _$LectureImpl _$$LectureImplFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
+      contents:
+          (json['contents'] as List<dynamic>?)
+              ?.map((e) => LessonContent.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$LectureImplToJson(_$LectureImpl instance) =>
@@ -50,4 +55,5 @@ Map<String, dynamic> _$$LectureImplToJson(_$LectureImpl instance) =>
       'watchedSeconds': instance.watchedSeconds,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
+      'contents': instance.contents,
     };

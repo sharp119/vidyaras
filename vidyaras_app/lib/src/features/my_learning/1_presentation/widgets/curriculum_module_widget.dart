@@ -67,14 +67,26 @@ class CurriculumModuleWidget extends StatefulWidget {
     );
 
     // Smart Title Formatting
-    // If section title already contains "Module X", don't prepend it
+    // If section title already contains "Module X", just use it as is.
+    // Otherwise, prepend "Module X".
     String formattedTitle;
-    // Regex matches "Module 1", "Module 01", "Module 1:", etc.
     final moduleRegex = RegExp(r'^\s*Module\s*\d+', caseSensitive: false);
     if (moduleRegex.hasMatch(section.title)) {
-      formattedTitle = section.title;
+      // If the backend data sends "Module 1", we want to STRIP that out and just show the number if we are doing "Module 1: Title" format
+      // BUT current design likely wants "Module 1: Intro" format.
+      // If user says "Module 1 is not being shown" - they mean the text "Module 1" is missing?
+      // OR they mean "Module 1" is shown TWICE?
+      // "In the curriculum module 1 is not being shown."
+      // "just the module name itself"
+      // "currently it keeps on saying Module 1, Module 2..." -> Redundant?
+      // "we ensured that we won't be showing module 1.. just the module name itself"
+
+      // NEW LOGIC: Remove "Module X" prefix if present
+      formattedTitle = section.title.replaceAll(moduleRegex, '').trim();
+      // Remove leading colons or dashes if they were separators
+      formattedTitle = formattedTitle.replaceAll(RegExp(r'^[:\-\s]+'), '');
     } else {
-      formattedTitle = 'Module ${moduleIndex + 1}: ${section.title}';
+      formattedTitle = section.title;
     }
 
     return CurriculumModuleWidget(

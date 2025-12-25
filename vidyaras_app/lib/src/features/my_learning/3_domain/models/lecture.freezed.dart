@@ -38,6 +38,7 @@ mixin _$Lecture {
   int? get watchedSeconds => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
+  List<LessonContent> get contents => throw _privateConstructorUsedError;
 
   /// Serializes this Lecture to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -70,6 +71,7 @@ abstract class $LectureCopyWith<$Res> {
     int? watchedSeconds,
     DateTime? createdAt,
     DateTime? updatedAt,
+    List<LessonContent> contents,
   });
 }
 
@@ -104,6 +106,7 @@ class _$LectureCopyWithImpl<$Res, $Val extends Lecture>
     Object? watchedSeconds = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? contents = null,
   }) {
     return _then(
       _value.copyWith(
@@ -171,6 +174,10 @@ class _$LectureCopyWithImpl<$Res, $Val extends Lecture>
                 ? _value.updatedAt
                 : updatedAt // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
+            contents: null == contents
+                ? _value.contents
+                : contents // ignore: cast_nullable_to_non_nullable
+                      as List<LessonContent>,
           )
           as $Val,
     );
@@ -202,6 +209,7 @@ abstract class _$$LectureImplCopyWith<$Res> implements $LectureCopyWith<$Res> {
     int? watchedSeconds,
     DateTime? createdAt,
     DateTime? updatedAt,
+    List<LessonContent> contents,
   });
 }
 
@@ -235,6 +243,7 @@ class __$$LectureImplCopyWithImpl<$Res>
     Object? watchedSeconds = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? contents = null,
   }) {
     return _then(
       _$LectureImpl(
@@ -302,6 +311,10 @@ class __$$LectureImplCopyWithImpl<$Res>
             ? _value.updatedAt
             : updatedAt // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
+        contents: null == contents
+            ? _value._contents
+            : contents // ignore: cast_nullable_to_non_nullable
+                  as List<LessonContent>,
       ),
     );
   }
@@ -327,7 +340,8 @@ class _$LectureImpl implements _Lecture {
     this.watchedSeconds,
     this.createdAt,
     this.updatedAt,
-  });
+    final List<LessonContent> contents = const [],
+  }) : _contents = contents;
 
   factory _$LectureImpl.fromJson(Map<String, dynamic> json) =>
       _$$LectureImplFromJson(json);
@@ -368,10 +382,18 @@ class _$LectureImpl implements _Lecture {
   final DateTime? createdAt;
   @override
   final DateTime? updatedAt;
+  final List<LessonContent> _contents;
+  @override
+  @JsonKey()
+  List<LessonContent> get contents {
+    if (_contents is EqualUnmodifiableListView) return _contents;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_contents);
+  }
 
   @override
   String toString() {
-    return 'Lecture(id: $id, courseId: $courseId, moduleId: $moduleId, title: $title, description: $description, orderIndex: $orderIndex, type: $type, durationMinutes: $durationMinutes, videoUrl: $videoUrl, requiredQuizId: $requiredQuizId, isCompleted: $isCompleted, isLocked: $isLocked, completedAt: $completedAt, watchedSeconds: $watchedSeconds, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Lecture(id: $id, courseId: $courseId, moduleId: $moduleId, title: $title, description: $description, orderIndex: $orderIndex, type: $type, durationMinutes: $durationMinutes, videoUrl: $videoUrl, requiredQuizId: $requiredQuizId, isCompleted: $isCompleted, isLocked: $isLocked, completedAt: $completedAt, watchedSeconds: $watchedSeconds, createdAt: $createdAt, updatedAt: $updatedAt, contents: $contents)';
   }
 
   @override
@@ -407,7 +429,8 @@ class _$LectureImpl implements _Lecture {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+                other.updatedAt == updatedAt) &&
+            const DeepCollectionEquality().equals(other._contents, _contents));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -430,6 +453,7 @@ class _$LectureImpl implements _Lecture {
     watchedSeconds,
     createdAt,
     updatedAt,
+    const DeepCollectionEquality().hash(_contents),
   );
 
   /// Create a copy of Lecture
@@ -464,6 +488,7 @@ abstract class _Lecture implements Lecture {
     final int? watchedSeconds,
     final DateTime? createdAt,
     final DateTime? updatedAt,
+    final List<LessonContent> contents,
   }) = _$LectureImpl;
 
   factory _Lecture.fromJson(Map<String, dynamic> json) = _$LectureImpl.fromJson;
@@ -500,6 +525,8 @@ abstract class _Lecture implements Lecture {
   DateTime? get createdAt;
   @override
   DateTime? get updatedAt;
+  @override
+  List<LessonContent> get contents;
 
   /// Create a copy of Lecture
   /// with the given fields replaced by the non-null parameter values.
