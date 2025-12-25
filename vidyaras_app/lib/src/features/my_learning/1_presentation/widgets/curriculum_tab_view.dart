@@ -14,6 +14,7 @@ class CurriculumTabView extends StatelessWidget {
     super.key,
     required this.course,
     this.activeLectureId,
+    this.activeContentId,
     this.onLessonTap,
     this.onMaterialTap,
   });
@@ -23,6 +24,9 @@ class CurriculumTabView extends StatelessWidget {
 
   /// ID of the currently active/playing lecture (for highlighting)
   final String? activeLectureId;
+
+  /// ID of the currently active/playing specific content (for highlighting within lesson)
+  final String? activeContentId;
 
   /// Callback when a lesson is tapped
   final void Function(Lecture, LessonContent?)? onLessonTap;
@@ -161,6 +165,7 @@ class CurriculumTabView extends StatelessWidget {
           return _LessonContainer(
             lecture: lecture,
             isActive: lecture.id == activeLectureId,
+            activeContentId: activeContentId,
             onContentTap: (content) => onLessonTap?.call(lecture, content),
           );
         }),
@@ -248,11 +253,13 @@ class _LessonContainer extends StatefulWidget {
   const _LessonContainer({
     required this.lecture,
     this.isActive = false,
+    this.activeContentId,
     this.onContentTap,
   });
 
   final Lecture lecture;
   final bool isActive;
+  final String? activeContentId;
   final void Function(LessonContent?)? onContentTap;
 
   @override
@@ -268,6 +275,10 @@ class _LessonContainerState extends State<_LessonContainer> {
     final isLocked = lecture.isLocked;
     final isCompleted = lecture.isCompleted;
     final isActive = widget.isActive;
+
+    // Use a local copy of expanded state unless active
+    // If active, force expanded
+    final expanded = _isExpanded || isActive;
 
     return Column(
       children: [
@@ -355,7 +366,7 @@ class _LessonContainerState extends State<_LessonContainer> {
                       ),
                     if (!isLocked)
                       Icon(
-                        _isExpanded ? Icons.expand_less : Icons.expand_more,
+                        expanded ? Icons.expand_less : Icons.expand_more,
                         color: AppColors.textSecondary,
                         size: 20,
                       ),
@@ -365,7 +376,7 @@ class _LessonContainerState extends State<_LessonContainer> {
             ),
           ),
         ), // Expanded content - Play button and resources
-        if (_isExpanded && !isLocked)
+        if (expanded && !isLocked)
           Container(
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.md,
@@ -378,7 +389,10 @@ class _LessonContainerState extends State<_LessonContainer> {
               children: [
                 if (lecture.contents.isNotEmpty)
                   ...lecture.contents.map(
-                    (content) => _buildContentItem(content),
+                    (content) => _buildContentItem(
+                      content,
+                      widget.activeContentId == content.id,
+                    ),
                   )
                 else
                   _buildLegacyPlayButton(lecture),
@@ -397,11 +411,13 @@ class _LessonContainerState extends State<_LessonContainer> {
     );
   }
 
-  Widget _buildContentItem(LessonContent content) {
+  Widget _buildContentItem(LessonContent content, bool isContentActive) {
     IconData icon;
     switch (content.type) {
       case 'video':
-        icon = Icons.play_circle_fill_rounded;
+        icon = isContentActive
+            ? Icons.play_circle_filled_rounded
+            : Icons.play_circle_outline_rounded;
         break;
       case 'pdf':
         icon = Icons.picture_as_pdf_rounded;
@@ -421,13 +437,25 @@ class _LessonContainerState extends State<_LessonContainer> {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.surface,
-            border: Border.all(color: AppColors.border),
+            color: isContentActive
+                ? AppColors.primary.withValues(alpha: 0.05)
+                : AppColors.surface,
+            border: Border.all(
+              color: isContentActive
+                  ? AppColors.primary.withValues(alpha: 0.3)
+                  : AppColors.border,
+            ),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
             children: [
-              Icon(icon, size: 20, color: AppColors.primary),
+              Icon(
+                icon,
+                size: 20,
+                color: isContentActive
+                    ? AppColors.primary
+                    : AppColors.textSecondary,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -435,28 +463,41 @@ class _LessonContainerState extends State<_LessonContainer> {
                   children: [
                     Text(
                       content.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textPrimary,
+                        fontWeight: isContentActive
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                        color: isContentActive
+                            ? AppColors.primary
+                            : AppColors.textPrimary,
                       ),
                     ),
                     if (content.duration != null && content.type == 'video')
                       Text(
                         '${content.duration} mins',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: AppColors.textSecondary,
+                          color: isContentActive
+                              ? AppColors.primary.withValues(alpha: 0.8)
+                              : AppColors.textSecondary,
                         ),
                       ),
                   ],
                 ),
               ),
-              const Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 14,
-                color: AppColors.textSecondary,
-              ),
+              if (isContentActive)
+                const Icon(
+                  Icons.equalizer_rounded, // Visual indicator for playing
+                  size: 14,
+                  color: AppColors.primary,
+                )
+              else
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: AppColors.textSecondary,
+                ),
             ],
           ),
         ),

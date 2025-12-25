@@ -65,7 +65,6 @@ class _UniversalMediaHeaderState extends State<UniversalMediaHeader> {
   void didUpdateWidget(UniversalMediaHeader oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.videoUrl != oldWidget.videoUrl) {
-      _disposeController();
       _checkVideoSource();
     }
   }
@@ -76,28 +75,45 @@ class _UniversalMediaHeaderState extends State<UniversalMediaHeader> {
       final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl!);
 
       if (videoId != null) {
-        setState(() {
-          _isYouTubeVideo = true;
-          _youtubeController = YoutubePlayerController(
-            initialVideoId: videoId,
-            flags: const YoutubePlayerFlags(
-              autoPlay: false,
-              mute: false,
-              hideControls: false,
-              disableDragSeek: false,
-              loop: false,
-              isLive: false,
-              forceHD: false,
-              enableCaption: false,
-            ),
-          );
-          // Add listener for video end detection
-          _youtubeController!.addListener(_onPlayerStateChange);
-        });
+        if (_youtubeController != null) {
+          // REUSE: If controller exists, just load the new video
+          _youtubeController!.load(videoId);
+          if (!_isYouTubeVideo) {
+            setState(() => _isYouTubeVideo = true);
+          }
+        } else {
+          // CREATE: If no controller, create one
+          setState(() {
+            _isYouTubeVideo = true;
+            _youtubeController = YoutubePlayerController(
+              initialVideoId: videoId,
+              flags: const YoutubePlayerFlags(
+                autoPlay: true, // Auto-play when loaded
+                mute: false,
+                hideControls: false,
+                disableDragSeek: false,
+                loop: false,
+                isLive: false,
+                forceHD: false,
+                enableCaption: false,
+              ),
+            );
+            // Add listener for video end detection
+            _youtubeController!.addListener(_onPlayerStateChange);
+          });
+        }
       } else {
-        setState(() {
-          _isYouTubeVideo = false;
-        });
+        // Not a valid YouTube ID
+        _disposeController();
+        if (_isYouTubeVideo) {
+          setState(() => _isYouTubeVideo = false);
+        }
+      }
+    } else {
+      // No video URL
+      _disposeController();
+      if (_isYouTubeVideo) {
+        setState(() => _isYouTubeVideo = false);
       }
     }
   }

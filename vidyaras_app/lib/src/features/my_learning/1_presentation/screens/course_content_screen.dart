@@ -13,6 +13,7 @@ import '../../3_domain/models/lesson_content.dart';
 import '../widgets/curriculum_tab_view.dart';
 import '../widgets/resources_tab_view.dart';
 import '../widgets/lesson_control_bar.dart';
+import '../../3_domain/models/section_info.dart';
 
 /// Course Content Screen - Fixed Player & Navigation Layout
 /// Video player remains fixed at top, curriculum scrolls independently
@@ -33,6 +34,9 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
   // State to track currently playing video
   String? _currentVideoUrl;
   bool _isPlaying = false;
+
+  // Track specific content playing (for multi-content lessons)
+  String? _currentContentId;
 
   // Lesson navigation state
   List<Lecture> _flatLessons = [];
@@ -58,12 +62,61 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
   }
 
   void _onVideoEnded() {
-    // Mark current lesson as complete
+    // 1. Check if there are more videos in the CURRENT lesson
+    if (_currentLecture != null &&
+        _currentContentId != null &&
+        _currentLecture!.contents.isNotEmpty) {
+      // Find current content index
+      final currentIndex = _currentLecture!.contents.indexWhere(
+        (c) => c.id == _currentContentId,
+      );
+
+      if (currentIndex != -1) {
+        // Look for subsequent video content
+        int nextContentIndex = -1;
+        for (
+          int i = currentIndex + 1;
+          i < _currentLecture!.contents.length;
+          i++
+        ) {
+          final content = _currentLecture!.contents[i];
+          if (content.type == 'video' &&
+              content.url != null &&
+              content.url!.isNotEmpty) {
+            nextContentIndex = i;
+            break;
+          }
+        }
+
+        // If found next video within lesson, play it!
+        if (nextContentIndex != -1) {
+          final nextContent = _currentLecture!.contents[nextContentIndex];
+          setState(() {
+            _currentVideoUrl = nextContent.url;
+            _currentContentId = nextContent.id;
+            _isPlaying = true;
+          });
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Playing next: ${nextContent.title}'),
+                duration: const Duration(seconds: 2),
+                backgroundColor: AppColors.primary,
+              ),
+            );
+          }
+          return; // Stop here, don't complete lesson yet
+        }
+      }
+    }
+
+    // 2. If no more videos in this lesson, mark LESSON as complete
     if (_currentLecture != null) {
       _markLessonComplete(_currentLecture!);
     }
 
-    // Don't auto-advance if we're on the last lesson (or can't find next playable)
+    // 3. Auto-advance to next LESSON
     // Check if there IS a next playable lesson
     bool hasNextPlayable = false;
     for (int i = _currentLessonIndex + 1; i < _flatLessons.length; i++) {
@@ -102,74 +155,99 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
     _autoAdvanceTimer = null;
     setState(() {
       _showAutoAdvanceOverlay = false;
-      _autoAdvanceCountdown = 0;
     });
   }
 
-  /// Build flat list of lessons for navigation (sorted by section then order)
   void _buildFlatLessonList(EnrolledCourse course) {
-    final lecturesBySection = course.lecturesBySection;
+    if (_flatLessons.isNotEmpty) return;
 
-    // Sort sections by orderIndex
-    final sortedSections = List.from(course.sections)
+    // Sort sections
+    final sections = List<SectionInfo>.from(course.sections)
       ..sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
 
-    final lessons = <Lecture>[];
-    for (final section in sortedSections) {
-      final sectionLectures = List<Lecture>.from(
-        lecturesBySection[section.id] ?? [],
-      )..sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
-      lessons.addAll(sectionLectures);
-    }
+    final lecturesByModule = course.lecturesBySection;
+    final allLectures = <Lecture>[];
 
-    // Fallback if no sections
-    if (lessons.isEmpty && course.lectures.isNotEmpty) {
-      lessons.addAll(
+    if (sections.isNotEmpty) {
+      for (final section in sections) {
+        final sectionLectures = List<Lecture>.from(
+          lecturesByModule[section.id] ?? [],
+        )..sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
+        allLectures.addAll(sectionLectures);
+      }
+    } else {
+      // Fallback if no sections
+      allLectures.addAll(
         List<Lecture>.from(course.lectures)
           ..sort((a, b) => a.orderIndex.compareTo(b.orderIndex)),
       );
     }
 
-    _flatLessons = lessons;
+    setState(() {
+      _flatLessons = allLectures;
+    });
 
-    // Find first incomplete lesson or start at beginning
-    if (_currentLecture == null && lessons.isNotEmpty) {
-      final nextIndex = lessons.indexWhere(
-        (l) => !l.isCompleted && !l.isLocked,
-      );
-      _currentLessonIndex = nextIndex >= 0 ? nextIndex : 0;
-      _currentLecture = lessons[_currentLessonIndex];
-      _initializeVideoForLesson(_currentLecture!);
-    }
+    _initializeCurrentLesson();
   }
 
-  void _initializeVideoForLesson(Lecture lecture) {
-    // First check lesson contents for video
-    final videoContent = lecture.contents.firstWhere(
-      (c) => c.type == 'video' && c.url != null && c.url!.isNotEmpty,
-      orElse: () => LessonContent(
-        id: '',
-        lessonId: lecture.id,
-        title: '',
-        type: '',
-        orderIndex: 0,
-      ),
-    );
+  void _initializeCurrentLesson() {
+    if (_flatLessons.isEmpty) return;
 
-    if (videoContent.url != null && videoContent.url!.isNotEmpty) {
+    // Default to first incomplete lesson or first lesson
+    int nextIndex = _flatLessons.indexWhere((l) => !l.isCompleted);
+    setState(() {
+      _currentLessonIndex = nextIndex >= 0 ? nextIndex : 0;
+      _currentLecture = _flatLessons[_currentLessonIndex];
+    });
+
+    _initializeVideoForLesson(_currentLecture!);
+  }
+
+  // Modified to support specific content selection
+  void _initializeVideoForLesson(Lecture lecture, {String? contentId}) {
+    LessonContent? targetContent;
+
+    if (contentId != null) {
+      // Find specific content if ID provided
+      try {
+        targetContent = lecture.contents.firstWhere(
+          (c) =>
+              c.id == contentId &&
+              c.type == 'video' &&
+              c.url != null &&
+              c.url!.isNotEmpty,
+        );
+      } catch (_) {}
+    }
+
+    if (targetContent == null) {
+      // Default to first video content if no ID or not found
+      try {
+        targetContent = lecture.contents.firstWhere(
+          (c) => c.type == 'video' && c.url != null && c.url!.isNotEmpty,
+        );
+      } catch (_) {
+        // No video content
+      }
+    }
+
+    if (targetContent != null) {
       setState(() {
-        _currentVideoUrl = videoContent.url;
+        _currentVideoUrl = targetContent!.url;
+        _currentContentId = targetContent.id;
         _isPlaying = true;
       });
     } else if (lecture.videoUrl != null && lecture.videoUrl!.isNotEmpty) {
       // Fallback to legacy videoUrl
       setState(() {
         _currentVideoUrl = lecture.videoUrl;
+        _currentContentId = null; // Legacy doesn't have content ID
         _isPlaying = true;
       });
     } else {
       setState(() {
         _currentVideoUrl = null;
+        _currentContentId = null;
         _isPlaying = false;
       });
     }
@@ -275,6 +353,8 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
   void _onLessonSelected(Lecture lecture, LessonContent? content) {
     final index = _flatLessons.indexWhere((l) => l.id == lecture.id);
     if (index >= 0) {
+      bool isDifferentLesson = _currentLessonIndex != index;
+
       setState(() {
         _currentLessonIndex = index;
         _currentLecture = lecture;
@@ -287,6 +367,7 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
             content.url!.isNotEmpty) {
           setState(() {
             _currentVideoUrl = content.url;
+            _currentContentId = content.id;
             _isPlaying = true;
           });
         } else {
@@ -297,20 +378,11 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
             ),
           );
         }
-      }
-      // Legacy fallback
-      else if (lecture.videoUrl != null && lecture.videoUrl!.isNotEmpty) {
-        setState(() {
-          _currentVideoUrl = lecture.videoUrl;
-          _isPlaying = true;
-        });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No video available for this lesson'),
-            duration: Duration(seconds: 1),
-          ),
-        );
+        // No specific content selected (tapped header), initialize defaults
+        if (isDifferentLesson) {
+          _initializeVideoForLesson(lecture);
+        }
       }
     }
   }
@@ -352,7 +424,10 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
                   isPlaying: _isPlaying,
                   onPlayPressed: () {
                     if (_currentLecture != null) {
-                      _initializeVideoForLesson(_currentLecture!);
+                      _initializeVideoForLesson(
+                        _currentLecture!,
+                        contentId: _currentContentId,
+                      );
                     } else if (_flatLessons.isNotEmpty) {
                       _goToLesson(0);
                     }
@@ -414,6 +489,7 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
                             CurriculumTabView(
                               course: course,
                               activeLectureId: _currentLecture?.id,
+                              activeContentId: _currentContentId,
                               onLessonTap: _onLessonSelected,
                               // ...
                               onMaterialTap: (_) {},
@@ -450,7 +526,11 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
             isPlaying: _isPlaying,
             onPlayPressed: () {
               if (_currentLecture != null) {
-                _initializeVideoForLesson(_currentLecture!);
+                // Determine which content to play (current tracking vs default)
+                _initializeVideoForLesson(
+                  _currentLecture!,
+                  contentId: _currentContentId,
+                );
               } else if (_flatLessons.isNotEmpty) {
                 _goToLesson(0);
               }
