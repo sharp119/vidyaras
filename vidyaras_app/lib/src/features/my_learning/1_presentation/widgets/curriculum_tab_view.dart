@@ -384,19 +384,30 @@ class _LessonContainerState extends State<_LessonContainer> {
               AppSpacing.md,
               AppSpacing.md,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (lecture.contents.isNotEmpty)
-                  ...lecture.contents.map(
-                    (content) => _buildContentItem(
-                      content,
-                      widget.activeContentId == content.id,
-                    ),
-                  )
-                else
-                  _buildLegacyPlayButton(lecture),
-              ],
+            child: Builder(
+              builder: (context) {
+                final totalSeconds = (lecture.durationMinutes ?? 0) * 60;
+                final watched = lecture.watchedSeconds ?? 0;
+                final progress = totalSeconds > 0
+                    ? (watched / totalSeconds).clamp(0.0, 1.0)
+                    : 0.0;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (lecture.contents.isNotEmpty)
+                      ...lecture.contents.map(
+                        (content) => _buildContentItem(
+                          content,
+                          widget.activeContentId == content.id,
+                          progress: content.type == 'video' ? progress : 0.0,
+                        ),
+                      )
+                    else
+                      _buildLegacyPlayButton(lecture, progress: progress),
+                  ],
+                );
+              },
             ),
           ),
 
@@ -411,7 +422,11 @@ class _LessonContainerState extends State<_LessonContainer> {
     );
   }
 
-  Widget _buildContentItem(LessonContent content, bool isContentActive) {
+  Widget _buildContentItem(
+    LessonContent content,
+    bool isContentActive, {
+    double progress = 0.0,
+  }) {
     IconData icon;
     switch (content.type) {
       case 'video':
@@ -447,56 +462,76 @@ class _LessonContainerState extends State<_LessonContainer> {
             ),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon,
-                size: 20,
-                color: isContentActive
-                    ? AppColors.primary
-                    : AppColors.textSecondary,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      content.title,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: isContentActive
-                            ? FontWeight.w600
-                            : FontWeight.w500,
-                        color: isContentActive
-                            ? AppColors.primary
-                            : AppColors.textPrimary,
-                      ),
-                    ),
-                    if (content.duration != null && content.type == 'video')
-                      Text(
-                        '${content.duration} mins',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: isContentActive
-                              ? AppColors.primary.withValues(alpha: 0.8)
-                              : AppColors.textSecondary,
+              Row(
+                children: [
+                  Icon(
+                    icon,
+                    size: 20,
+                    color: isContentActive
+                        ? AppColors.primary
+                        : AppColors.textSecondary,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          content.title,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: isContentActive
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                            color: isContentActive
+                                ? AppColors.primary
+                                : AppColors.textPrimary,
+                          ),
                         ),
-                      ),
-                  ],
-                ),
+                        if (content.duration != null && content.type == 'video')
+                          Text(
+                            '${content.duration} mins',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: isContentActive
+                                  ? AppColors.primary.withValues(alpha: 0.8)
+                                  : AppColors.textSecondary,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (isContentActive)
+                    const Icon(
+                      Icons.equalizer_rounded, // Visual indicator for playing
+                      size: 14,
+                      color: AppColors.primary,
+                    )
+                  else
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 14,
+                      color: AppColors.textSecondary,
+                    ),
+                ],
               ),
-              if (isContentActive)
-                const Icon(
-                  Icons.equalizer_rounded, // Visual indicator for playing
-                  size: 14,
-                  color: AppColors.primary,
-                )
-              else
-                const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 14,
-                  color: AppColors.textSecondary,
+              if (progress > 0.05 && progress < 1.0)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, left: 32),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(2),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: AppColors.border,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.primary.withValues(alpha: 0.6),
+                      ),
+                      minHeight: 3,
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -505,24 +540,73 @@ class _LessonContainerState extends State<_LessonContainer> {
     );
   }
 
-  Widget _buildLegacyPlayButton(Lecture lecture) {
+  Widget _buildLegacyPlayButton(Lecture lecture, {double progress = 0.0}) {
+    // If it's not a live session and has no video URL, show "Upcoming" message
+    if (lecture.type != 'live' &&
+        (lecture.videoUrl == null || lecture.videoUrl!.trim().isEmpty)) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 48, top: 4, bottom: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.access_time_rounded,
+              size: 18,
+              color: AppColors.textSecondary,
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'Upcoming',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.only(left: 48),
-      child: ElevatedButton.icon(
-        onPressed: () => widget.onContentTap?.call(null),
-        icon: Icon(
-          lecture.type == 'live'
-              ? Icons.videocam_rounded
-              : Icons.play_arrow_rounded,
-          size: 18,
-        ),
-        label: Text(lecture.type == 'live' ? 'Join Session' : 'Play Video'),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ElevatedButton.icon(
+            onPressed: () => widget.onContentTap?.call(null),
+            icon: Icon(
+              lecture.type == 'live'
+                  ? Icons.videocam_rounded
+                  : Icons.play_arrow_rounded,
+              size: 18,
+            ),
+            label: Text(lecture.type == 'live' ? 'Join Session' : 'Play Video'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          if (progress > 0.05 && progress < 1.0)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  backgroundColor: AppColors.border,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    AppColors.primary.withValues(alpha: 0.6),
+                  ),
+                  minHeight: 3,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

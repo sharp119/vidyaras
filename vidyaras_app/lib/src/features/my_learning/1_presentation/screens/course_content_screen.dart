@@ -158,6 +158,13 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
     });
   }
 
+  bool _hasVideoContent(Lecture lecture) {
+    return (lecture.videoUrl != null && lecture.videoUrl!.trim().isNotEmpty) ||
+        lecture.contents.any(
+          (c) => c.type == 'video' && c.url != null && c.url!.trim().isNotEmpty,
+        );
+  }
+
   void _buildFlatLessonList(EnrolledCourse course) {
     if (_flatLessons.isNotEmpty) return;
 
@@ -193,8 +200,16 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
   void _initializeCurrentLesson() {
     if (_flatLessons.isEmpty) return;
 
-    // Default to first incomplete lesson or first lesson
-    int nextIndex = _flatLessons.indexWhere((l) => !l.isCompleted);
+    // Default to first incomplete lesson that has video content
+    int nextIndex = _flatLessons.indexWhere(
+      (l) => !l.isCompleted && _hasVideoContent(l),
+    );
+
+    // If no incomplete lesson has video, try finding ANY lesson with video
+    if (nextIndex == -1) {
+      nextIndex = _flatLessons.indexWhere((l) => _hasVideoContent(l));
+    }
+
     setState(() {
       _currentLessonIndex = nextIndex >= 0 ? nextIndex : 0;
       _currentLecture = _flatLessons[_currentLessonIndex];
@@ -319,6 +334,16 @@ class _CourseContentScreenState extends ConsumerState<CourseContentScreen>
 
   Future<void> _markLessonComplete(Lecture lecture) async {
     if (lecture.isCompleted) return;
+
+    // Don't mark as complete if there's no actual content to watch (for video lessons)
+    if (lecture.type == 'video' && !_hasVideoContent(lecture)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cannot complete an empty lesson')),
+        );
+      }
+      return;
+    }
 
     try {
       final repository = ref.read(myLearningRepositoryProvider);
